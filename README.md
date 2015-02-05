@@ -20,6 +20,7 @@ stored data from earlier releases. We do however expect to release a 1.0.0 versi
 ### Configuring and starting the VisualReview server
 * First, download and extract a preview release from [here](https://github.com/xebia/VisualReview/releases).
 * Configure the environment variables in start.sh (optional)
+* Make sure that the screenshot directory exists (default is .visualreview/screenshots)
 * Run ./start.sh
 * Open your browser at [http://localhost:7000](http://localhost:7000) (or the port you configured in start.sh)
 * Create a new project
