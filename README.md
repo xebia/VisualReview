@@ -35,11 +35,10 @@ the protractor-plugin's [README](https://github.com/xebia/VisualReview-protracto
 * Click on the run to review all screenshots and differences. If this is the first time you created a run in this suite, there will be no
 differences yet.
 * To approve or reject a screenshot, use the top-right menu or hit the 'a' or 'x' key on your keyboard.
-	- When you accept a screenshot, it will be added to this suite's so-called 'baseline'. Every future screenshot with that name inside the suite will be compared to this baseline.
- All screenshots you accept in future runs will overwrite this baseline. The baseline will therefore contain all latest accepted screenshots of a suite to which all new
-   screenshots will be compared against.
-	- When you reject a screenshot, the baseline will not be updated.
-    - After you either accepted or rejected a screenshot, you can always revert this decision by selecting the 'pending' option in the top right menu.
+  * When you accept a screenshot, it will be added to this suite's so-called 'baseline'. Every future screenshot with that name inside the suite will be compared to this baseline.
+ All screenshots you accept in future runs will overwrite this baseline. The baseline will therefore contain all latest accepted screenshots of a suite to which all new screenshots will be compared against.
+  * When you reject a screenshot, the baseline will not be updated.
+  * After you either accepted or rejected a screenshot, you can always revert this decision by selecting the 'pending' option in the top right menu.
 
 
 ## Features in development (aka known issues, limitations)
