@@ -70,7 +70,7 @@ We'd like to acknowledge the original authors of this project, from before versi
 
 ## License
 
-Copyright © 2015 Xebia
+Copyright © 2015 [Xebia](https://xebia.com/)
 
 Distributed under the [Apache License 2.0](http://http://www.apache.org/licenses/LICENSE-2.0).
 
