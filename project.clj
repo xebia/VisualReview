@@ -21,7 +21,8 @@ across several browsers, resolutions and platforms."
   :min-lein-version "2.4.0"
 
   :plugins [[lein-shell "0.4.0"]
-            [lein-resource "14.10.1"]]
+            [lein-resource "14.10.1"]
+            [lein-midje "3.1.3"]]
 
   :main com.xebia.visualreview.core
 
