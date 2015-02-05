@@ -79,7 +79,7 @@ module.exports = function (grunt) {
         {
           context: '/api',
           host: 'localhost',
-          port: 1337,
+          port: 7000,
           https: false,
           changeOrigin: false,
           xforward: false
@@ -87,7 +87,7 @@ module.exports = function (grunt) {
         {
           context: '/screenshots',
           host: 'localhost',
-          port: 1337,
+          port: 7000,
           https: false,
           changeOrigin: false,
           xforward: false
@@ -95,7 +95,7 @@ module.exports = function (grunt) {
         {
           context: '/repo',
           host: 'localhost',
-          port: 1337,
+          port: 7000,
           https: false,
           changeOrigin: false,
           xforward: false
