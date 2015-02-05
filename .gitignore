@@ -1,0 +1,21 @@
+target
+classes
+checkouts
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+.lein-*
+.nrepl-port
+.visualreview
+.DS_Store
+profiles.clj
+*.db
+*.tmp
+*.iml
+*.log
+
+# viewer
+node_modules
+bower_components
+dist

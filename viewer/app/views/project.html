@@ -1,0 +1,30 @@
+<div>
+
+  <div navbar project-id="project.id" project-name="project.name"></div>
+
+  <div class="project-container overflow-auto">
+    <h1 ng-hide="project.$vrIsLoading">List of suites in {{project.name}}</h1>
+
+    <div ng-show="project.$vrIsLoading" class="text-small">
+      Retrieving...
+    </div>
+
+    <div ng-show="project.$vrHasError" class="text-small text-red">
+      Could not retrieve list of suites. {{project.$vrErrorMessage}}
+    </div>
+
+    <div ng-repeat="suite in project.suites" ng-hide="project.$vrIsLoading">
+      <a class="text-decoration-none" href="#/{{project.id}}/{{suite.id}}/">
+        <span class="project-header">
+            {{suite.name}}
+        </span>
+
+      </a>
+    </div>
+    <div ng-hide="project.$vrIsLoading  || project.$vrHasError || project.suites.length > 0">
+      No suites found in this project. New suites are automatically created when running a test.
+    </div>
+  </div>
+
+
+</div>

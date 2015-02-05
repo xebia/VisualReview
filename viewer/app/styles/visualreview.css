@@ -1,0 +1,509 @@
+@font-face{
+    font-family: 'OpenSans';
+    src: url('font/OpenSans-Regular-webfont.eot');
+    src: url('font/OpenSans-Regular-webfont.eot?iefix') format('eot'),
+    url('font/OpenSans-Regular-webfont.woff') format('woff'),
+    url('font/OpenSans-Regular-webfont.ttf') format('truetype'),
+    url('font/OpenSans-Regular-webfont.svg#webfont') format('svg');
+}
+
+@font-face{
+    font-family: 'OpenSans-Semibold';
+    src: url('font/OpenSans-Semibold-webfont.eot');
+    src: url('font/OpenSans-Semibold-webfont.eot?iefix') format('eot'),
+    url('font/OpenSans-Semibold-webfont.woff') format('woff'),
+    url('font/OpenSans-Semibold-webfont.ttf') format('truetype'),
+    url('font/OpenSans-Semibold-webfont.svg#webfont') format('svg');
+}
+
+@font-face {
+    font-family: "visualreview-icons";
+    src:url("font/visualreview-icons.eot");
+    src:url("font/visualreview-icons.eot?iefix") format("eot"),
+    url("font/visualreview-icons.woff") format("woff"),
+    url("font/visualreview-icons.ttf") format("truetype"),
+    url("font/visualreview-icons.svg#visualreview-icons") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    padding-top: 70px;
+    background-color: #252525;
+    font-family: 'OpenSans', Arial, sans-serif;
+}
+
+b {
+    font-family: 'OpenSans-bold', Arial, sans-serif;
+}
+
+a:link{
+    color: #000000;
+    text-decoration: underline;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color: #aaaaaa;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #aaaaaa;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #aaaaaa;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: #aaaaaa;
+}
+
+[data-icon]:before {
+    font-family: "visualreview-icons" !important;
+    content: attr(data-icon);
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+    font-family: "visualreview-icons" !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* Make sure to update README.icons.md when updating this list */
+.icon-alert:before {
+    content: "a";
+}
+.icon-os-android:before {
+    content: "d";
+}
+.icon-os-mac:before {
+    content: "e";
+}
+.icon-os-windows:before {
+    content: "f";
+}
+.icon-rejected:before {
+    content: "g";
+}
+.icon-accepted:before {
+    content: "c";
+}
+.icon-pending:before {
+    content: "b";
+}
+.icon-chevron-down:before {
+    content: "i";
+}
+.icon-chevron-up:before {
+    content: "j";
+}
+.icon-os-android:before {
+    content: "d";
+}
+.icon-os-apple:before {
+    content: "e";
+}
+.icon-os-windows:before {
+    content: "f";
+}
+.icon-browser-chrome:before {
+    content: "k";
+}
+.icon-browser-firefox:before {
+    content: "l";
+}
+.icon-os-windows-old:before {
+    content: "n";
+}
+.icon-browser-opera:before {
+    content: "o";
+}
+.icon-browser-safari:before {
+    content: "p";
+}
+.icon-browser-ie:before {
+    content: "m";
+}
+.icon-os-linux:before {
+    content: "q";
+}
+
+.navbar {
+    position:fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    z-index: 10000;
+
+    background-color:#fff;
+    border: solid 1px #979797;
+    padding: 9px;
+    box-shadow: 0px 2px 4px 0px;
+}
+
+.logo-image {
+    background-image: url(assets/logo.png);
+    background-size: 93px 51px;
+    height: 51px;
+    width: 93px;
+}
+
+@media only screen and (min--moz-device-pixel-ratio: 2),
+only screen and (-o-min-device-pixel-ratio: 2/1),
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (min-device-pixel-ratio: 2) {
+    .logo-image {
+
+        background: url(assets/logo@2x.png) no-repeat;
+        background-size: 93px 51px;
+    }
+}
+
+.navbar-separator {
+    width: 1px;
+    background-color: #EBEBEB;
+    height: 60px;
+    float: left;
+
+    margin-left: 9px;
+    margin-right: 9px;
+}
+
+.navbar-breadcrumb {
+    font-family: 'OpenSans', 'Arial', 'Helvetica', sans-serif;
+    font-style: italic;
+    font-size: 8pt;
+    color: #000000;
+    vertical-align: top;
+    line-height: 11pt;
+}
+
+.navbar-screenshot-name {
+    font-family: 'OpenSans-Semibold', 'Arial', 'Helvetica', sans-serif;
+    font-size: 18pt;
+    line-height: 24pt;
+    color: #000000;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.navbar-image-controls {
+    font-family: 'OpenSans', 'Arial', 'Helvetica', sans-serif;
+    font-size: 9pt;
+    line-height: 14pt;
+}
+
+.navbar-image-controls div {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.navbar-image-controls input {
+    vertical-align: top;
+    margin-left: 0px;
+    cursor: pointer;
+}
+
+.navbar-image-controls label {
+    cursor: pointer;
+}
+
+.navbar-image-controls-space {
+    margin-right: 18px;
+}
+
+.navbar-image-controls-separator {
+    width: 1px;
+    background-color: #EBEBEB;
+    height: 10px;
+    vertical-align: middle;
+
+    margin-left: 9px;
+    margin-right: 9px;
+}
+
+.navbar-status {
+    width: 65px;
+    height: 65px;
+    cursor: pointer;
+
+}
+.navbar-status:hover {
+    box-shadow: 0px 2px 4px 0px;
+}
+
+.navbar-status-icon {
+    font-size: 40pt;
+    color: #000000;
+
+    text-align: center;
+    vertical-align: middle;
+    line-height: 58pt;
+}
+
+
+
+.status-accepted {
+    background-color: #BDD657;
+}
+
+.status-rejected {
+    background-color: #D65757;
+}
+
+.status-pending {
+    background-color: #B9B9B9;
+}
+
+.screenshot-container {
+    width:100%;
+    text-align:center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.center {
+    text-align: center;
+}
+
+.float-left {
+    float: left;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.screenshot-thumbnail {
+    width: 250px;
+    vertical-align: bottom;
+}
+
+.screenshot-thumbnail-container {
+    margin: 10px;
+    padding: 0px 2px 2px 2px;
+    height: auto;
+    width: auto;
+    float: left;
+    text-align: center;
+}
+
+.screenshot-thumbnail-table {
+    width: 1100px;
+    margin: 0px auto;
+}
+
+.screenshot-thumbnail-status {
+    margin: 5px;
+    font-family: 'OpenSans', Arial, sans-serif;
+    font-size: 12pt;
+    color: #FFFFFF;
+    vertical-align: middle;
+    padding: 0px;
+}
+
+.counter-container {
+    position:fixed;
+    bottom:0px;
+    right:0px;
+    color: red;
+    text-align: right;
+    vertical-align: bottom;
+
+    font-family: 'OpenSans-light', Arial, sans-serif;
+    font-size: 16pt;
+    color: #fff;
+    line-height: 1;
+}
+
+.counter-current {
+    font-size: 36pt;
+}
+
+.counter-arrow {
+    vertical-align: bottom;
+    font-family: 'OpenSans-bold', Arial, sans-serif;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.dark {
+    color: #555555;
+}
+
+.text-red {
+    color: #ff2222;
+}
+
+.text-small {
+    font-size: 8pt;
+}
+
+.project-image {
+    width: 150px;
+    height: 150px;
+    border-width: 1px;
+    border-style: solid;
+    border-color:#FFFFFF;
+    background-color: #555555;
+}
+
+.project-header {
+    font-family: 'OpenSans-bold', Arial, sans-serif;
+    font-size: 20px;
+    color: #fff;
+    text-decoration: underline;
+}
+
+.project-metadata {
+    font-family: 'OpenSans-bold', Arial, sans-serif;
+    font-size: 12px;
+    text-decoration:none;
+    padding-left: 5px;
+    color: #fff;
+}
+
+.project-container {
+    margin: 0 auto;
+    padding: 20px;
+    width: 700px;
+    color: #fff;
+}
+
+.text-decoration-none {
+    text-decoration: none;
+}
+
+.run-image-rejected {
+    background-color: #CC0000;
+}
+
+.run-image-accepted {
+    background-color: #BDD84D;
+}
+
+.run-image-pending {
+    background-color: #999999;
+}
+
+.navbar-screenshot-dropdown {
+    max-width: 1000px;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.navbar-screenshot-dropdown-inner {
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.navbar-screenshot-dropdown-item {
+    top: -18px;
+    left: -18px;
+    font-family: 'OpenSans', 'Arial', 'Helvetica', sans-serif;
+    font-size: 18pt;
+    line-height: 24pt;
+    color: #000000;
+    vertical-align: top;
+    padding: 9px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.navbar-screenshot-dropdown-item:hover {
+    text-decoration: underline;
+}
+
+.navbar-screenshot-dropdown-metadata {
+    font-size: 13pt;
+}
+
+.navbar-screenshot-dropdown-item-selected {
+    font-family: 'OpenSans-Semibold', 'Arial', 'Helvetica', sans-serif;
+}
+
+.screenshot-metadata-separator {
+    padding: 0px 2px 0px 2px;
+}
+
+/** generic styles */
+
+.row {
+    display: block;
+}
+
+.row-column {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.row-column-left {
+    float: left;
+}
+
+.row-column-right {
+    float: right;
+}
+
+.vertical-middle {
+    vertical-align: middle;
+}
+
+.margin-right-2 {
+    margin-right: 18px;
+}
+
+.link-small {
+    font-family: 'OpenSans', 'Arial', 'Helvetica', sans-serif;
+    font-size: 8pt;
+    color: #fff;
+}
+
+.cursor-pointer {
+    cursor:pointer;
+}
+
+.unselectable {
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+.vr-dropdown-menu-contents {
+    -webkit-transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    -moz-transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    -o-transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    -ms-transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+
+    background-color: #FFFFFF;
+    position:absolute;
+    visibility: hidden;
+
+    margin-top: 0px;
+    overflow: hidden;
+
+    box-shadow: 0px 2px 4px 0px;
+}

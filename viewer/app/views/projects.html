@@ -1,0 +1,44 @@
+<div>
+
+  <div navbar></div>
+
+  <div class="project-container overflow-auto">
+    <h1>List of projects</h1>
+
+    <div ng-show="projects.$vrIsLoading" class="text-small">
+      Retrieving...
+    </div>
+
+    <div ng-show="projects.$vrHasError" class="text-small text-red">
+      Could not retrieve list of projects. {{projects.$vrErrorMessage}}
+    </div>
+
+    <div ng-repeat="project in projects" ng-hide="projects.$vrIsLoading">
+      <a href="#/{{project.id}}/">
+        <span class="project-header">
+            {{project.name}}
+        </span>
+      </a>
+    </div>
+
+    <div ng-hide="projects.$vrIsLoading  || projects.$vrHasError || projects.length > 0">
+      No projects found.
+    </div>
+    <br><br>
+    <div>
+      <a href="" class="link-small" ng-click="showNewProjectForm = true" ng-show="!showNewProjectForm">Create new project</a>
+      <div ng-show="showNewProjectForm">
+        <form novalidate ng-submit="createNewProject()">
+          <input type="text" ng-model="newProjectName" placeholder="Project name" ng-disabled="createdProject.$vrIsLoading">
+          <button ng-disabled="createdProject.$vrIsLoading">{{createdProject.$vrIsLoading ? 'Creating..' : 'Create'}}</button>
+          <br><span class="text-small text-red">{{createdProject.$vrErrorMessage}}</span>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+
+
+</div>

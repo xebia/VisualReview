@@ -1,0 +1,66 @@
+<div class="navbar row">
+
+  <a href="#/"><div class="row-column logo-image"></div></a>
+  <div class="row-column"> <div class="navbar-separator"></div></div>
+  <div class="row-column" ng-show="projectId">
+    <div class="navbar-breadcrumb">
+      <a href="#/{{projectId}}/">{{projectName}}</a>
+      <span ng-show="suiteName"> > <a href="#/{{projectId}}/{{suiteId}}">{{suiteName}}</a></span>
+      <span ng-show="creationTime"> > <a href="#/{{projectId}}/{{suiteId}}/{{runId}}">{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})</a></span>
+    </div>
+
+    <div ng-show="screenshot">
+      <div vr-dropdown="screenshotSelector">
+
+        <div vr-dropdown-contents class="navbar-screenshot-dropdown">
+          <div class="navbar-screenshot-dropdown-inner">
+            <div ng-repeat="aShot in screenshots" style="clear:both;">
+               <div class="row cursor-pointer navbar-screenshot-dropdown-item" ng-class="{'navbar-screenshot-dropdown-item-selected': aShot === screenshot}"
+                       ng-click="selectScreenshot($index)">
+                 <div class="row-column-left vertical-middle margin-right-2">{{aShot.before.screenshotName}}</div>
+                 <div class="row-column-right vertical-middle navbar-screenshot-dropdown-metadata">
+                   <div screenshot-metadata os="aShot.before.os" browser="aShot.before.browser" resolution="aShot.before.resolution" version="aShot.before.version">
+                   </div>
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+        <div class="row cursor-pointer" vr-dropdown-toggle>
+          <div class="row-column navbar-screenshot-name">{{screenshot.before.screenshotName}} ({{screenshot.percentage | number}}%)</div>
+          <div class="navbar-image-controls-separator row-column">
+          </div>
+          <div class="row-column">
+            <div screenshot-metadata os="screenshot.before.os" browser="screenshot.before.browser" resolution="screenshot.before.resolution" version="screenshot.before.version">
+            </div>
+
+          </div>
+          <div class="navbar-image-controls-separator  h-vertical-middle"></div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="navbar-image-controls" ng-show="screenshot">
+      <div>
+        <input type="radio" id="radio-baseline" name="imageVersionDisplay" ng-model="screenshotType" value="before">
+        <label for="radio-baseline" class="unselectable">baseline</label>
+      </div>
+      <div>
+        <input type="radio" id="radio-actual" name="imageVersionDisplay" ng-model="screenshotType" value="after">
+        <label for="radio-actual" class="navbar-image-controls-space unselectable">actual</label>
+      </div>
+      <div class="navbar-image-controls-separator"></div>
+      <div>
+        <input type="checkbox" id="checkbox-difference" name="imageDifferenceDisplay" ng-model="showDiff">
+        <label for="checkbox-difference" class="unselectable">show difference</label>
+      </div>
+    </div>
+  </div>
+  <div class="row-column row-column-right margin-right-2" ng-show="screenshot">
+    <div vr-screenshot-status-button current-status="{{screenshot.status}}"></div>
+
+
+  </div>
+</div>

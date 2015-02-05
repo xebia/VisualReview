@@ -1,0 +1,31 @@
+<div ng-show="analysis" keyboard>
+  <div class="counter-container">
+    <div class="center">
+      <div ng-click="selectPreviousScreenshot()" class="counter-arrow {{selectedDiffIndex == 0 ? 'dark' : ''}}">∧</div>
+      <div>{{selectedDiffIndex + 1}} / {{diffs.length}}</div>
+      <div ng-click="selectNextScreenshot()"
+           class="counter-arrow {{(selectedDiffIndex + 1) == diffs.length ? 'dark' : ''}}">∨
+      </div>
+    </div>
+  </div>
+
+  <div navbar
+       project-id="run.projectId"
+       project-name="analysis.projectName"
+       suite-id="run.suiteId"
+       suite-name="analysis.suiteName"
+       run-id="runId"
+       creation-time="run.startTime"
+       screenshot="diffs[selectedDiffIndex]"
+       show-diff="showDiff"
+       screenshot-type="selectedScreenshot"
+       screenshots="diffs">
+  </div>
+
+  <div class="screenshot-container">
+    <div>
+      <img ng-show="showDiff" ng-src="{{diffs[selectedDiffIndex].path}}" style="position:absolute;"/>
+      <img ng-src="{{diffs[selectedDiffIndex][selectedScreenshot].path}}"/>
+    </div>
+  </div>
+</div>
