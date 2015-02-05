@@ -19,7 +19,7 @@ angular.module('visualDiffViewerApp')
           var key = KEY_CODES[e.which || e.keyCode];
           if (key) {
             e.preventDefault();
-            $rootScope.$broadcast('keypress', key);
+            $rootScope.$broadcast('keydown', key);
           }
         });
 

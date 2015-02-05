@@ -84,7 +84,7 @@ angular.module('visualDiffViewerApp')
       'D': toggleDiff
     };
 
-    $scope.$on('keypress', function (ngEvent, key) {
+    $scope.$on('keydown', function (ngEvent, key) {
       $scope.$apply(function () {
         $scope.$emit("selectionChange", $scope.selectedScreenshot, $scope.selectedDiffIndex);
         keyPressMap[key]();
