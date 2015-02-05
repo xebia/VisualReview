@@ -9,6 +9,7 @@ pom.xml.asc
 .nrepl-port
 .visualreview
 .DS_Store
+.idea
 profiles.clj
 *.db
 *.tmp
