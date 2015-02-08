@@ -38,17 +38,17 @@ across several browsers, resolutions and platforms."
              :skip-stencil   [#".*"]
              :silent         true}                         ; only prints errors
 
-  :aliases {"integration"   ["with-profile" "integration" "midje"]
+  :aliases {"integration"   ["with-profile" "+integration" "midje"]
             "unit"          ["with-profile" "unit" "midje"]
             "test"          ["midje"]
             "npm-install"   ["shell" "npm" "install"]
             "bower-install" ["shell" "bower" "install"]
             "grunt-build"   ["shell" "grunt" "build"]}
 
-  :profiles {:uberjar     {:aot :all
+  :profiles {:uberjar     {:aot        :all
                            :prep-tasks ^:replace [["npm-install"] ["bower-install"] ["grunt-build"] ["resource"] ["javac"] ["compile"]]
-                           :hooks [leiningen.resource]}
-             :integration {:test-paths ^:replace ["src/integration/clojure"]
+                           :hooks      [leiningen.resource]}
+             :integration {:test-paths     ^:replace ["src/integration/clojure"]
                            :resource-paths ["src/integration/resources"]}
              :unit        {:test-paths ^:replace ["src/test/clojure"]}}
 
