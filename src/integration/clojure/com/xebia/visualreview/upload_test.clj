@@ -50,6 +50,9 @@
     (:body (api/get-projects)) => (just [(contains {:id 1 :name project-name-1})
                                          (contains {:id 2 :name project-name-2})]))
 
+  (fact "There no runs yet or screenshots yet"
+    (api/get-runs {:project-name project-name-1 :suite-name suite-name}) => (contains {:status 404}))
+
   (fact "We can upload screenshots"
     (let [run-id (-> (api/post-run! {:project-name project-name-1 :suite-name suite-name})
                      :body :id)]
@@ -64,4 +67,28 @@
                                                                       :runId          run-id
                                                                       :screenshotName "Tapir"
                                                                       :size           38116
-                                                                      :version        "31.4.0"})))
+                                                                      :version        "31.4.0"}))
+
+  (fact "We can retrieve the analysis for a run"
+    (let [analysis-response (api/get-analysis 1)
+          {:keys [analysis diffs]} (:body analysis-response)
+          diff (first diffs)
+          before-screenshot (:before diff)
+          after-screenshot (:after diff)]
+      (:status analysis-response) => 200
+      (fact "The analysis contains a baseline for the suite and other information"
+        analysis => (contains {:baselineId   1
+                               :creationTime #""
+                               :projectName  project-name-1
+                               :suiteName    suite-name}))
+      (fact "The diff contains a single entry"
+        (count diffs) => 1)
+      (fact "The status of the diff is pending"
+        (:status diff) => "pending")
+      (fact "The before and after images are equal"
+        (:percentage diff) => 0.0
+        (= before-screenshot after-screenshot) => true)
+      (fact "We can retrieve the images from the returned paths"
+        (let [response (api/http-get (:path before-screenshot))]
+          (:status response) => 200
+          (get-in response [:headers "Content-Type"]) => "image/png")))))

@@ -23,8 +23,10 @@
                              :throw-exceptions    false
                              :decode-body-headers true})
 
-(def api-root (str "http://localhost:" test/test-server-port "/api/"))
-(defn endpoint [path] (str api-root path))
+(def server-root (str "http://localhost:" test/test-server-port "/"))
+(def api-root (str server-root "api/"))
+(defn endpoint [& parts]
+  (str api-root (apply str (interpose \/ parts))))
 
 (defn get-projects []
   (http/get (endpoint "projects") default-opts))
@@ -33,7 +35,7 @@
   (http/put (endpoint "projects") (merge default-opts {:form-params params})))
 
 (defn get-project [project-id]
-  (http/get (endpoint (str "projects/" project-id)) (merge default-opts {:as :json})))
+  (http/get (endpoint "projects" project-id) (merge default-opts {:as :json})))
 
 (defn post-run! [params]
   (dissoc (http/post (endpoint "runs") (merge default-opts {:form-params params})) :headers))
@@ -42,19 +44,25 @@
   (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params params})) :headers))
 
 (defn get-run [run-id]
-  (http/get (endpoint (str "runs/" run-id)) default-opts))
+  (http/get (endpoint "runs" run-id) default-opts))
 
 (defn get-suites [project-id]
-  (dissoc (http/get (endpoint (str "projects/" project-id "/suites")) default-opts) :headers))
+  (dissoc (http/get (endpoint "projects" project-id "suites") default-opts) :headers))
 
 (defn- create-multipart-entries [part-name m]
   (reduce (fn [acc [k v]] (conj acc {:name (str part-name "[" (name k) "]") :content v})) [] m))
 (defn upload-screenshot! [run-id {:keys [file meta screenshot-name]}]
   (let [file (io/as-file (io/resource file))
         metas (create-multipart-entries "meta" meta)]
-    (dissoc (http/post (endpoint (str "runs/" run-id "/screenshots"))
+    (dissoc (http/post (endpoint "runs" run-id "screenshots")
                        (merge default-opts
                               {:multipart (into [{:name "file" :content file :mime-type "image/png"}
                                                  {:name "screenshot-name" :content screenshot-name}]
                                                 metas)}))
             :headers)))
+
+(defn http-get [path]
+  (http/get (str server-root path) {:throw-exceptions false}))
+
+(defn get-analysis [run-id]
+  (dissoc (http/get (endpoint "runs" run-id "analysis") default-opts) :headers))
