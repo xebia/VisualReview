@@ -16,13 +16,14 @@
 
 (ns com.xebia.visualreview.api-test
   (:require [clj-http.client :as http]
+            [com.xebia.visualreview.test-util :as test]
             [clojure.java.io :as io]))
 
 (def ^:private default-opts {:as                  :json
                              :throw-exceptions    false
                              :decode-body-headers true})
 
-(def api-root "http://localhost:8001/api/")
+(def api-root (str "http://localhost:" test/test-server-port "/api/"))
 (defn endpoint [path] (str api-root path))
 
 (defn get-projects []

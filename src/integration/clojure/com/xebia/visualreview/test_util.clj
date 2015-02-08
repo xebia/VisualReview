@@ -18,10 +18,11 @@
   (:require [taoensso.timbre :as timbre]
             [com.xebia.visualreview.starter :as starter]))
 
+(def test-server-port 7001)
 
 (defn start-server []
-  (timbre/info "Starting test server")
-  (starter/start-server 8001))
+  (timbre/info "Starting test server on port 7001")
+  (starter/start-server test-server-port))
 
 (defn stop-server []
   (timbre/info "Shutting down test server")
