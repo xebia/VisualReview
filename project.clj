@@ -14,22 +14,19 @@ across several browsers, resolutions and platforms."
                  [slingshot "0.12.1"]                       ;improved exception handling
                  [org.clojure/java.jdbc "0.3.5"]
                  [com.mchange/c3p0 "0.9.2.1"]               ;database connection pooling
-                 [com.h2database/h2 "1.4.185"]
-                 [midje "1.6.3" :scope "test"]
-                 [clj-http "1.0.1" :scope "test"]]
+                 [com.h2database/h2 "1.4.185"]]
 
   :min-lein-version "2.4.0"
 
   :plugins [[lein-shell "0.4.0"]
-            [lein-resource "14.10.1"]
-            [lein-midje "3.1.3"]]
+            [lein-resource "14.10.1"]]
 
   :main com.xebia.visualreview.core
 
   :source-paths ["src/main/clojure"]
   :test-paths ["src/test/clojure" "src/integration/clojure"]
   :java-source-paths ["src/main/java"]
-  :resource-paths ["src/main/resources" "src/integration/resources"]
+  :resource-paths ["src/main/resources"]
 
   :shell {:dir "viewer"}
 
@@ -39,14 +36,21 @@ across several browsers, resolutions and platforms."
              :silent         true}                         ; only prints errors
 
   :aliases {"integration"   ["with-profile" "+integration" "midje"]
-            "unit"          ["with-profile" "unit" "midje"]
+            "unit"          ["with-profile" "+unit" "midje"]
             "test"          ["midje"]
             "npm-install"   ["shell" "npm" "install"]
             "bower-install" ["shell" "bower" "install"]
             "grunt-build"   ["shell" "grunt" "build"]}
 
-  :profiles {:uberjar     {:aot        :all
-                           :prep-tasks ^:replace [["npm-install"] ["bower-install"] ["grunt-build"] ["resource"] ["javac"] ["compile"]]
+  :profiles {:dev-common  {:dependencies   [[midje "1.6.3"]
+                                            [clj-http "1.0.1"]]
+                           :plugins        [[lein-environ "1.0.0"]
+                                            [lein-midje "3.1.3"]]
+                           :resource-paths ["src/integration/resources"]}
+             :dev         [:dev-common :dev-overrides]
+             :uberjar     {:aot        :all
+                           :prep-tasks ^:replace [["npm-install"] ["bower-install"] ["grunt-build"]
+                                                  ["resource"] ["javac"] ["compile"]]
                            :hooks      [leiningen.resource]}
              :integration {:test-paths     ^:replace ["src/integration/clojure"]
                            :resource-paths ["src/integration/resources"]}
