@@ -7,9 +7,9 @@
 ;       :plugins [[lein-environ "1.0.0"]]}}
 
 ; h2
-{:dev {:env     {:visualreview-port "1337"  
-                 :visualreview-db-uri "file:./visualreview.db"  
+{:dev {:env     {:visualreview-port "7000"  
+                 :visualreview-db-uri "file:./.visualreview/visualreview.db"  
                  :visualreview-db-user ""  
                  :visualreview-db-password ""  
-                 :visualreview-screenshots-dir "/Users/Kmandr/dev/visualreview-screenshots"}  
+                 :visualreview-screenshots-dir ".visualreview/screenshots"}  
        :plugins [[lein-environ "1.0.0"]]}}

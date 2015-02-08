@@ -22,7 +22,7 @@
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
-                       :subname        "file:./temp/vrtest.db"
+                       :subname        "file:./target/temp/vrtest.db"
                        :user           "`"
                        :init-pool-size 1
                        :max-pool-size  1})
@@ -34,7 +34,7 @@
     (com.xebia.visualreview.persistence.database/run-init-script conn)))
 
 (defmacro rebind-screenshots-dir [& body]
-  `(with-redefs [io/screenshots-dir "target/temp"] ~@body))
+  `(with-redefs [io/screenshots-dir "target/temp/screenshots"] ~@body))
 
 (defmacro rebind-db-spec [& body]
   `(with-redefs [db/conn *conn*] ~@body))
