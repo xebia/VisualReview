@@ -57,6 +57,4 @@ across several browsers, resolutions and platforms."
              :unit        {:test-paths ^:replace ["src/test/clojure"]}}
 
   :jar-name "visualreview-%s.jar"
-  :uberjar-name "visualreview-%s-standalone.jar"
-
-  )
+  :uberjar-name "visualreview-%s-standalone.jar")
