@@ -12,8 +12,8 @@ across several browsers, resolutions and platforms."
                  [liberator "0.12.2"]                       ;resources
                  [com.taoensso/timbre "3.3.1"]              ;logging
                  [slingshot "0.12.1"]                       ;improved exception handling
-                 [org.clojure/java.jdbc "0.3.5"]
-                 [com.mchange/c3p0 "0.9.2.1"]               ;database connection pooling
+                 [org.clojure/java.jdbc "0.3.6"]
+                 [com.mchange/c3p0 "0.9.5"]                 ;database connection pooling
                  [com.h2database/h2 "1.4.185"]]
 
   :min-lein-version "2.4.0"
