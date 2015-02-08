@@ -27,6 +27,10 @@
 (def project-name-1 "Test Project A")
 (def project-name-2 "Test Project B")
 (def suite-name "Test suite")
+(def meta-info {:os         "LINUX"
+                :browser    "firefox"
+                :resolution "1024x786"
+                :version    "31.4.0"})
 
 (defn setup-projects []
   (api/put-project! {:name project-name-1})
@@ -45,14 +49,19 @@
   (fact "There are two test projects"
     (:body (api/get-projects)) => (just [(contains {:id 1 :name project-name-1})
                                          (contains {:id 2 :name project-name-2})]))
-  (api/post-run! {:project-name project-name-1 :suite-name suite-name})
 
-  ;; TODO: uploading screenshots needs to be figured out
-  ;(api/upload-screenshot! 1 {:file            "tapir.png"
-  ;                           :meta            {:os         "Linux"
-  ;                                             :browser    "FireFox"
-  ;                                             :resolution "1024x786"
-  ;                                             :version    "31.4.0"}
-  ;                           :screenshot-name "blabla"}) => []
-
-  )
+  (fact "We can upload screenshots"
+    (let [run-id (-> (api/post-run! {:project-name project-name-1 :suite-name suite-name})
+                     :body :id)]
+      (:body (api/upload-screenshot! run-id
+                                     {:file            "tapir.png"
+                                      :meta            meta-info
+                                      :screenshot-name "Tapir"})) => {:id             1
+                                                                      :browser        "firefox"
+                                                                      :os             "LINUX"
+                                                                      :path           "1/1/1"
+                                                                      :resolution     "1024x786"
+                                                                      :runId          run-id
+                                                                      :screenshotName "Tapir"
+                                                                      :size           38116
+                                                                      :version        "31.4.0"})))

@@ -46,12 +46,14 @@
 (defn get-suites [project-id]
   (dissoc (http/get (endpoint (str "projects/" project-id "/suites")) default-opts) :headers))
 
-(defn upload-screenshot! [run-id params]
-  (dissoc (http/post (endpoint (str "runs/" run-id "/screenshots"))
-                     (merge default-opts
-                            {:headers {"Content-Type" "multipart/form-data"}
-                             :multipart   [{:name "file" :content (io/as-file (io/resource "tapir.png"))}
-                                           {:name "Content-Type" :content "image/png"}]
-                             :form-params {:meta {:os      "OS"
-                                                  :browser "B"}}}))
-          :headers))
+(defn- create-multipart-entries [part-name m]
+  (reduce (fn [acc [k v]] (conj acc {:name (str part-name "[" (name k) "]") :content v})) [] m))
+(defn upload-screenshot! [run-id {:keys [file meta screenshot-name]}]
+  (let [file (io/as-file (io/resource file))
+        metas (create-multipart-entries "meta" meta)]
+    (dissoc (http/post (endpoint (str "runs/" run-id "/screenshots"))
+                       (merge default-opts
+                              {:multipart (into [{:name "file" :content file :mime-type "image/png"}
+                                                 {:name "screenshot-name" :content screenshot-name}]
+                                                metas)}))
+            :headers)))
