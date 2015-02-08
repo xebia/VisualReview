@@ -29,7 +29,7 @@ across several browsers, resolutions and platforms."
   :source-paths ["src/main/clojure"]
   :test-paths ["src/test/clojure" "src/integration/clojure"]
   :java-source-paths ["src/main/java"]
-  :resource-paths ["src/main/resources"]
+  :resource-paths ["src/main/resources" "src/integration/resources"]
 
   :shell {:dir "viewer"}
 
@@ -48,7 +48,8 @@ across several browsers, resolutions and platforms."
   :profiles {:uberjar     {:aot :all
                            :prep-tasks ^:replace [["npm-install"] ["bower-install"] ["grunt-build"] ["resource"] ["javac"] ["compile"]]
                            :hooks [leiningen.resource]}
-             :integration {:test-paths ^:replace ["src/integration/clojure"]}
+             :integration {:test-paths ^:replace ["src/integration/clojure"]
+                           :resource-paths ["src/integration/resources"]}
              :unit        {:test-paths ^:replace ["src/test/clojure"]}}
 
   :jar-name "visualreview-%s.jar"
