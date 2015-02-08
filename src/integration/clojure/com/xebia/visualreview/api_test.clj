@@ -66,3 +66,8 @@
 
 (defn get-analysis [run-id]
   (dissoc (http/get (endpoint "runs" run-id "analysis") default-opts) :headers))
+
+(defn update-diff-status! [run-id diff-id status]
+  (dissoc (http/post (endpoint "runs" run-id "analysis" "diffs" diff-id)
+                     (merge default-opts {:form-params {:status status}}))
+          :headers))
