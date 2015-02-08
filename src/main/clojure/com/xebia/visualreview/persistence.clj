@@ -180,7 +180,7 @@
                                              :path            path}
                                             meta))
     (catch SQLException e
-      (if (unique-constraint-violation? e)
+      (when (unique-constraint-violation? e)
         (ex/throw+ {:type    :sql-exception
                     :subtype ::unique-constraint-violation
                     :message (.getMessage e)})))))

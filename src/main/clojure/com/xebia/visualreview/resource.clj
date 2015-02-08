@@ -229,7 +229,7 @@
                      screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name path meta file)]
                  {::screenshot screenshot})
                (catch [:subtype ::p/unique-constraint-violation] _
-                 {::screenshot "Screenshot already exists"})))
+                 {::screenshot {:error "Screenshot name already exists in this run"}})))
     :handle-created ::screenshot))
 
 ;; Analysis
@@ -300,4 +300,6 @@
                  {::diff diff}))
     :can-post-to-missing? false
     :post! (fn [ctx]
-             {::updated-diff (update-diff-status! (tx-conn ctx) (::diff ctx) (::new-status ctx))})))
+             (update-diff-status! (tx-conn ctx) (::diff ctx) (::new-status ctx))
+             {::updated-diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
+    :handle-created ::updated-diff))

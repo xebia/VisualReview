@@ -50,7 +50,7 @@
     (:body (api/get-projects)) => (just [(contains {:id 1 :name project-name-1})
                                          (contains {:id 2 :name project-name-2})]))
 
-  (fact "There no runs yet or screenshots yet"
+  (fact "There no runs or screenshots yet"
     (api/get-runs {:project-name project-name-1 :suite-name suite-name}) => (contains {:status 404}))
 
   (fact "We can upload screenshots"
