@@ -29,8 +29,8 @@
       <a href="" class="link-small" ng-click="showNewProjectForm = true" ng-show="!showNewProjectForm">Create new project</a>
       <div ng-show="showNewProjectForm">
         <form novalidate ng-submit="createNewProject()">
-          <input type="text" ng-model="newProjectName" placeholder="Project name" ng-disabled="createdProject.$vrIsLoading">
-          <button ng-disabled="createdProject.$vrIsLoading">{{createdProject.$vrIsLoading ? 'Creating..' : 'Create'}}</button>
+          <input class="form-control" type="text" ng-model="newProjectName" placeholder="Project name" ng-disabled="createdProject.$vrIsLoading">
+          <button class="btn" ng-disabled="createdProject.$vrIsLoading">{{createdProject.$vrIsLoading ? 'Creating..' : 'Create'}}</button>
           <br><span class="text-small text-red">{{createdProject.$vrErrorMessage}}</span>
 
         </form>

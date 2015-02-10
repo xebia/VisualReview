@@ -507,3 +507,14 @@ only screen and (min-device-pixel-ratio: 2) {
 
     box-shadow: 0px 2px 4px 0px;
 }
+
+.btn {
+  display: inline-block;
+  height: 45px;
+  font-size: 18px;
+}
+
+.form-control {
+  height: 40px;
+  font-size: 18px;
+}
