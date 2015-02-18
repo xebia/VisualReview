@@ -57,4 +57,6 @@ across several browsers, resolutions and platforms."
              :unit        {:test-paths ^:replace ["src/test/clojure"]}}
 
   :jar-name "visualreview-%s.jar"
-  :uberjar-name "visualreview-%s-standalone.jar")
+  :uberjar-name "visualreview-%s-standalone.jar"
+  :javac-options ["-target" "1.7" "-source" "1.7"])
+
