@@ -16,10 +16,12 @@
 
 (ns com.xebia.visualreview.api-test
   (:require [clj-http.client :as http]
+            [cheshire.core :as json]
             [com.xebia.visualreview.test-util :as test]
             [clojure.java.io :as io]))
 
-(def ^:private default-opts {:as                  :json
+(def ^:private default-opts {:content-type        :json
+                             :as                  :json
                              :throw-exceptions    false
                              :decode-body-headers true})
 
@@ -32,13 +34,13 @@
   (http/get (endpoint "projects") default-opts))
 
 (defn put-project! [params]
-  (http/put (endpoint "projects") (merge default-opts {:form-params params})))
+  (http/put (endpoint "projects") (merge default-opts {:body (json/generate-string params)})))
 
 (defn get-project [project-id]
   (http/get (endpoint "projects" project-id) (merge default-opts {:as :json})))
 
 (defn post-run! [params]
-  (dissoc (http/post (endpoint "runs") (merge default-opts {:form-params params})) :headers))
+  (dissoc (http/post (endpoint "runs") (merge default-opts {:body (json/generate-string params)})) :headers))
 
 (defn get-runs [params]
   (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params params})) :headers))
@@ -49,16 +51,13 @@
 (defn get-suites [project-id]
   (dissoc (http/get (endpoint "projects" project-id "suites") default-opts) :headers))
 
-(defn- create-multipart-entries [part-name m]
-  (reduce (fn [acc [k v]] (conj acc {:name (str part-name "[" (name k) "]") :content v})) [] m))
-(defn upload-screenshot! [run-id {:keys [file meta screenshot-name]}]
-  (let [file (io/as-file (io/resource file))
-        metas (create-multipart-entries "meta" meta)]
+(defn upload-screenshot! [run-id {:keys [file meta screenshotName]}]
+  (let [file (io/as-file (io/resource file))]
     (dissoc (http/post (endpoint "runs" run-id "screenshots")
-                       (merge default-opts
-                              {:multipart (into [{:name "file" :content file :mime-type "image/png"}
-                                                 {:name "screenshot-name" :content screenshot-name}]
-                                                metas)}))
+                       (merge (dissoc default-opts :content-type)
+                              {:multipart [{:name "file" :content file :mime-type "image/png"}
+                                           {:name "screenshotName" :content screenshotName}
+                                           {:name "meta" :content (json/generate-string meta)}]}))
             :headers)))
 
 (defn http-get [path]
@@ -69,5 +68,5 @@
 
 (defn update-diff-status! [run-id diff-id status]
   (dissoc (http/post (endpoint "runs" run-id "analysis" "diffs" diff-id)
-                     (merge default-opts {:form-params {:status status}}))
+                     (merge default-opts {:body (json/generate-string {:status status})}))
           :headers))

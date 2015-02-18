@@ -27,7 +27,7 @@
 (def api-routes
   (m/wrap-tx
     (routes
-      (ANY "/projects" [name] (resource/project-resource name))
+      (ANY "/projects" [] (resource/project-resource))
       (context "/projects/:project-id" [project-id]
         (ANY "/" [] (resource/get-project project-id))
         (ANY "/suites" [] (resource/suites-resource project-id))

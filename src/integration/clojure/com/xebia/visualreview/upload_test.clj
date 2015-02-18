@@ -51,23 +51,23 @@
                                          (contains {:id 2 :name project-name-2})]))
 
   (fact "There no runs or screenshots yet"
-    (api/get-runs {:project-name project-name-1 :suite-name suite-name}) => (contains {:status 404}))
+    (api/get-runs {:projectName project-name-1 :suiteName suite-name}) => (contains {:status 404}))
 
   (fact "We can upload screenshots"
-    (let [run-id (-> (api/post-run! {:project-name project-name-1 :suite-name suite-name})
+    (let [run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name})
                      :body :id)]
       (:body (api/upload-screenshot! run-id
-                                     {:file            "tapir.png"
-                                      :meta            meta-info
-                                      :screenshot-name "Tapir"})) => {:id             1
-                                                                      :browser        "firefox"
-                                                                      :os             "LINUX"
-                                                                      :path           "1/1/1"
-                                                                      :resolution     "1024x786"
-                                                                      :runId          run-id
-                                                                      :screenshotName "Tapir"
-                                                                      :size           38116
-                                                                      :version        "31.4.0"}))
+                                     {:file           "tapir.png"
+                                      :meta           meta-info
+                                      :screenshotName "Tapir"})) => {:id             1
+                                                                     :browser        "firefox"
+                                                                     :os             "LINUX"
+                                                                     :path           "1/1/1"
+                                                                     :resolution     "1024x786"
+                                                                     :runId          run-id
+                                                                     :screenshotName "Tapir"
+                                                                     :size           38116
+                                                                     :version        "31.4.0"}))
 
   (fact "We can retrieve the analysis for a run"
     (let [analysis-response (api/get-analysis 1)

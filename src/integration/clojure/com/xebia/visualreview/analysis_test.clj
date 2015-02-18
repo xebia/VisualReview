@@ -32,10 +32,10 @@
 
 (defn setup-projects []
   (api/put-project! {:name project-name-1})
-  (api/post-run! {:project-name project-name-1 :suite-name suite-name})
+  (api/post-run! {:projectName project-name-1 :suiteName suite-name})
   (api/upload-screenshot! 1 {:file            "chess1.png"
                              :meta            meta-info
-                             :screenshot-name "Kasparov vs Topalov - 1999"}))
+                             :screenshotName "Kasparov vs Topalov - 1999"}))
 
 (background
   (before :contents (mock/setup-db))
@@ -49,7 +49,7 @@
 
   (fact "There is one run with a pending screenshot"
     (count (:body (api/get-projects))) => 1
-    (count (:body (api/get-runs {:project-name project-name-1 :suite-name suite-name}))) => 1
+    (count (:body (api/get-runs {:projectName project-name-1 :suiteName suite-name}))) => 1
     (let [diff (-> (api/get-analysis 1) :body :diffs first)]
       (:status diff) => "pending"))
 
@@ -64,16 +64,16 @@
   (fact "We cannot upload another screenshot with the same name in the same run"
     ;; TODO: This should be possible. A check for differences in meta-data should be made.
     ;; TODO: When it fails, it should not return status 201. 409 would be better, i.e. we should actually use PUT, not POST
-    (api/upload-screenshot! 1 {:file            "chess2.png"
-                               :meta            meta-info
-                               :screenshot-name "Kasparov vs Topalov - 1999"}) => (contains {:status 201
-                                                                                             :body   (just {:error #"already exists"})}))
+    (api/upload-screenshot! 1 {:file           "chess2.png"
+                               :meta           meta-info
+                               :screenshotName "Kasparov vs Topalov - 1999"}) => (contains {:status 201
+                                                                                            :body   (just {:error #"already exists"})}))
 
   (fact "We can start a new run and upload a new screenshot version"
-    (api/post-run! {:project-name project-name-1 :suite-name suite-name})
-    (api/upload-screenshot! 2 {:file            "chess2.png"
-                               :meta            meta-info
-                               :screenshot-name "Kasparov vs Topalov - 1999"}) => (contains {:status 201}))
+    (api/post-run! {:projectName project-name-1 :suiteName suite-name})
+    (api/upload-screenshot! 2 {:file           "chess2.png"
+                               :meta           meta-info
+                               :screenshotName "Kasparov vs Topalov - 1999"}) => (contains {:status 201}))
 
   (fact "The new diff is now pending and differs from its previous version"
     (let [{:keys [analysis diffs]} (:body (api/get-analysis 2))

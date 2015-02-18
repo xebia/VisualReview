@@ -15,15 +15,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.resource
-  (:import [java.util Map])
   (:require [liberator.core :refer [resource]]
             [liberator.representation :as representation]
+            [cheshire.core :as json]
             [com.xebia.visualreview.validation :as v]
             [com.xebia.visualreview.util :as util]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.analysis.core :as analysis]
             [com.xebia.visualreview.io :as io]
-            [slingshot.slingshot :as ex]))
+            [slingshot.slingshot :as ex])
+  (:import [java.util Map]
+           [com.fasterxml.jackson.core JsonParseException]))
 
 (defn- camelize-response [x]
   (cond
@@ -31,15 +33,31 @@
     (map? x) (reduce (fn [acc [k v]] (conj acc [k (camelize-response v)])) {} ((util/map-keys util/camelize) x))
     :else x))
 
+(def ^:private hyphenize-request (util/map-keys util/hyphenize))
+
+(defn- get-request? [ctx] (= (-> ctx :request :request-method) :get))
+(defn- put-or-post-request? [ctx] (#{:put :post} (get-in ctx [:request :request-method])))
+(defn- content-type [ctx] (get-in ctx [:request :headers "content-type"]))
+
 (defn json-resource [& args]
   (apply liberator.core/resource
          :available-media-types ["application/json"]
+         :known-content-type? (fn [ctx] (if (put-or-post-request? ctx)
+                                          (re-find #"^application/json" (content-type ctx))
+                                          true))
+         :malformed? (fn [{{body :body} :request}]
+                       (try
+                         [false {::parsed-json (-> body
+                                                   slurp
+                                                   (json/parse-string true))}]
+                         (catch JsonParseException _
+                           [true {::message "Malformed JSON request body"}])))
+         :handle-malformed ::message
          :as-response (fn [d ctx] (representation/as-response (camelize-response d) ctx))
          args))
 
 (defn- tx-conn [ctx]
   (-> ctx :request :tx-conn))
-(defn- get-request? [ctx] (= (-> ctx :request :request-method) :get))
 
 (defn- parse-longs [xs] (mapv #(Long/parseLong %) xs))
 
@@ -54,30 +72,31 @@
 (def ^:private project-schema
   {:name [String [::v/non-empty]]})
 
-(defn project-resource [project-name]
+(defn project-resource []
   (json-resource
     :allowed-methods [:get :put]
     :processable? (fn [ctx]
                     (or (get-request? ctx)
-                        (let [v (v/validations project-schema {:name project-name})]
+                        (let [v (v/validations project-schema (::parsed-json ctx))]
                           (if (:valid? v)
-                            {::project-name project-name}
+                            {::project-name (-> v :data :name)}
                             [false {::error-msg (handle-invalid v
                                                   ::v/non-empty "Name can not be empty")}]))))
     :handle-unprocessable-entity ::error-msg
     :exists? (fn [ctx]
                (or (get-request? ctx)
-                   (when-let [project-id (p/get-project-by-name (tx-conn ctx) project-name :id)]
+                   (when-let [project-id (p/get-project-by-name (tx-conn ctx) (::project-name ctx) :id)]
                      {::project-id project-id})))
     :conflict? (fn [ctx] (::project-id ctx))
-    :handle-conflict (fn [_] (format "A project with name: '%s' already exists." project-name))
+    :handle-conflict (fn [ctx] (format "A project with name: '%s' already exists." (::project-name ctx)))
     :put! (fn [ctx]
-            (let [new-project-id (p/create-project! (tx-conn ctx) project-name)
+            (let [new-project-id (p/create-project! (tx-conn ctx) (::project-name ctx))
                   project (p/get-project (tx-conn ctx) new-project-id)]
               (io/create-project-directory! new-project-id)
               {::project project}))
     :handle-created ::project
     :handle-ok (fn [ctx] (p/get-projects (tx-conn ctx)))))
+
 (defn get-project [project-id]
   (json-resource
     :exists? (fn [ctx]
@@ -114,8 +133,8 @@
 
 ;;;;;;;;;;; Runs ;;;;;;;;;;;
 (def ^:private run-create-schema
-  {:project-name [String []]
-   :suite-name   [String [::v/non-empty]]})
+  {:projectName [String []]
+   :suiteName   [String [::v/non-empty]]})
 
 (defn run-resource [run-id]
   (json-resource
@@ -132,9 +151,11 @@
   (json-resource
     :allowed-methods [:get :post]
     :processable? (fn [ctx]
-                    (let [v (v/validations run-create-schema (-> ctx :request :params))]
+                    (let [v (v/validations run-create-schema (if (get-request? ctx)
+                                                               (-> ctx :request :params)
+                                                               (::parsed-json ctx)))]
                       (if (:valid? v)
-                        {::data (:data v)}
+                        {::data (hyphenize-request (:data v))}
                         [false {::error-msg (handle-invalid v
                                               ::v/non-empty "Suite name can not be empty")}])))
     :handle-unprocessable-entity ::error-msg
@@ -164,9 +185,9 @@
 
 ;; The screenshot resource has been split up into separate handler for each http method.
 (def ^:private upload-screenshot-schema
-  {:file            [Map [::v/screenshot]]
-   :screenshot-name [String []]
-   :meta            [Map [::v/screenshot-meta]]})
+  {:file           [Map [::v/screenshot]]
+   :screenshotName [String []]
+   :meta           [Map [::v/screenshot-meta]]})
 (defn- update-screenshot-path [screenshot]
   (update-in screenshot [:path] #(str "/screenshots/" % "/" (:id screenshot) ".png")))
 
@@ -207,10 +228,13 @@
 (defn upload-screenshot [run-id]
   (json-resource
     :allowed-methods [:post]
+    :known-content-type? #(re-find #"multipart" (content-type %))
+    :malformed? false
     :processable? (fn [ctx]
-                    (let [v (v/validations upload-screenshot-schema (-> ctx :request :params))]
+                    (let [v (v/validations upload-screenshot-schema (-> ctx :request :params
+                                                                        (update-in [:meta] json/parse-string true)))]
                       (if (:valid? v)
-                        (let [data (:data v)
+                        (let [data (hyphenize-request (:data v))
                               run (p/get-run (tx-conn ctx) (Long/parseLong run-id))]
                           (if (or (= (:status run) "running") (nil? run))
                             {::data data ::run run}
@@ -288,7 +312,7 @@
     :processable? (fn [ctx]
                     (try
                       (let [[run-id diff-id] (parse-longs [run-id diff-id])
-                            v (v/validations update-diff-status-schema (-> ctx :request :params))]
+                            v (v/validations update-diff-status-schema (::parsed-json ctx))]
                         (if (:valid? v)
                           {::run-id run-id ::diff-id diff-id ::new-status (-> v :data :status)}
                           [false {::error-msg (handle-invalid v

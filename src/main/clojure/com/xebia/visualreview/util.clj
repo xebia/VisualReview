@@ -28,7 +28,11 @@
 (defn camelize [s]
   (string/replace s #"[_-](\w)" (fn [[_ ^String m]] (.toUpperCase m))))
 
+(defn hyphenize [[c :as s]]
+  (str c (string/replace (subs s 1) #"[A-Z]" (fn [^String x] (str \- (.toLowerCase x))))))
+
 (def ^SimpleDateFormat date-format (SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ssZ"))
+
 (defn format-date [m k]
   (if-let [date ^Date (k m)]
     (assoc m k (.format date-format date))
