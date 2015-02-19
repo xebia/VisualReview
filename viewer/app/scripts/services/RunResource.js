@@ -14,15 +14,7 @@ angular.module('visualDiffViewerApp')
       },
       'updateStatus': {
         method: 'POST',
-        url: '/api/runs/:runId/analysis/diffs/:diffId',
-        headers : {'Content-Type': 'application/x-www-form-urlencoded'},
-        transformRequest: function(parameterObj) {
-          // transform to form data
-          var formParams = [];
-          for(var p in parameterObj)
-            formParams.push(encodeURIComponent(p) + "=" + encodeURIComponent(parameterObj[p]));
-          return formParams.join("&");
-        }
+        url: '/api/runs/:runId/analysis/diffs/:diffId'
       }
     });
 
