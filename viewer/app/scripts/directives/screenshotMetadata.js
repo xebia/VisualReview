@@ -63,13 +63,17 @@ angular.module('visualDiffViewerApp')
     return {
       restrict: 'A',
       scope: {
-        os: '=',
-        browser: '=',
-        version: '=',
-        resolution: '='
+        meta: '=',
+        properties: '='
       },
       templateUrl: 'views/screenshotMetadata.html',
       link: function(scope) {
+        function takeFromPropertiesOrMeta(field) {
+          scope[field] = (scope.properties && scope.properties[field]) || (scope.meta && scope.meta[field]);
+        }
+
+        ['os', 'browser', 'version', 'resolution'].forEach(takeFromPropertiesOrMeta);
+
         scope.unknown = SCREENSHOT_METADATA_UNKNOWN;
       }
     };
