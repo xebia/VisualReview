@@ -27,10 +27,13 @@
 (def project-name-1 "Test Project A")
 (def project-name-2 "Test Project B")
 (def suite-name "Test suite")
-(def meta-info {:os         "LINUX"
-                :browser    "firefox"
-                :resolution "1024x786"
-                :version    "31.4.0"})
+(def screenshot-properties {:os         "LINUX"
+                            :browser    "firefox"
+                            :resolution "1024x786"
+                            :version    "31.4.0"})
+
+(def meta-info {:takenBy   "Daniel"
+                :timeStamp "2015-02-19T16:34:12"})
 
 (defn setup-projects []
   (api/put-project! {:name project-name-1})
@@ -59,15 +62,14 @@
       (:body (api/upload-screenshot! run-id
                                      {:file           "tapir.png"
                                       :meta           meta-info
+                                      :properties     screenshot-properties
                                       :screenshotName "Tapir"})) => {:id             1
-                                                                     :browser        "firefox"
-                                                                     :os             "LINUX"
                                                                      :path           "1/1/1"
-                                                                     :resolution     "1024x786"
                                                                      :runId          run-id
                                                                      :screenshotName "Tapir"
                                                                      :size           38116
-                                                                     :version        "31.4.0"}))
+                                                                     :meta           meta-info
+                                                                     :properties     screenshot-properties}))
 
   (fact "We can retrieve the analysis for a run"
     (let [analysis-response (api/get-analysis 1)

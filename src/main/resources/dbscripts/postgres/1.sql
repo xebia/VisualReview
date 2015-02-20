@@ -25,14 +25,12 @@ CREATE TABLE run
 CREATE TABLE screenshot
 (
   id              SERIAL CONSTRAINT screenshot_pk PRIMARY KEY,
-  size            INTEGER     NOT NULL,
-  resolution      VARCHAR(31) NOT NULL,
-  os              VARCHAR(31) NOT NULL,
-  browser         VARCHAR(31) NOT NULL,
-  version         VARCHAR(31) NOT NULL,
-  screenshot_name VARCHAR     NOT NULL,
-  run_id          INTEGER     NOT NULL REFERENCES run,
-  path            VARCHAR     NOT NULL,
+  size            INTEGER      NOT NULL,
+  meta            VARCHAR(512) NOT NULL,
+  properties      VARCHAR(512) NOT NULL,
+  screenshot_name VARCHAR      NOT NULL,
+  run_id          INTEGER      NOT NULL REFERENCES run,
+  path            VARCHAR      NOT NULL,
   UNIQUE (run_id, screenshot_name)
 );
 

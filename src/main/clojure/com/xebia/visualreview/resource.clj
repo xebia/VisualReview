@@ -187,7 +187,9 @@
 (def ^:private upload-screenshot-schema
   {:file           [Map [::v/screenshot]]
    :screenshotName [String []]
-   :meta           [Map [::v/screenshot-meta]]})
+   :meta           [Map [::v/screenshot-meta]]
+   :properties     [Map [::v/screenshot-meta]]})
+
 (defn- update-screenshot-path [screenshot]
   (update-in screenshot [:path] #(str "/screenshots/" % "/" (:id screenshot) ".png")))
 
@@ -202,11 +204,11 @@
     :handle-ok (fn [ctx] (let [screenshots (p/get-screenshots (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
-(defn- process-screenshot [conn project-id suite-id run-id screenshot-name path meta {:keys [tempfile size]}]
-  (let [screenshot-id (p/save-screenshot! conn run-id screenshot-name path (assoc meta :size size))
+(defn- process-screenshot [conn project-id suite-id run-id screenshot-name path properties meta {:keys [tempfile size]}]
+  (let [screenshot-id (p/save-screenshot! conn run-id screenshot-name path size properties meta)
         screenshot (p/get-screenshot-by-id conn screenshot-id)
         baseline (p/get-baseline conn suite-id)
-        [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id screenshot-name meta)]
+        [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id screenshot-name properties)]
                                                 [false bs]
                                                 (do
                                                   (p/create-baseline-screenshot! conn (:id baseline) (:id screenshot))
@@ -232,7 +234,8 @@
     :malformed? false
     :processable? (fn [ctx]
                     (let [v (v/validations upload-screenshot-schema (-> ctx :request :params
-                                                                        (update-in [:meta] json/parse-string true)))]
+                                                                        (update-in [:meta] json/parse-string true)
+                                                                        (update-in [:properties] json/parse-string true)))]
                       (if (:valid? v)
                         (let [data (hyphenize-request (:data v))
                               run (p/get-run (tx-conn ctx) (Long/parseLong run-id))]
@@ -241,16 +244,16 @@
                             [false {::error-msg (format "Run status must be 'running' to upload screenshots. Status is: %s" (:status run))}]))
                         [false {::error-msg (handle-invalid v
                                               ::v/screenshot "'file' is not a valid PNG file"
-                                              ::v/screenshot-meta "Invalid meta data. Does it have valid 'os', 'browser', 'version' and 'resolution'?")}])))
+                                              ::v/screenshot-meta "Invalid meta or properties data. Are the values either strings or numbers?")}])))
     :handle-unprocessable-entity ::error-msg
     :exists? ::run
     :can-post-to-missing? false
     :post! (fn [ctx]
              (ex/try+
-               (let [{meta :meta file :file screenshot-name :screenshot-name} (::data ctx)
+               (let [{:keys [meta file properties screenshot-name]} (::data ctx)
                      {project-id :project-id suite-id :suite-id run-id :id} (::run ctx)
                      path (apply str (interpose \/ [project-id suite-id run-id]))
-                     screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name path meta file)]
+                     screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name path properties meta file)]
                  {::screenshot screenshot})
                (catch [:subtype ::p/unique-constraint-violation] _
                  {::screenshot {:error "Screenshot name already exists in this run"}})))
@@ -270,19 +273,15 @@
    :before     {:id             (:before diff)
                 :path           (full-path (:before-path diff) (:before diff))
                 :size           (:before-size diff)
-                :os             (:before-os diff)
-                :browser        (:before-browser diff)
-                :version        (:before-version diff)
-                :screenshotName (:before-name diff)
-                :resolution     (:before-resolution diff)}
+                :meta           (:before-meta diff)
+                :properties     (:before-properties diff)
+                :screenshotName (:before-name diff)}
    :after      {:id             (:after diff)
                 :path           (full-path (:after-path diff) (:after diff))
                 :size           (:after-size diff)
-                :os             (:after-os diff)
-                :browser        (:after-browser diff)
-                :version        (:after-version diff)
-                :screenshotName (:after-name diff)
-                :resolution     (:after-resolution diff)}
+                :meta           (:after-meta diff)
+                :properties     (:after-properties diff)
+                :screenshotName (:after-name diff)}
    :status     (:status diff)
    :percentage (:percentage diff)
    :path       (full-path (:path diff) (:id diff))})

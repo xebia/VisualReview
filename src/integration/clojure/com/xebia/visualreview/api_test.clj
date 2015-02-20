@@ -51,13 +51,14 @@
 (defn get-suites [project-id]
   (dissoc (http/get (endpoint "projects" project-id "suites") default-opts) :headers))
 
-(defn upload-screenshot! [run-id {:keys [file meta screenshotName]}]
+(defn upload-screenshot! [run-id {:keys [file meta screenshotName properties]}]
   (let [file (io/as-file (io/resource file))]
     (dissoc (http/post (endpoint "runs" run-id "screenshots")
                        (merge (dissoc default-opts :content-type)
                               {:multipart [{:name "file" :content file :mime-type "image/png"}
                                            {:name "screenshotName" :content screenshotName}
-                                           {:name "meta" :content (json/generate-string meta)}]}))
+                                           {:name "meta" :content (json/generate-string meta)}
+                                           {:name "properties" :content (json/generate-string properties)}]}))
             :headers)))
 
 (defn http-get [path]

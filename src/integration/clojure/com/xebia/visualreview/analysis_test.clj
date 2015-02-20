@@ -26,15 +26,16 @@
 (def project-name-1 "Test Project A")
 (def suite-name "Test suite")
 (def meta-info {:os         "LINUX"
-                :browser    "firefox"
-                :resolution "1024x786"
                 :version    "31.4.0"})
+(def screenshot-properties {:browser "firefox"
+                            :resolution "1024x786"})
 
 (defn setup-projects []
   (api/put-project! {:name project-name-1})
   (api/post-run! {:projectName project-name-1 :suiteName suite-name})
-  (api/upload-screenshot! 1 {:file            "chess1.png"
-                             :meta            meta-info
+  (api/upload-screenshot! 1 {:file           "chess1.png"
+                             :meta           meta-info
+                             :properties     screenshot-properties
                              :screenshotName "Kasparov vs Topalov - 1999"}))
 
 (background
@@ -66,6 +67,7 @@
     ;; TODO: When it fails, it should not return status 201. 409 would be better, i.e. we should actually use PUT, not POST
     (api/upload-screenshot! 1 {:file           "chess2.png"
                                :meta           meta-info
+                               :properties     screenshot-properties
                                :screenshotName "Kasparov vs Topalov - 1999"}) => (contains {:status 201
                                                                                             :body   (just {:error #"already exists"})}))
 
@@ -73,6 +75,7 @@
     (api/post-run! {:projectName project-name-1 :suiteName suite-name})
     (api/upload-screenshot! 2 {:file           "chess2.png"
                                :meta           meta-info
+                               :properties     screenshot-properties
                                :screenshotName "Kasparov vs Topalov - 1999"}) => (contains {:status 201}))
 
   (fact "The new diff is now pending and differs from its previous version"

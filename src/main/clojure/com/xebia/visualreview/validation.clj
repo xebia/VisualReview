@@ -58,8 +58,7 @@
   true)
 
 (defmethod conforms? ::screenshot-meta [v _]
-  (and
-    (every? #(contains? v %) [:resolution :browser :os :version])))
+  (every? (some-fn string? number?) (vals v)))
 
 (defmethod conforms? ::diff-status [v _]
   (contains? #{"pending" "accepted" "rejected"} v))
