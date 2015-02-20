@@ -58,7 +58,7 @@
   true)
 
 (defmethod conforms? ::screenshot-meta [v _]
-  (every? (some-fn string? number?) (vals v)))
+  (every? (some-fn string? number? true? false? nil?) (vals v)))
 
 (defmethod conforms? ::diff-status [v _]
   (contains? #{"pending" "accepted" "rejected"} v))
