@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS screenshot
   screenshot_name VARCHAR      NOT NULL,
   run_id          INTEGER      NOT NULL REFERENCES run,
   path            VARCHAR      NOT NULL,
-  UNIQUE (run_id, screenshot_name)
+  UNIQUE (run_id, screenshot_name, properties)
 );
 
 CREATE TABLE IF NOT EXISTS baseline

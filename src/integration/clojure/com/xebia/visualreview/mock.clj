@@ -18,7 +18,8 @@
   (:require [clojure.java.jdbc :as j]
             [taoensso.timbre :as timbre]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.persistence.database :as db]))
+            [com.xebia.visualreview.persistence.database :as db]
+            [com.xebia.visualreview.api-test :as api]))
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
@@ -38,3 +39,12 @@
 
 (defmacro rebind-db-spec [& body]
   `(with-redefs [db/conn *conn*] ~@body))
+
+(defn upload-tapir [run-id meta props]
+  (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))
+(defn upload-tapir-hat [run-id meta props]
+  (api/upload-screenshot! run-id {:file "tapir_hat.png" :meta meta :properties props :screenshotName "Tapir"}))
+(defn upload-chess-image-1 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "chess1.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
+(defn upload-chess-image-2 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "chess2.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))

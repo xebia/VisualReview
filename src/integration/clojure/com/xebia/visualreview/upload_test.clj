@@ -18,7 +18,7 @@
   (:require [com.xebia.visualreview.test-util :refer [start-server stop-server]]
             [midje.sweet :refer :all]
             [com.xebia.visualreview.api-test :as api]
-            [com.xebia.visualreview.mock :as mock]
+            [com.xebia.visualreview.mock :as mock :refer [upload-chess-image-1 upload-chess-image-2 upload-tapir]]
             [taoensso.timbre :as timbre]))
 
 (timbre/merge-config!
@@ -27,10 +27,10 @@
 (def project-name-1 "Test Project A")
 (def project-name-2 "Test Project B")
 (def suite-name "Test suite")
-(def screenshot-properties {:os         "LINUX"
-                            :browser    "firefox"
-                            :resolution "1024x786"
-                            :version    "31.4.0"})
+(def properties {:os         "LINUX"
+                 :browser    "firefox"
+                 :resolution "1024x786"
+                 :version    "31.4.0"})
 
 (def meta-info {:takenBy   "Daniel"
                 :timeStamp "2015-02-19T16:34:12"})
@@ -56,41 +56,28 @@
   (fact "There no runs or screenshots yet"
     (api/get-runs {:projectName project-name-1 :suiteName suite-name}) => (contains {:status 404}))
 
-  (fact "We can upload screenshots"
-    (let [run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name})
-                     :body :id)]
-      (:body (api/upload-screenshot! run-id
-                                     {:file           "tapir.png"
-                                      :meta           meta-info
-                                      :properties     screenshot-properties
-                                      :screenshotName "Tapir"})) => {:id             1
-                                                                     :path           "1/1/1"
-                                                                     :runId          run-id
-                                                                     :screenshotName "Tapir"
-                                                                     :size           38116
-                                                                     :meta           meta-info
-                                                                     :properties     screenshot-properties}))
+  (let [run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name}) :body :id)]
+    (fact "We can upload screenshots"
+      (upload-tapir run-id meta-info properties) => (contains {:status 201
+                                                               :body   {:id             1
+                                                                        :path           "1/1/1"
+                                                                        :runId          run-id
+                                                                        :screenshotName "Tapir"
+                                                                        :size           38116
+                                                                        :meta           meta-info
+                                                                        :properties     properties}}))
 
-  (fact "We can retrieve the analysis for a run"
-    (let [analysis-response (api/get-analysis 1)
-          {:keys [analysis diffs]} (:body analysis-response)
-          diff (first diffs)
-          before-screenshot (:before diff)
-          after-screenshot (:after diff)]
-      (:status analysis-response) => 200
-      (fact "The analysis contains a baseline for the suite and other information"
-        analysis => (contains {:baselineId   1
-                               :creationTime #""
-                               :projectName  project-name-1
-                               :suiteName    suite-name}))
-      (fact "The diff contains a single entry"
-        (count diffs) => 1)
-      (fact "The status of the diff is pending"
-        (:status diff) => "pending")
-      (fact "The before and after images are equal"
-        (:percentage diff) => 0.0
-        (= before-screenshot after-screenshot) => true)
-      (fact "We can retrieve the images from the returned paths"
-        (let [response (api/http-get (:path before-screenshot))]
-          (:status response) => 200
-          (get-in response [:headers "Content-Type"]) => "image/png")))))
+    (fact "We cannot upload screenshots with the same name and properties in the same run"
+      (upload-chess-image-1 run-id meta-info properties) => (contains {:status 201})
+      (upload-chess-image-2 run-id meta-info properties) => (contains {:status 200
+                                                                       :body   (just {:error             #"already uploaded"
+                                                                                      :conflictingEntity map?})}))
+
+    (fact "We can upload screenshots with the same name and meta, but different properties"
+      (upload-chess-image-2 run-id meta-info (assoc properties :resolution "800x600")) => (contains {:status 201})))
+
+  (let [next-run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name}) :body :id)]
+    (fact "In a new run, we can upload a screenshot with identical name and props as in the previous run"
+      (upload-chess-image-2 next-run-id meta-info properties) => (contains {:status 201})))
+
+  )

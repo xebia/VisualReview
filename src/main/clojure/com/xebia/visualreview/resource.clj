@@ -254,10 +254,15 @@
                      {project-id :project-id suite-id :suite-id run-id :id} (::run ctx)
                      path (apply str (interpose \/ [project-id suite-id run-id]))
                      screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name path properties meta file)]
-                 {::screenshot screenshot})
+                 {::screenshot screenshot ::new? true})
                (catch [:subtype ::p/unique-constraint-violation] _
-                 {::screenshot {:error "Screenshot name already exists in this run"}})))
-    :handle-created ::screenshot))
+                 {::screenshot {:error "Screenshot with identical name and properties was already uploaded in this run"
+                                :conflicting-entity (select-keys (::data ctx) [:meta :properties :screenshot-name])}
+                  ::new? false})))
+    :new? ::new?
+    :respond-with-entity? true
+    :handle-created ::screenshot
+    :handle-ok ::screenshot))
 
 ;; Analysis
 (defn screenshots-resource [run-id]
