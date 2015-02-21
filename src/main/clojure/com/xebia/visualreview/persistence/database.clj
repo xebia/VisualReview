@@ -16,8 +16,8 @@
 
 (ns com.xebia.visualreview.persistence.database
   (:require [clojure.java.jdbc :as j]
-            [clojure.java.io :refer [resource]])
-  (:import com.mchange.v2.c3p0.ComboPooledDataSource))
+            [clojure.java.io :as io])
+  (:import [com.mchange.v2.c3p0 PooledDataSource ComboPooledDataSource]))
 
 (defn pooled-datasource
   [spec]
@@ -39,7 +39,7 @@
 (defonce conn {})
 
 (defn run-init-script [conn]
-  (j/execute! conn [(slurp (resource "dbscripts/h2/1.sql"))]))
+  (j/execute! conn [(slurp (io/resource "dbscripts/h2/1.sql"))]))
 
 (defn init! [db-uri user pass]
   {:pre [db-uri user]}
@@ -55,3 +55,7 @@
     (do
       (run-init-script conn)
       conn)))
+
+(defn close-connection []
+  (when-let [db-conn ^PooledDataSource (:datasource conn)]
+    (.close db-conn)))
