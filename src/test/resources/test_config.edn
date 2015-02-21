@@ -1,0 +1,15 @@
+{
+ ;; Server
+ :server-port "7001"
+
+ ;; Database
+ :db-uri "dummy:123//db"
+ :db-user "test-user"
+ :db-password "test-password"
+
+ ;; File system
+ :screenshots-dir ".visualreview/screenshots-test"
+
+ ;; Fake testing fields
+ :nonexistent-configuration-key "Some value"
+ }

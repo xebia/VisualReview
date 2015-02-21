@@ -23,16 +23,16 @@
 
 (defn- config-settings []
   (try+
-    (config/parsed-settings)
+    (config/init!)
     (catch [:type :com.xebia.visualreview.validation/invalid] exception
       (timbre/log :fatal (str "Server configuration error: " (exception :message))))))
 
 (defn -main [& _]
-  (when-let [{:keys [port db-uri db-user db-password screenshots-dir]} (config-settings)]
+  (when-let [{:keys [server-port db-uri db-user db-password screenshots-dir]} (config-settings)]
     (try
       (com.xebia.visualreview.io/init-screenshots-dir! screenshots-dir)
       (com.xebia.visualreview.persistence.database/init! db-uri db-user db-password)
-      (starter/start-server port)
+      (starter/start-server server-port)
       :ok
       (catch Exception e
         (timbre/log :fatal (str "Error initializing: " (.getMessage e)))

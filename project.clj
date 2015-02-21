@@ -5,7 +5,6 @@ across several browsers, resolutions and platforms."
   :license {:name "Apache Licence 2.0"
             :url  "http://www.apache.org/licenses/LICENSE-2.0.txt"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [environ "1.0.0"]                          ;configuration
                  [ring/ring-core "1.3.2"]                   ;webserver middleware
                  [ring/ring-jetty-adapter "1.3.2"]          ;webserver container
                  [compojure "1.3.1"]                        ;routes
@@ -43,12 +42,10 @@ across several browsers, resolutions and platforms."
             "bower-install" ["shell" "bower" "install"]
             "grunt-build"   ["shell" "grunt" "build"]}
 
-  :profiles {:dev-common  {:dependencies   [[midje "1.6.3"]
+  :profiles {:dev         {:dependencies   [[midje "1.6.3"]
                                             [clj-http "1.0.1"]]
-                           :plugins        [[lein-environ "1.0.0"]
-                                            [lein-midje "3.1.3"]]
-                           :resource-paths ["src/integration/resources"]}
-             :dev         [:dev-common :dev-overrides]
+                           :plugins        [[lein-midje "3.1.3"]]
+                           :resource-paths ["src/test/resources" "src/integration/resources"]}
              :uberjar     {:aot        :all
                            :prep-tasks ^:replace [["npm-install"] ["bower-install"] ["grunt-build"]
                                                   ["resource"] ["javac"] ["compile"]]
@@ -60,4 +57,3 @@ across several browsers, resolutions and platforms."
   :jar-name "visualreview-%s.jar"
   :uberjar-name "visualreview-%s-standalone.jar"
   :javac-options ["-target" "1.7" "-source" "1.7"])
-

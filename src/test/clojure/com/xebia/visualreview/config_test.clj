@@ -16,28 +16,13 @@
 
 (ns com.xebia.visualreview.config-test
   (:require [midje.sweet :refer :all]
-            [com.xebia.visualreview.config :refer :all]
-            [environ.core :as environ]))
+            [com.xebia.visualreview.config :refer :all]))
 
-(def stub-env {:visualreview-port        1234
-               :visualreview-db-uri      "//localhost:5432/testdb"
-               :visualreview-db-user     "testuser"
-               :visualreview-db-password "test123"
-               :some-other-env-var       "some-value"})
-
-(defmacro with-env [env & body]
-  `(with-redefs [environ/env ~env]
-     ~@body))
-
-(facts "about parsed-settings"
-  (fact "it validates and parses environment variables prefixed with 'visual-review-'. it retrieves only the fields defined in the config-schema"
-    (with-env stub-env
-      (parsed-settings)) => {:port        1234
-                             :db-uri      "//localhost:5432/testdb"
-                             :db-user     "testuser"
-                             :db-password "test123"})
-  (fact "the port should be a number or parseable to a number"
-    (with-env (update-in stub-env [:visualreview-port] str)
-      (:port (parsed-settings)) => 1234)
-    (with-env (assoc stub-env :visualreview-port "Not a number")
-      (parsed-settings) => (throws Exception #"not a number"))))
+(facts "About init!"
+  (fact "validates and parses configuration variables"
+    (init! "test_config.edn") => {:server-port     7001
+                                  :db-uri          "dummy:123//db"
+                                  :db-user         "test-user"
+                                  :db-password     "test-password"
+                                  :screenshots-dir ".visualreview/screenshots-test"})
+  )

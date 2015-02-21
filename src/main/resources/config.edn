@@ -1,0 +1,13 @@
+{
+ ;; Server
+ :server-port "7000"
+
+ ;; Database
+ :db-uri "file:./.visualreview/visualreview.db"
+ :db-user ""
+ :db-password ""
+
+ ;; File system
+ :screenshots-dir ".visualreview/screenshots"
+
+ }

@@ -18,11 +18,11 @@
   (:import [java.io File FileNotFoundException]
            [java.nio.file NotDirectoryException Files AccessDeniedException LinkOption]
            [java.nio.file.attribute FileAttribute]
-           (javax.imageio ImageIO)
-           (java.awt.image BufferedImage))
+           [javax.imageio ImageIO]
+           [java.awt.image BufferedImage])
   (:require [clojure.java.io :as io]))
 
-(defonce screenshots-dir "screenshots")
+(def screenshots-dir "screenshots")
 
 (defn init-screenshots-dir! [dir]
   (let [dir (or dir "screenshots")

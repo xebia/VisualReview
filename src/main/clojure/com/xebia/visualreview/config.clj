@@ -15,27 +15,31 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.config
-  (:require [environ.core :refer [env]]
-            [com.xebia.visualreview.validation :as v]))
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [com.xebia.visualreview.validation :as v])
+  (:import [java.io FileNotFoundException]))
 
-(def ^:private config-env-prefix "visualreview-")
-
-(def config-schema
-  "Expected keys and related validators for configuration data"
-  {:port [Long []]
-   :db-uri [String []]
-   :db-user [String []]
-   :db-password [String [::v/optional]]
+(def ^{:private true :doc "Expected keys and related validators for configuration data"}
+config-schema
+  {:server-port     [Long []]
+   :db-uri          [String []]
+   :db-user         [String []]
+   :db-password     [String [::v/optional]]
    :screenshots-dir [String [::v/optional]]})
 
-(defn- read-setting [entry-keyword]
-  "Returns a configuration entry, set by ether a command-line parameter or environment variable.
-  While all configuration entries are set using the 'visualreview-' prefix, users of this API should omit this prefix."
-  (when (contains? config-schema entry-keyword)
-    ((keyword (str config-env-prefix (name entry-keyword))) env)))
+(def default-config {:server-port "7000"
+                     :screenshots-dir ".visualreview"})
 
-(defn- settings []
-  (into {} (for [k (keys config-schema)] [k (read-setting k)])))
+(defonce env {})
 
-(defn parsed-settings []
-  (v/validate config-schema (settings)))
+(def ^:private config-file "config.edn")
+(defn init!
+  "Reads the config.edn resource file on the classpath (or the given arg). Parses it and sets the env var"
+  ([] (init! config-file))
+  ([cfg]
+   (if-let [resource (io/resource cfg)]
+     (let [conf (merge default-config (-> resource slurp edn/read-string))]
+       (alter-var-root #'env (fn [_] (v/validate config-schema conf))))
+     (throw (FileNotFoundException. (format "The configuration file %s could not be found" cfg))))))
+

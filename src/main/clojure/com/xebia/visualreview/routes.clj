@@ -20,6 +20,7 @@
             [compojure.route :as route]
             [com.xebia.visualreview.middleware :as m]
             [com.xebia.visualreview.resource :as resource]
+            [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.config :as config]))
 
 (def ^:private resources-root "public")
@@ -45,7 +46,7 @@
   (GET "/" [] (resource-response "index.html" {:root resources-root}))
   (context "/api" req api-routes)
   (context "/screenshots" []
-    (route/files "/" {:root (:screenshots-dir (config/parsed-settings))})
+    (route/files "/" {:root io/screenshots-dir})
     (route/not-found nil))
   (route/resources "/")
   (route/not-found "Page not found")
