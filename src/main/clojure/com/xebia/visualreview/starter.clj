@@ -19,7 +19,6 @@
   (:require [ring.middleware
              [params :as params]
              [keyword-params :refer [wrap-keyword-params]]
-             [nested-params :refer [wrap-nested-params]]
              [multipart-params :refer [wrap-multipart-params]]]
             [taoensso.timbre :as timbre]
             [com.xebia.visualreview.routes :as routes]
@@ -28,7 +27,6 @@
 
 (def app (-> routes/main-router
              wrap-keyword-params
-             wrap-nested-params
              wrap-multipart-params
              params/wrap-params
              middleware/wrap-exception))
