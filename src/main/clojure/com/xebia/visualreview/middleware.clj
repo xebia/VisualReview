@@ -36,9 +36,9 @@
       (try
         (handler (assoc req :tx-conn conn))
         (catch SQLException e
-          (timbre/log :error e "SQLException caught.")
+          (timbre/log :error "SQLException caught.")
           (throw e))
         (catch Exception e
-          (timbre/log :error e "Exception occured whilst inside transaction. Transaction was rolled back.")
+          (timbre/log :error "Exception occured whilst inside transaction. Transaction was rolled back.")
           (j/db-set-rollback-only! conn)
           (throw e))))))
