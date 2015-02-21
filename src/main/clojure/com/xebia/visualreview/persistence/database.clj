@@ -27,6 +27,7 @@
                (.setUser (:user spec))
                (.setPassword (:password spec))
                (.setMaxPoolSize (:max-pool-size spec))
+               (.setMinPoolSize (:min-pool-size spec))
                (.setInitialPoolSize (:init-pool-size spec))
                ;; expire excess connections after 30 minutes of inactivity:
                (.setMaxIdleTimeExcessConnections (* 30 60))
@@ -48,6 +49,7 @@
                  :user           user
                  :password       pass
                  :init-pool-size 1
+                 :min-pool-size  1
                  :max-pool-size  1}
         conn (alter-var-root #'conn (constantly (pooled-datasource db-spec)))]
     (do
