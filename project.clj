@@ -1,6 +1,5 @@
 (defproject visualreview "0.0.1-SNAPSHOT"
-  :description "Provides a productive and human-friendly workflow for testing and reviewing your web application's layout
-across several browsers, resolutions and platforms."
+  :description "Provides a productive and human-friendly workflow for catching visual regressions by comparing screenshots"
   :url "https://github.com/xebia/VisualReview"
   :license {:name "Apache Licence 2.0"
             :url  "http://www.apache.org/licenses/LICENSE-2.0.txt"}
