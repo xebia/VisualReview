@@ -71,3 +71,12 @@
     (if (.exists file)
       file
       (throw (FileNotFoundException. (format "File at %s does not exist." (str (.getPath file))))))))
+
+(defn store-image!
+  "Stores the given file to the given path"
+  [file directory id]
+  {:pre [file directory id]}
+  (let [dest (io/file screenshots-dir directory (str id ".png"))]
+    (do
+      (.mkdirs (.getParentFile dest))
+      (io/copy file dest))))
