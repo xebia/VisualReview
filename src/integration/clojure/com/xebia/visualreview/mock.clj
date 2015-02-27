@@ -24,9 +24,17 @@
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
                        :subname        "file:./target/temp/vrtest.db"
-                       :user           "`"
+                       :user           ""
                        :init-pool-size 1
                        :max-pool-size  1})
+
+(defn delete-recursively [fname]
+  (let [func (fn [func f]
+               (when (.isDirectory f)
+                 (doseq [f2 (.listFiles f)]
+                   (func func f2)))
+               (clojure.java.io/delete-file f true))]
+    (func func (clojure.java.io/file fname))))
 
 (defn setup-db []
   (timbre/info "Setting up test database")
@@ -34,8 +42,11 @@
     (j/execute! conn ["DROP ALL OBJECTS"])
     (com.xebia.visualreview.persistence.database/run-init-script conn)))
 
-(defmacro rebind-screenshots-dir [& body]
-  `(with-redefs [io/screenshots-dir "target/temp/screenshots"] ~@body))
+(defmacro setup-screenshots-dir [& body]
+  `(with-redefs [io/screenshots-dir "target/temp/screenshots"]
+     (do (delete-recursively io/screenshots-dir)
+         (.mkdirs (clojure.java.io/file io/screenshots-dir))
+         ~@body)))
 
 (defmacro rebind-db-spec [& body]
   `(with-redefs [db/conn *conn*] ~@body))

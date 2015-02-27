@@ -28,7 +28,7 @@
 (background
   (before :contents (setup-db))
   (around :facts (rebind-db-spec ?form))
-  (around :facts (rebind-screenshots-dir ?form)))
+  (around :facts (setup-screenshots-dir ?form)))
 
 (def project-name-1 "A Test Project")
 (def project-name-2 "Another Project")

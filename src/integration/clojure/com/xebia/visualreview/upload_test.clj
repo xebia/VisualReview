@@ -22,7 +22,7 @@
             [taoensso.timbre :as timbre]))
 
 (timbre/merge-config!
-  timbre/example-config {:fmt-output-fn :message})
+  timbre/example-config )
 
 (def project-name-1 "Test Project A")
 (def project-name-2 "Test Project B")
@@ -42,7 +42,7 @@
 (background
   (before :contents (mock/setup-db))
   (around :facts (mock/rebind-db-spec ?form))
-  (around :facts (mock/rebind-screenshots-dir ?form)))
+  (around :contents (mock/setup-screenshots-dir ?form)))
 
 (facts "Screenshots"
   (against-background

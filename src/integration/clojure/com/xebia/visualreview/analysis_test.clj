@@ -45,7 +45,7 @@
 (background
   (before :contents (mock/setup-db))
   (around :facts (mock/rebind-db-spec ?form))
-  (around :facts (mock/rebind-screenshots-dir ?form)))
+  (around :contents (mock/setup-screenshots-dir ?form)))
 
 (facts "Analysis"
   (against-background
