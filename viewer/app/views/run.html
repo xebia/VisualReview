@@ -24,7 +24,7 @@
 
   <div class="screenshot-container">
     <div>
-      <img ng-show="showDiff" ng-src="{{diffs[selectedDiffIndex].path}}" style="position:absolute;"/>
+      <img ng-show="showDiff" ng-src="/api/image/{{diffs[selectedDiffIndex].imageId}}" style="position:absolute;"/>
       <img ng-src="/api/image/{{diffs[selectedDiffIndex][selectedScreenshot].imageId}}"/>
     </div>
   </div>
