@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.service.screenshot-itest
+(ns com.xebia.visualreview.service.screenshot-test
   (:require [midje.sweet :refer :all]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
