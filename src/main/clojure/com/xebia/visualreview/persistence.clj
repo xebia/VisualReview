@@ -95,14 +95,14 @@
     new-suite-id))
 
 ;; Baseline
-(defn get-baseline-screenshot [conn suite-id screenshot-name properties]
+(defn get-baseline-screenshot [conn suite-id branch-name screenshot-name properties]
   (query-single conn
-    ["SELECT screenshot.* FROM screenshot
-     JOIN baseline_screenshot ON screenshot.id = baseline_screenshot.screenshot_id
-     JOIN baseline ON baseline_screenshot.baseline_id = baseline.id
-     JOIN suite ON baseline.suite_id = suite.id
-     WHERE suite.id = ? AND screenshot.screenshot_name = ?
-     AND screenshot.properties = ?" suite-id screenshot-name (json/generate-string properties)]))
+    ["SELECT screenshot.* FROM baseline_tree tr
+     JOIN baseline_branch br ON br.baseline_tree = tr.id
+     JOIN bl_node_screenshot bl_ss ON bl_ss.baseline_node = br.head
+     JOIN screenshot ON screenshot.id = bl_ss.screenshot_id
+     WHERE tr.suite_id = ? AND br.name = ? AND screenshot.screenshot_name = ?
+     AND screenshot.properties = ?" suite-id branch-name screenshot-name (json/generate-string properties)]))
 
 (defn get-baseline-head
   ([conn suite-id] (get-baseline-head conn suite-id "master"))
@@ -115,9 +115,9 @@
 
 (defn create-baseline-screenshot!
   "Adds the given screenshot-id to the given baseline."
-  [conn baseline-id screenshot-id]
-  (insert-single! conn :baseline-screenshot {:baseline-id   baseline-id
-                                             :screenshot-id screenshot-id}))
+  [conn baseline-node screenshot-id]
+  (insert-single! conn :bl-node-screenshot {:baseline-node baseline-node
+                                            :screenshot-id screenshot-id}))
 
 (defn create-bl-node-screenshots!
   [conn node-id screenshot-id]
@@ -125,9 +125,9 @@
 
 (defn set-baseline! [conn diff-id screenshot-id new-screenshot-id]
   (first
-    (update! conn :baseline-screenshot {:screenshot-id new-screenshot-id}
-             ["screenshot_id = ? AND baseline_id =
-              (SELECT analysis.baseline_id FROM diff
+    (update! conn :bl-node-screenshot {:screenshot-id new-screenshot-id}
+             ["screenshot_id = ? AND baseline_node =
+              (SELECT analysis.baseline_node FROM diff
               JOIN analysis ON analysis.id = diff.analysis_id
               WHERE diff.id = ?)" screenshot-id diff-id])))
 

@@ -208,10 +208,10 @@
   (let [screenshot-id (p/save-screenshot! conn run-id screenshot-name path size properties meta)
         screenshot (p/get-screenshot-by-id conn screenshot-id)
         baseline (p/get-baseline-head conn suite-id)
-        [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id screenshot-name properties)]
+        [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id "master" screenshot-name properties)]
                                                 [false bs]
                                                 (do
-                                                  (p/create-baseline-screenshot! conn (:id baseline) (:id screenshot))
+                                                  (p/create-baseline-screenshot! conn baseline (:id screenshot))
                                                   [true screenshot]))
         analysis (p/get-analysis conn run-id)
         after-file-id (:id screenshot)
