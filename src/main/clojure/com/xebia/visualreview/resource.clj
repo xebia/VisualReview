@@ -207,7 +207,7 @@
 (defn- process-screenshot [conn project-id suite-id run-id screenshot-name path properties meta {:keys [tempfile size]}]
   (let [screenshot-id (p/save-screenshot! conn run-id screenshot-name path size properties meta)
         screenshot (p/get-screenshot-by-id conn screenshot-id)
-        baseline (p/get-baseline conn suite-id)
+        baseline (p/get-baseline-head conn suite-id)
         [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id screenshot-name properties)]
                                                 [false bs]
                                                 (do

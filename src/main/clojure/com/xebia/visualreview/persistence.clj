@@ -91,7 +91,6 @@
   [conn project-name suite-name]
   (let [project-id (get-project-by-name conn project-name :id)
         new-suite-id (insert-single! conn :suite {:project-id project-id :name suite-name})]
-    (insert-single! conn :baseline {:suite-id new-suite-id})
     (create-baseline-tree! conn new-suite-id)
     new-suite-id))
 
@@ -105,8 +104,14 @@
      WHERE suite.id = ? AND screenshot.screenshot_name = ?
      AND screenshot.properties = ?" suite-id screenshot-name (json/generate-string properties)]))
 
-(defn get-baseline [conn suite-id]
-  (query-single conn ["SELECT * FROM baseline WHERE suite_id = ?" suite-id]))
+(defn get-baseline-head
+  ([conn suite-id] (get-baseline-head conn suite-id "master"))
+  ([conn suite-id branch-name]
+   (query-single conn ["SELECT br.head FROM suite
+   JOIN baseline_tree t ON suite.id = t.suite_id
+   JOIN baseline_branch br ON t.baseline_root = br.head
+   WHERE suite_id = ? AND br.name = ?" suite-id branch-name]
+     :row-fn :head)))
 
 (defn create-baseline-screenshot!
   "Adds the given screenshot-id to the given baseline."
@@ -127,9 +132,9 @@
               WHERE diff.id = ?)" screenshot-id diff-id])))
 
 ;; Analysis
-(defn- create-analysis! [conn baseline-id run-id]
+(defn- create-analysis! [conn baseline-node run-id]
   "Returns the generated analysis id"
-  (insert-single! conn :analysis {:baseline-id baseline-id :run-id run-id}))
+  (insert-single! conn :analysis {:baseline-node baseline-node :run-id run-id}))
 
 (defn get-analysis
   [conn run-id]
@@ -198,14 +203,14 @@
   If the suite does not yet exist it will be created along with a new baseline.
   Creating a run also creates an analysis for the run, this may change in the future.
   Returns the created run id."
-  [conn {:keys [project-name suite-name]}]
+  [conn {:keys [project-name suite-name branch-name] :or {branch-name "master"}}]
   (let [suite-id (or (get-suite-by-name conn project-name suite-name :id)
                      (create-suite-for-project! conn project-name suite-name))
-        baseline (get-baseline conn suite-id)
+        baseline (get-baseline-head conn suite-id branch-name)
         new-run-id (insert-single! conn :run {:suite-id   suite-id
                                               :start-time (Timestamp. (.getTime (Date.)))
                                               :status     "running"})
-        _ (create-analysis! conn (:id baseline) new-run-id)]
+        _ (create-analysis! conn baseline new-run-id)]
     new-run-id))
 
 (defn get-run
