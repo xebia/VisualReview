@@ -16,19 +16,26 @@
 
 (ns com.xebia.visualreview.middleware
   (:require [taoensso.timbre :as timbre]
+            [slingshot.slingshot :as s]
             [com.xebia.visualreview.persistence.database :as db]
             [clojure.java.jdbc :as j])
   (:import [java.sql SQLException]))
 
 (defn wrap-exception [f]
   (fn [request]
-    (try (f request)
-         (catch Exception e
-           (do
-             (timbre/log :error e (str "A request triggered an unhandled exception, as a result the request was met with a HTTP status 500 response."))
-             {:status 500
-              :headers {}
-              :body "Internal error occurred"})))))
+    (s/try+ (f request)
+            (catch [:type :service-exception] {:keys [message code]}
+              (do
+                (timbre/log :error (str "A service exception occured, code " code ", message " message))
+                {:status 500
+                 :headers {}
+                 :body (str "Internal service exception occured")}))
+            (catch Exception e
+              (do
+                (timbre/log :error e (str "A request triggered an unhandled exception, as a result the request was met with a HTTP status 500 response." (.getMessage e)))
+                 {:status 500
+                  :headers {}
+                  :body "Internal error occurred"})))))
 
 (defn wrap-tx [handler]
   (fn [req]

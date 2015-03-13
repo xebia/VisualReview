@@ -40,6 +40,7 @@
         (ANY "/screenshots" [] (resource/screenshots-resource run-id))
         (ANY "/analysis" [] (resource/analysis-resource run-id))
         (ANY "/analysis/diffs/:diff-id" [diff-id] (resource/diff-status-resource run-id diff-id)))
+      (ANY "/image/:image-id" [image-id] (resource/image image-id))
       (route/not-found nil))))
 
 (defroutes main-router

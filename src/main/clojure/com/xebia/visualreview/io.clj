@@ -65,9 +65,9 @@
         dest (io/file screenshots-dir project-dir suite-dir "diffs" (str diff-id ".png"))]
     (ImageIO/write diff-image "png" dest)))
 
-(defn get-file [path screenshot-id]
-  {:pre [path screenshot-id]}
-  (let [file (io/file screenshots-dir path (str screenshot-id ".png"))]
+(defn get-file [file-path]
+  {:pre [file-path]}
+  (let [file (io/file screenshots-dir file-path)]
     (if (.exists file)
       file
       (throw (FileNotFoundException. (format "File at %s does not exist." (str (.getPath file))))))))

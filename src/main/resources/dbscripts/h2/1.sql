@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS screenshot
   meta            VARCHAR(512) NOT NULL,
   screenshot_name VARCHAR      NOT NULL,
   run_id          INTEGER      NOT NULL REFERENCES run,
-  path            VARCHAR      NOT NULL,
+  image_id        BIGINT       UNIQUE REFERENCES image,
   UNIQUE (run_id, screenshot_name, properties)
 );
 

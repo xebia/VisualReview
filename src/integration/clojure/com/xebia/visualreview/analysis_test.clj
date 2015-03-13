@@ -16,10 +16,10 @@
 
 (ns com.xebia.visualreview.analysis-test
   (:require [midje.sweet :refer :all]
+            [taoensso.timbre :as timbre]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.test-util :refer [start-server stop-server]]
-            [taoensso.timbre :as timbre]))
+            [com.xebia.visualreview.test-util :refer [start-server stop-server]]))
 
 (timbre/set-level! :warn)
 
@@ -72,10 +72,10 @@
         (:percentage diff) => 0.0
         (= before-screenshot after-screenshot) => true)
       (fact "We can retrieve the images from the returned paths"
-        (let [before-screenshot (api/http-get (:path before-screenshot))
+        (let [before-image (api/get-image (:imageId before-screenshot))
               diff-image (api/http-get (:path diff))]
-          (map :status [before-screenshot diff-image]) => (two-of 200)
-          (map #(get-in % [:headers "Content-Type"]) [before-screenshot diff-image]) => (two-of "image/png")))))
+          (map :status [before-image diff-image]) => (two-of 200)
+          (map #(get-in % [:headers "Content-Type"]) [before-image diff-image]) => (two-of "image/png")))))
 
   (fact "There is one run with two pending screenshots"
     (count (:body (api/get-projects))) => 1
@@ -127,7 +127,5 @@
       (fact "The chess image is changed with respect to the previous run"
         chess-diff => (contains {:percentage 1.03 :status "pending"})
         (-> chess-diff :before :id) => (-> (@image-ids 2) :chess)
-        (-> chess-diff :after :id) => (-> (@image-ids run-id) :chess))))
-
-  )
+        (-> chess-diff :after :id) => (-> (@image-ids run-id) :chess)))))
 

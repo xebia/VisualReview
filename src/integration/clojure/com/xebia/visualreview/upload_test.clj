@@ -16,13 +16,9 @@
 
 (ns com.xebia.visualreview.upload-test
   (:require [com.xebia.visualreview.test-util :refer [start-server stop-server]]
-            [midje.sweet :refer :all]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.mock :as mock :refer [upload-chess-image-1 upload-chess-image-2 upload-tapir]]
-            [taoensso.timbre :as timbre]))
-
-(timbre/merge-config!
-  timbre/example-config )
+            [midje.sweet :refer :all]))
 
 (def project-name-1 "Test Project A")
 (def project-name-2 "Test Project B")
@@ -60,8 +56,8 @@
     (fact "We can upload screenshots"
       (upload-tapir run-id meta-info properties) => (contains {:status 201
                                                                :body   {:id             1
-                                                                        :path           "1/1/1"
                                                                         :runId          run-id
+                                                                        :imageId        1
                                                                         :screenshotName "Tapir"
                                                                         :size           38116
                                                                         :meta           meta-info
@@ -78,6 +74,4 @@
 
   (let [next-run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name}) :body :id)]
     (fact "In a new run, we can upload a screenshot with identical name and props as in the previous run"
-      (upload-chess-image-2 next-run-id meta-info properties) => (contains {:status 201})))
-
-  )
+      (upload-chess-image-2 next-run-id meta-info properties) => (contains {:status 201}))))

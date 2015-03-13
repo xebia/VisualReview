@@ -15,15 +15,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.resource
-  (:require [liberator.core :refer [resource]]
+  (:require [liberator.core :refer [resource defresource]]
             [liberator.representation :as representation]
             [cheshire.core :as json]
+            [slingshot.slingshot :as ex]
             [com.xebia.visualreview.validation :as v]
             [com.xebia.visualreview.util :as util]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.analysis.core :as analysis]
             [com.xebia.visualreview.io :as io]
-            [slingshot.slingshot :as ex])
+            [com.xebia.visualreview.service.image :as image]
+            [com.xebia.visualreview.service.screenshot :as screenshot])
   (:import [java.util Map]
            [com.fasterxml.jackson.core JsonParseException]))
 
@@ -204,8 +206,8 @@
     :handle-ok (fn [ctx] (let [screenshots (p/get-screenshots (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
-(defn- process-screenshot [conn project-id suite-id run-id screenshot-name path properties meta {:keys [tempfile size]}]
-  (let [screenshot-id (p/save-screenshot! conn run-id screenshot-name path size properties meta)
+(defn- process-screenshot [conn project-id suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
+  (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (p/get-screenshot-by-id conn screenshot-id)
         baseline (p/get-baseline conn suite-id)
         [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id screenshot-name properties)]
@@ -214,10 +216,10 @@
                                                   (p/create-baseline-screenshot! conn (:id baseline) (:id screenshot))
                                                   [true screenshot]))
         analysis (p/get-analysis conn run-id)
-        after-file-id (:id screenshot)
+        after-file-id (:image-id screenshot)
         after-file tempfile
-        before-file-id (or (:id baseline-screenshot) after-file-id)
-        before-file (if (= screenshot baseline-screenshot) after-file (io/get-file (:path baseline-screenshot) (:id baseline-screenshot)))
+        before-file-id (or (:image-id baseline-screenshot) after-file-id)
+        before-file (if new-screenshot? after-file (io/get-file (image/get-image-path conn before-file-id)))
         diff-report (analysis/diff-report before-file after-file)
         new-diff-id (p/save-diff! conn (str project-id "/" suite-id "/diffs") before-file-id after-file-id (:percentage diff-report) (:id analysis))
         diff (p/get-diff conn run-id new-diff-id)]
@@ -252,10 +254,9 @@
              (ex/try+
                (let [{:keys [meta file properties screenshot-name]} (::data ctx)
                      {project-id :project-id suite-id :suite-id run-id :id} (::run ctx)
-                     path (apply str (interpose \/ [project-id suite-id run-id]))
-                     screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name path properties meta file)]
+                     screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name properties meta file)]
                  {::screenshot screenshot ::new? true})
-               (catch [:subtype ::p/unique-constraint-violation] _
+               (catch [:type :service-exception :code ::screenshot/screenshot-cannot-store-in-db-already-exists] _
                  {::screenshot {:error "Screenshot with identical name and properties was already uploaded in this run"
                                 :conflicting-entity (select-keys (::data ctx) [:meta :properties :screenshot-name])}
                   ::new? false})))
@@ -276,13 +277,13 @@
 (defn- transform-diff [diff]
   {:id         (:id diff)
    :before     {:id             (:before diff)
-                :path           (full-path (:before-path diff) (:before diff))
+                :image-id       (:before-image-id diff)
                 :size           (:before-size diff)
                 :meta           (:before-meta diff)
                 :properties     (:before-properties diff)
                 :screenshotName (:before-name diff)}
    :after      {:id             (:after diff)
-                :path           (full-path (:after-path diff) (:after diff))
+                :image-id       (:after-image-id diff)
                 :size           (:after-size diff)
                 :meta           (:after-meta diff)
                 :properties     (:after-properties diff)
@@ -331,3 +332,11 @@
              (update-diff-status! (tx-conn ctx) (::diff ctx) (::new-status ctx))
              {::updated-diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
     :handle-created ::updated-diff))
+
+(defresource image [image-id]
+             :available-media-types ["image/png"]
+             :allowed-methods [:get]
+             :exists? (fn [ctx]
+                        {:image-path (image/get-image-path (tx-conn ctx) image-id)})
+             :handle-ok (fn [ctx]
+                          (io/get-file (:image-path ctx))))

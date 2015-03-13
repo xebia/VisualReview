@@ -16,9 +16,10 @@
 
 (ns com.xebia.visualreview.persistence
   (:require [clojure.java.jdbc :as j]
-            [com.xebia.visualreview.util :refer :all]
+            [taoensso.timbre :as timbre]
             [slingshot.slingshot :as ex]
-            [cheshire.core :as json])
+            [cheshire.core :as json]
+            [com.xebia.visualreview.util :refer :all])
   (:import [java.sql Timestamp]
            [java.util Date]
            [java.sql SQLException]))
@@ -107,11 +108,12 @@
 ;; Baseline
 (defn get-baseline-screenshot [conn suite-id screenshot-name properties]
   (query-single conn
-    ["SELECT screenshot.* FROM screenshot
+    ["SELECT screenshot.*, image.directory FROM screenshot, image
      JOIN baseline_screenshot ON screenshot.id = baseline_screenshot.screenshot_id
      JOIN baseline ON baseline_screenshot.baseline_id = baseline.id
      JOIN suite ON baseline.suite_id = suite.id
      WHERE suite.id = ? AND screenshot.screenshot_name = ?
+     AND screenshot.image_id = image.id
      AND screenshot.properties = ?" suite-id screenshot-name (json/generate-string properties)]))
 
 (defn get-baseline [conn suite-id]
@@ -155,12 +157,12 @@
                      sbefore.meta before_meta,
                      sbefore.properties before_properties,
                      sbefore.screenshot_name before_name,
-                     sbefore.path before_path,
+                     sbefore.image_id before_image_id,
                      safter.size after_size,
                      safter.meta after_meta,
                      safter.properties after_properties,
                      safter.screenshot_name after_name,
-                     safter.path after_path FROM analysis
+                     safter.image_id after_image_id FROM analysis
                      JOIN diff ON diff.analysis_id = analysis.id
                      JOIN diff_image ON diff.diff_image = diff_image.id
                      JOIN screenshot safter ON safter.id = diff.after
@@ -173,27 +175,29 @@
 ;; Screenshots
 (defn save-screenshot!
   "Stores a reference with data of a new screenshot. Returns the new screenshot id."
-  [conn run-id screenshot-name path size properties meta]
+  [conn run-id screenshot-name size properties meta image-id]
   (try
+    (timbre/debug (str "saving screenshot with image-id " image-id))
     (insert-single! conn :screenshot {:run-id          run-id
                                       :screenshot-name screenshot-name
-                                      :path            path
+                                      :image-id        image-id
                                       :size            size
                                       :meta            (json/generate-string meta)
                                       :properties      (json/generate-string properties)})
     (catch SQLException e
-      (when (unique-constraint-violation? e)
+      (if (unique-constraint-violation? e)
         (ex/throw+ {:type    :sql-exception
                     :subtype ::unique-constraint-violation
-                    :message (.getMessage e)})))))
+                    :message (.getMessage e)})
+        (throw e)))))
 
 (defn get-screenshot-by-id [conn screenshot-id]
-  (query-single conn ["SELECT * FROM screenshot WHERE id = ?" screenshot-id]
+  (query-single conn ["SELECT screenshot.* FROM screenshot, image WHERE screenshot.id = ?" screenshot-id]
     :row-fn (parse-json-fields :meta :properties)
     :result-set-fn vec))
 
 (defn get-screenshots [conn run-id]
-  (query conn ["SELECT * FROM screenshot WHERE run_id = ?" run-id]
+  (query conn ["SELECT screenshot.* FROM screenshot WHERE screenshot.run_id = ?" run-id]
          :row-fn (parse-json-fields :meta :properties)
          :result-set-fn vec))
 

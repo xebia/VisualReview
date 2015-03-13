@@ -17,8 +17,8 @@
 (ns com.xebia.visualreview.api-test
   (:require [clj-http.client :as http]
             [cheshire.core :as json]
-            [com.xebia.visualreview.test-util :as test]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [com.xebia.visualreview.test-util :as test]))
 
 (def ^:private default-opts {:content-type        :json
                              :as                  :json
@@ -63,6 +63,9 @@
 
 (defn http-get [path]
   (http/get (str server-root path) {:throw-exceptions false}))
+
+(defn get-image [image-id]
+  (http/get (endpoint "image" image-id) nil))
 
 (defn get-analysis [run-id]
   (dissoc (http/get (endpoint "runs" run-id "analysis") default-opts) :headers))
