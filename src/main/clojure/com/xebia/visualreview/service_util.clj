@@ -17,8 +17,14 @@
 (ns com.xebia.visualreview.service-util
   (:require [slingshot.slingshot :as ex]))
 
-(defn rethrow [message code]
-  (ex/throw+ {:type ::service-exception :code code :message message}))
+(defn throw-service-exception [message code]
+  (ex/throw+ {:type :service-exception :code code :message message}))
+
+(defn rethrow-as-service-exception [object-or-exception message code]
+  (if (instance? Exception object-or-exception)
+    (throw-service-exception (format message (.getMessage object-or-exception)) code)
+    (throw-service-exception (format message (:message object-or-exception)) code)))
+
 
 (defmacro attempt
   "Attempts to execute the given form. If the form throws an exception (of either the Java or slingshot kind),
@@ -29,7 +35,11 @@
   [form err-msg err-code]
   `(ex/try+
      ~form
-     (catch Exception e#
-       (rethrow (format ~err-msg (.getMessage e#)) ~err-code))
      (catch Object o#
-       (rethrow (format ~err-msg (:message o#)) ~err-code))))
+       (rethrow-as-service-exception o# ~err-msg ~err-code))))
+
+(defmacro assume
+  "When the given form returns a falsy value, assume will throw a service exception with the given error message and code.
+  'Assume' is primarily intended for easy sanity checking of input values for forms in the service layer."
+  [form err-msg err-code]
+  `(when (not ~form) (throw-service-exception ~err-msg ~err-code)))
