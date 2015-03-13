@@ -20,8 +20,8 @@
             [compojure.route :as route]
             [com.xebia.visualreview.middleware :as m]
             [com.xebia.visualreview.resource :as resource]
-            [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.config :as config]))
+            [com.xebia.visualreview.resource.baseline :as baseline]
+            [com.xebia.visualreview.io :as io]))
 
 (def ^:private resources-root "public")
 
@@ -33,7 +33,8 @@
         (ANY "/" [] (resource/get-project project-id))
         (ANY "/suites" [] (resource/suites-resource project-id))
         (context "/suites/:suite-id" [suite-id]
-          (ANY "/" [suite-id] (resource/suite-resource project-id suite-id))))
+          (ANY "/" [suite-id] (resource/suite-resource project-id suite-id))
+          (ANY "/create-branch" [] baseline/create-branch)))
       (ANY "/runs" req resource/runs-resource)
       (context "/runs/:run-id" [run-id]
         (ANY "/" [] (resource/run-resource run-id))
