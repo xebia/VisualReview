@@ -62,19 +62,13 @@ CREATE TABLE IF NOT EXISTS analysis
   baseline_id   INTEGER                  NOT NULL REFERENCES baseline
 );
 
-CREATE TABLE IF NOT EXISTS diff_image
-(
-  id   BIGINT AUTO_INCREMENT CONSTRAINT diff_image_pk PRIMARY KEY,
-  path VARCHAR NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS diff
 (
   id          BIGINT AUTO_INCREMENT CONSTRAINT diff_pk PRIMARY KEY,
   before      INTEGER        NOT NULL REFERENCES screenshot,
   after       INTEGER        NOT NULL REFERENCES screenshot,
   percentage  NUMERIC(5, 2)  NOT NULL,
-  diff_image  INTEGER UNIQUE NOT NULL REFERENCES diff_image,
+  image_id        BIGINT       UNIQUE REFERENCES image,
   status      VARCHAR(8)     NOT NULL,
   analysis_id INTEGER        NOT NULL REFERENCES analysis
 );

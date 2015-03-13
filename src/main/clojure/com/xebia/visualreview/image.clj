@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.service.image
+(ns com.xebia.visualreview.image
   (:require [taoensso.timbre :as timbre]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.persistence :as p]

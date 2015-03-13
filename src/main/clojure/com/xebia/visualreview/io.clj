@@ -17,9 +17,7 @@
 (ns com.xebia.visualreview.io
   (:import [java.io File FileNotFoundException]
            [java.nio.file NotDirectoryException Files AccessDeniedException LinkOption]
-           [java.nio.file.attribute FileAttribute]
-           [javax.imageio ImageIO]
-           [java.awt.image BufferedImage])
+           [java.nio.file.attribute FileAttribute])
   (:require [clojure.java.io :as io]))
 
 (def screenshots-dir "screenshots")
@@ -52,18 +50,6 @@
       (Files/createDirectories run-file (make-array FileAttribute 0)))
     (when (Files/notExists diffs-file (make-array LinkOption 0))
       (Files/createDirectories diffs-file (make-array FileAttribute 0)))))
-
-(defn store-screenshot! [project-id suite-id run-id screenshot-id file]
-  {:pre [project-id suite-id run-id screenshot-id file]}
-  (let [[project-dir suite-dir run-dir screenshot-fname] (map str [project-id suite-id run-id screenshot-id])
-        dest (io/file screenshots-dir project-dir suite-dir run-dir (str screenshot-fname ".png"))]
-    (io/copy file dest)))
-
-(defn store-diff! [project-id suite-id diff-id ^BufferedImage diff-image]
-  {:pre [project-id suite-id diff-id] :post [true?]}
-  (let [[project-dir suite-dir] (map str [project-id suite-id])
-        dest (io/file screenshots-dir project-dir suite-dir "diffs" (str diff-id ".png"))]
-    (ImageIO/write diff-image "png" dest)))
 
 (defn get-file [file-path]
   {:pre [file-path]}

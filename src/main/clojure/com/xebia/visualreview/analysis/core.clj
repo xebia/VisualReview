@@ -15,13 +15,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.analysis.core
-  (:import [com.xebia.visualreview PixelComparator DiffReport]))
+  (:require [com.xebia.visualreview.service-util :as sutil])
+  (:import [com.xebia.visualreview PixelComparator DiffReport]
+           [javax.imageio ImageIO]
+           (java.io File)))
 
-(defn diff-report
+(defn generate-diff-report
   "Takes 2 inputfiles and returns a map with:
-  :diff => A BufferedImage of the diff,
+  :diff => A image file of the diff,
   :percentage => A double with the percentage difference found"
   [file1 file2]
-  (let [result ^DiffReport (PixelComparator/processImage file1 file2)]
-    {:diff (.getDiffImage result)
-     :percentage (.getPercentage result)}))
+  (let [result ^DiffReport (PixelComparator/processImage file1 file2)
+        diff-file (File/createTempFile "vr-diff-" ".tmp")
+        write-success? (ImageIO/write (.getDiffImage result) "png" diff-file)]
+    (do
+      (sutil/assume (true? write-success?) (str "Could not write diff image to temporary file " (.getAbsolutePath() diff-file)) ::diff-could-not-write-on-fs))
+      {:diff diff-file
+       :percentage (.getPercentage result)}))

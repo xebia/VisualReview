@@ -152,7 +152,7 @@
 (defn get-full-analysis [conn run-id]
   (let [analysis (get-analysis conn run-id)
         diffs (query conn
-                     ["SELECT diff.*, diff_image.path,
+                     ["SELECT diff.*,
                      sbefore.size before_size,
                      sbefore.meta before_meta,
                      sbefore.properties before_properties,
@@ -164,7 +164,6 @@
                      safter.screenshot_name after_name,
                      safter.image_id after_image_id FROM analysis
                      JOIN diff ON diff.analysis_id = analysis.id
-                     JOIN diff_image ON diff.diff_image = diff_image.id
                      JOIN screenshot safter ON safter.id = diff.after
                      JOIN screenshot sbefore ON sbefore.id = diff.before
                      WHERE analysis.run_id = ?" run-id]
@@ -271,20 +270,15 @@
   [conn project-name]
   (insert-single! conn :project {:name project-name}))
 
-;; Diff
-(defn store-diff-image! [conn path]
-  (insert-single! conn :diff-image {:path path}))
-
 (defn save-diff!
   "Stores a new diff. Returns the new diff's id."
-  [conn path before after percentage analysis-id]
-  (let [diff-image-id (store-diff-image! conn path)]
-    (insert-single! conn :diff {:before      before
-                                :after       after
-                                :percentage  percentage
-                                :status      "pending"
-                                :analysis-id analysis-id
-                                :diff-image  diff-image-id})))
+  [conn image-id before after percentage analysis-id]
+  (insert-single! conn :diff {:before      before
+                              :after       after
+                              :percentage  percentage
+                              :status      "pending"
+                              :analysis-id analysis-id
+                              :image-id    image-id}))
 
 (defn get-diff [conn run-id diff-id]
   (query-single conn

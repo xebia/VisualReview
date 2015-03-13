@@ -14,8 +14,8 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.service.screenshot
-  (:require [com.xebia.visualreview.service.image :as image]
+(ns com.xebia.visualreview.screenshot
+  (:require [com.xebia.visualreview.image :as image]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.service-util :as sutil]
             [slingshot.slingshot :as ex]))

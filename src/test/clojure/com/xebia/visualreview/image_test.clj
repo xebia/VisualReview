@@ -14,8 +14,8 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.service.image-itest
-  (:require [com.xebia.visualreview.service.image :as image]
+(ns com.xebia.visualreview.image-itest
+  (:require [com.xebia.visualreview.image :as image]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.io :as vrio]
             [com.xebia.visualreview.service-util-test :as sutilt]

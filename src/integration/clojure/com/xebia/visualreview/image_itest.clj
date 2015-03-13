@@ -14,11 +14,11 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.service.image-itest
+(ns com.xebia.visualreview.image-itest
   (:require  [midje.sweet :refer :all]
              [taoensso.timbre :as timbre]
              [clojure.java.io :as io]
-             [com.xebia.visualreview.service.image :as image]
+             [com.xebia.visualreview.image :as image]
              [com.xebia.visualreview.mock :as mock]
              [com.xebia.visualreview.io :as vrio])
   (:import (java.util Calendar)))

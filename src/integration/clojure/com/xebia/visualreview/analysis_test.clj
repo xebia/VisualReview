@@ -73,7 +73,7 @@
         (= before-screenshot after-screenshot) => true)
       (fact "We can retrieve the images from the returned paths"
         (let [before-image (api/get-image (:imageId before-screenshot))
-              diff-image (api/http-get (:path diff))]
+              diff-image (api/get-image (:imageId diff))]
           (map :status [before-image diff-image]) => (two-of 200)
           (map #(get-in % [:headers "Content-Type"]) [before-image diff-image]) => (two-of "image/png")))))
 

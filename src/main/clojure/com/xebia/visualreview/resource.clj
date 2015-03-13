@@ -24,8 +24,8 @@
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.analysis.core :as analysis]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.service.image :as image]
-            [com.xebia.visualreview.service.screenshot :as screenshot])
+            [com.xebia.visualreview.image :as image]
+            [com.xebia.visualreview.screenshot :as screenshot])
   (:import [java.util Map]
            [com.fasterxml.jackson.core JsonParseException]))
 
@@ -206,7 +206,7 @@
     :handle-ok (fn [ctx] (let [screenshots (p/get-screenshots (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
-(defn- process-screenshot [conn project-id suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
+(defn- process-screenshot [conn suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (p/get-screenshot-by-id conn screenshot-id)
         baseline (p/get-baseline conn suite-id)
@@ -220,13 +220,12 @@
         after-file tempfile
         before-file-id (or (:image-id baseline-screenshot) after-file-id)
         before-file (if new-screenshot? after-file (io/get-file (image/get-image-path conn before-file-id)))
-        diff-report (analysis/diff-report before-file after-file)
-        new-diff-id (p/save-diff! conn (str project-id "/" suite-id "/diffs") before-file-id after-file-id (:percentage diff-report) (:id analysis))
+        diff-report (analysis/generate-diff-report before-file after-file)
+        diff-file-id (image/insert-image! conn (:diff diff-report))
+        new-diff-id (p/save-diff! conn diff-file-id (:id baseline-screenshot) screenshot-id (:percentage diff-report) (:id analysis))
         diff (p/get-diff conn run-id new-diff-id)]
     (when (and (not new-screenshot?) (zero? (:percentage diff-report)))
       (update-diff-status! conn diff "accepted"))
-    (io/store-screenshot! project-id suite-id run-id (:id screenshot) tempfile)
-    (io/store-diff! project-id suite-id new-diff-id (:diff diff-report))
     screenshot))
 
 (defn upload-screenshot [run-id]
@@ -253,8 +252,8 @@
     :post! (fn [ctx]
              (ex/try+
                (let [{:keys [meta file properties screenshot-name]} (::data ctx)
-                     {project-id :project-id suite-id :suite-id run-id :id} (::run ctx)
-                     screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name properties meta file)]
+                     {suite-id :suite-id run-id :id} (::run ctx)
+                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties meta file)]
                  {::screenshot screenshot ::new? true})
                (catch [:type :service-exception :code ::screenshot/screenshot-cannot-store-in-db-already-exists] _
                  {::screenshot {:error "Screenshot with identical name and properties was already uploaded in this run"
@@ -290,7 +289,7 @@
                 :screenshotName (:after-name diff)}
    :status     (:status diff)
    :percentage (:percentage diff)
-   :path       (full-path (:path diff) (:id diff))})
+   :image-id   (:image-id diff)})
 
 (defn- transform-analysis [full-analysis]
   (update-in full-analysis [:diffs] #(mapv transform-diff %)))
