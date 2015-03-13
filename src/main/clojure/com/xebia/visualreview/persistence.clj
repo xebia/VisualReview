@@ -15,55 +15,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.persistence
-  (:require [clojure.java.jdbc :as j]
-            [taoensso.timbre :as timbre]
+  (:require [taoensso.timbre :as timbre]
             [slingshot.slingshot :as ex]
+            [clojure.java.jdbc :as j]
             [cheshire.core :as json]
             [com.xebia.visualreview.util :refer :all]
+            [com.xebia.visualreview.persistence.util :as putil]
             [com.xebia.visualreview.persistence.database :as db])
-  (:import [java.sql Timestamp]
-           [java.util Date]
-           [java.sql SQLException]))
-
-(defn- unique-constraint-violation? [^SQLException e]
-  (= (.getSQLState e) "23505"))
-
-(defn- ent-fn [^String s] (.replace s \- \_))
-(defn- ident-fn [^String s] (.replace (.toLowerCase s) \_ \-))
-
-(def ^:private h2-generated-key (keyword "scope_identity()"))
-(defn- extract-generated-id
-  "Workaround for incompatibilities of the clojure.java.jdbc update! and insert! methods between JDBC drivers.
-   For example: the H2 driver returns a :scope_identity() key, while PostgreSQL's driver returns the actual table column names as keys.
-   This function returns the generated id as a number.
-   Important note: this function assumes jdbc-returned-keys only returns 1 key (which is true for our application at time of writing)."
-  [{h2-id h2-generated-key id :id}]
-  (or h2-id id))
-
-(defn- insert-single! [conn table row-map & opts]
-  (extract-generated-id (first (apply j/insert! conn table row-map :entities ent-fn opts))))
-(defn- update! [conn table set-map where-clause & opts]
-  (apply j/update! conn table set-map where-clause :entities ent-fn opts))
-(defn- query [conn sql-and-params & opts]
-  (apply j/query conn sql-and-params :identifiers ident-fn opts))
-(defn- query-single [& args]
-  (first (apply query args)))
-
+  (:import [java.sql Timestamp SQLException]
+           [java.util Date]))
 (defn- format-dates [run-row]
   (-> run-row
       (format-date :start-time)
       (format-date :end-time)
       (format-date :creation-time)))
 
-(defn- parse-json-fields [& ks]
-  (fn [screenshot-row]
-    (reduce #(update-in %1 [%2] json/parse-string true) screenshot-row ks)))
-
 (defn get-suite-by-name
   ([conn project-name suite-name]
    (get-suite-by-name conn project-name suite-name identity))
   ([conn project-name suite-name row-fn]
-   (query-single conn
+   (putil/query-single conn
      ["SELECT suite.* FROM suite JOIN project ON project_id = project.id WHERE project.name = ? AND suite.name = ?" project-name suite-name]
      :row-fn row-fn)))
 
@@ -71,7 +42,7 @@
   ([conn project-id suite-id]
    (get-suite-by-id conn project-id suite-id identity))
   ([conn project-id suite-id row-fn]
-   (query-single conn
+   (putil/query-single conn
      ["SELECT suite.* FROM suite JOIN project ON suite.project_id = project.id WHERE suite.id = ? AND project.id = ?" suite-id project-id]
      :row-fn row-fn)))
 
@@ -79,28 +50,28 @@
   ([conn project-name]
    (get-project-by-name conn project-name identity))
   ([conn project-name row-fn]
-   (query-single conn ["SELECT * FROM project WHERE name = ?" project-name] :row-fn row-fn)))
+   (putil/query-single conn ["SELECT * FROM project WHERE name = ?" project-name] :row-fn row-fn)))
 
 (defn get-project-by-id
   ([conn project-id]
    (get-project-by-id conn project-id identity))
   ([conn project-id row-fn]
-   (query-single conn ["SELECT project.* FROM project WHERE id = ?" project-id] :row-fn row-fn)))
+   (putil/query-single conn ["SELECT project.* FROM project WHERE id = ?" project-id] :row-fn row-fn)))
 (declare create-baseline-tree!)
 (defn create-suite-for-project!
   "Creates a new suite with an empty baseline for the given project. Returns the created suite's id."
   [conn project-name suite-name]
   (let [project-id (get-project-by-name conn project-name :id)
-        new-suite-id (insert-single! conn :suite {:project-id project-id :name suite-name})]
+        new-suite-id (putil/insert-single! conn :suite {:project-id project-id :name suite-name})]
     (create-baseline-tree! conn new-suite-id)
     new-suite-id))
 
 ;; Images
 (defn insert-image! [conn directory]
-  (insert-single! conn :image { :directory directory }))
+  (putil/insert-single! conn :image { :directory directory }))
 
 (defn get-image-path [conn image-id]
-  (let [image (query-single conn
+  (let [image (putil/query-single conn
                             ["SELECT id, directory FROM image WHERE id = ?" image-id])
         directory (:directory image)
         id (:id image)]
@@ -108,7 +79,7 @@
 
 ;; Baseline
 (defn get-baseline-screenshot [conn suite-id branch-name screenshot-name properties]
-  (query-single conn
+  (putil/query-single conn
     ["SELECT screenshot.* FROM baseline_tree tr
      JOIN baseline_branch br ON br.baseline_tree = tr.id
      JOIN bl_node_screenshot bl_ss ON bl_ss.baseline_node = br.head
@@ -119,7 +90,7 @@
 (defn get-baseline-head
   ([conn suite-id] (get-baseline-head conn suite-id "master"))
   ([conn suite-id branch-name]
-   (query-single conn ["SELECT br.head FROM suite
+   (putil/query-single conn ["SELECT br.head FROM suite
    JOIN baseline_tree t ON suite.id = t.suite_id
    JOIN baseline_branch br ON t.baseline_root = br.head
    WHERE suite_id = ? AND br.name = ?" suite-id branch-name]
@@ -128,16 +99,16 @@
 (defn create-baseline-screenshot!
   "Adds the given screenshot-id to the given baseline."
   [conn baseline-node screenshot-id]
-  (insert-single! conn :bl-node-screenshot {:baseline-node baseline-node
+  (putil/insert-single! conn :bl-node-screenshot {:baseline-node baseline-node
                                             :screenshot-id screenshot-id}))
 
 (defn create-bl-node-screenshots!
   [conn node-id screenshot-id]
-  (insert-single! conn :bl-node-screenshot {:baseline-node node-id :screenshot-id screenshot-id}))
+  (putil/insert-single! conn :bl-node-screenshot {:baseline-node node-id :screenshot-id screenshot-id}))
 
 (defn set-baseline! [conn diff-id screenshot-id new-screenshot-id]
   (first
-    (update! conn :bl-node-screenshot {:screenshot-id new-screenshot-id}
+    (putil/update! conn :bl-node-screenshot {:screenshot-id new-screenshot-id}
              ["screenshot_id = ? AND baseline_node =
               (SELECT analysis.baseline_node FROM diff
               JOIN analysis ON analysis.id = diff.analysis_id
@@ -146,11 +117,11 @@
 ;; Analysis
 (defn- create-analysis! [conn baseline-node run-id]
   "Returns the generated analysis id"
-  (insert-single! conn :analysis {:baseline-node baseline-node :run-id run-id}))
+  (putil/insert-single! conn :analysis {:baseline-node baseline-node :run-id run-id}))
 
 (defn get-analysis
   [conn run-id]
-  (query-single conn
+  (putil/query-single conn
     ["SELECT analysis.*, project.id project_id, project.name project_name, suite.id suite_id, suite.name suite_name
      FROM analysis
      JOIN run ON run.id = analysis.run_id
@@ -161,7 +132,7 @@
 
 (defn get-full-analysis [conn run-id]
   (let [analysis (get-analysis conn run-id)
-        diffs (query conn
+        diffs (putil/query conn
                      ["SELECT diff.*,
                      sbefore.size before_size,
                      sbefore.meta before_meta,
@@ -177,7 +148,7 @@
                      JOIN screenshot safter ON safter.id = diff.after
                      JOIN screenshot sbefore ON sbefore.id = diff.before
                      WHERE analysis.run_id = ?" run-id]
-                     :row-fn (comp (parse-json-fields :before-meta :before-properties :after-meta :after-properties) format-dates)
+                     :row-fn (comp (putil/parse-json-fields :before-meta :before-properties :after-meta :after-properties) format-dates)
                      :result-set-fn vec)]
     {:analysis analysis :diffs diffs}))
 
@@ -186,28 +157,28 @@
   "Stores a reference with data of a new screenshot. Returns the new screenshot id."
   [conn run-id screenshot-name size properties meta image-id]
   (try
-    (timbre/debug (str "saving screenshot with image-id " image-id))
-    (insert-single! conn :screenshot {:run-id          run-id
+    (timbre/log :debug (str "saving screenshot with image-id " image-id))
+    (putil/insert-single! conn :screenshot {:run-id          run-id
                                       :screenshot-name screenshot-name
                                       :image-id        image-id
                                       :size            size
                                       :meta            (json/generate-string meta)
                                       :properties      (json/generate-string properties)})
     (catch SQLException e
-      (if (unique-constraint-violation? e)
+      (if (putil/unique-constraint-violation? e)
         (ex/throw+ {:type    :sql-exception
                     :subtype ::unique-constraint-violation
                     :message (.getMessage e)})
         (throw e)))))
 
 (defn get-screenshot-by-id [conn screenshot-id]
-  (query-single conn ["SELECT screenshot.* FROM screenshot, image WHERE screenshot.id = ?" screenshot-id]
-    :row-fn (parse-json-fields :meta :properties)
+  (putil/query-single conn ["SELECT screenshot.* FROM screenshot, image WHERE screenshot.id = ?" screenshot-id]
+    :row-fn (putil/parse-json-fields :meta :properties)
     :result-set-fn vec))
 
 (defn get-screenshots [conn run-id]
-  (query conn ["SELECT screenshot.* FROM screenshot WHERE screenshot.run_id = ?" run-id]
-         :row-fn (parse-json-fields :meta :properties)
+  (putil/query conn ["SELECT screenshot.* FROM screenshot WHERE screenshot.run_id = ?" run-id]
+         :row-fn (putil/parse-json-fields :meta :properties)
          :result-set-fn vec))
 
 ;; Runs
@@ -220,7 +191,7 @@
   (let [suite-id (or (get-suite-by-name conn project-name suite-name :id)
                      (create-suite-for-project! conn project-name suite-name))
         baseline (get-baseline-head conn suite-id branch-name)
-        new-run-id (insert-single! conn :run {:suite-id   suite-id
+        new-run-id (putil/insert-single! conn :run {:suite-id   suite-id
                                               :start-time (Timestamp. (.getTime (Date.)))
                                               :status     "running"})
         _ (create-analysis! conn baseline new-run-id)]
@@ -229,7 +200,7 @@
 (defn get-run
   "Returns the data for the given run-id"
   [conn run-id]
-  (query-single conn
+  (putil/query-single conn
     ["SELECT run.*, project.id project_id FROM run
           JOIN suite ON run.suite_id = suite.id JOIN project ON suite.project_id = project.id
           WHERE project.id = suite.project_id AND suite.id = run.suite_id AND run.id = ?" run-id]
@@ -243,7 +214,7 @@
 (defn get-runs
   "Returns the list of runs for the given suite"
   [conn project-id suite-id]
-  (query conn [get-suite-runs-sql suite-id project-id]
+  (putil/query conn [get-suite-runs-sql suite-id project-id]
          :row-fn (comp #(assoc % :project-id project-id) format-dates)
          :result-set-fn vec))
 
@@ -259,13 +230,13 @@
 (defn get-suites
   "Returns the list of suites"
   [conn project-id]
-  (query conn [get-suites-sql project-id] :result-set-fn vec))
+  (putil/query conn [get-suites-sql project-id] :result-set-fn vec))
 
 ;; Projects
 (defn get-projects
   "Retrieve the list of projects"
   [conn]
-  (query conn ["SELECT * FROM project"] :result-set-fn vec))
+  (putil/query conn ["SELECT * FROM project"] :result-set-fn vec))
 
 (defn get-project
   "Returns the project with list of suites"
@@ -278,12 +249,12 @@
 (defn create-project!
   "Creates a new project. Returns the new project id."
   [conn project-name]
-  (insert-single! conn :project {:name project-name}))
+  (putil/insert-single! conn :project {:name project-name}))
 
 (defn save-diff!
   "Stores a new diff. Returns the new diff's id."
   [conn image-id before after percentage analysis-id]
-  (insert-single! conn :diff {:before      before
+  (putil/insert-single! conn :diff {:before      before
                               :after       after
                               :percentage  percentage
                               :status      "pending"
@@ -291,26 +262,26 @@
                               :image-id    image-id}))
 
 (defn get-diff [conn run-id diff-id]
-  (query-single conn
+  (putil/query-single conn
     ["SELECT diff.* FROM diff
       JOIN analysis ON analysis.id = diff.analysis_id
       JOIN run ON run.id = analysis.run_id
       WHERE run.id = ? AND diff.id = ?" run-id diff-id]))
 
 (defn update-diff-status! [conn diff-id status]
-  (update! conn :diff {:status status} ["id = ?" diff-id]))
+  (putil/update! conn :diff {:status status} ["id = ?" diff-id]))
 
 (defn get-baseline-tree
   [conn suite-id]
-  (query-single conn ["SELECT * FROM baseline_tree WHERE suite_id = ?" suite-id]))
+  (putil/query-single conn ["SELECT * FROM baseline_tree WHERE suite_id = ?" suite-id]))
 
 (defn create-baseline-tree!
   "Creates a new baseline tree for the given suite.
   The baseline will be empty (no screenshots). Returns the generated root-id"
   [conn suite-id]
-  (let [root-id (insert-single! conn :baseline-node {})
-        tree-id (insert-single! conn :baseline-tree {:suite-id suite-id :baseline-root root-id})]
-    (insert-single! conn :baseline-branch {:baseline-tree tree-id
+  (let [root-id (putil/insert-single! conn :baseline-node {})
+        tree-id (putil/insert-single! conn :baseline-tree {:suite-id suite-id :baseline-root root-id})]
+    (putil/insert-single! conn :baseline-branch {:baseline-tree tree-id
                                            :name          "master"
                                            :head          root-id
                                            :branch-root   root-id})
@@ -328,7 +299,7 @@
        clauses))
 
 (defn- get-tree-for-node [conn node-id]
-  (query-single conn
+  (putil/query-single conn
     [(node-root-sql node-id "SELECT bl.* FROM T JOIN baseline_tree bl ON bl.baseline_root = T.id WHERE parent IS ?") nil]))
 
 (defn- copy-baseline-refs [conn from-id to-id]
@@ -338,19 +309,19 @@
 
 (defn- create-baseline-child! [conn tree-id branch-name]
   {:pre [(number? tree-id) (string? branch-name)]}
-  (when-let [parent-id (query-single conn ["SELECT * FROM baseline_branch WHERE baseline_tree = ? AND name = ?" tree-id branch-name]
+  (when-let [parent-id (putil/query-single conn ["SELECT * FROM baseline_branch WHERE baseline_tree = ? AND name = ?" tree-id branch-name]
                          :row-fn :head)]
-    (let [child-id (insert-single! conn :baseline-node {:parent parent-id})]
+    (let [child-id (putil/insert-single! conn :baseline-node {:parent parent-id})]
       (copy-baseline-refs conn parent-id child-id)
-      (update! conn :baseline-branch {:head child-id} ["head = ?" parent-id]))))
+      (putil/update! conn :baseline-branch {:head child-id} ["head = ?" parent-id]))))
 
 (defn create-baseline-branch! [conn parent-id branch-name]
   {:pre [(number? parent-id)]}
   (j/with-db-transaction [conn conn]
     (let [tree-id (:id (get-tree-for-node conn parent-id))
-          child-id (insert-single! conn :baseline-node {:parent parent-id})]
+          child-id (putil/insert-single! conn :baseline-node {:parent parent-id})]
       (copy-baseline-refs conn parent-id child-id)
-      (insert-single! conn :baseline-branch {:name          branch-name
+      (putil/insert-single! conn :baseline-branch {:name          branch-name
                                              :baseline-tree tree-id
                                              :head          child-id
                                              :branch-root   child-id}))))
