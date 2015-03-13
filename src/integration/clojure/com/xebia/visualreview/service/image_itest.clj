@@ -14,19 +14,14 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.service.image-test
-  (:require [midje.sweet :refer :all]
-            [taoensso.timbre :as timbre]
-            [clojure.java.io :as io]
-            [com.xebia.visualreview.service.image :as image]
-            [com.xebia.visualreview.persistence :as p]
-            [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.io :as vrio]
-            [com.xebia.visualreview.service.service-util-test :as sutilt])
-  (:import (java.util Calendar)
-           (java.io IOException)
-           (clojure.lang IExceptionInfo)
-           (java.sql SQLException)))
+(ns com.xebia.visualreview.service.image-itest
+  (:require  [midje.sweet :refer :all]
+             [taoensso.timbre :as timbre]
+             [clojure.java.io :as io]
+             [com.xebia.visualreview.service.image :as image]
+             [com.xebia.visualreview.mock :as mock]
+             [com.xebia.visualreview.io :as vrio])
+  (:import (java.util Calendar)))
 
 (timbre/set-level! :warn)
 
@@ -48,16 +43,4 @@
                image-1-path => (str expected-path-prefix "/" image-1-id ".png")
                image-2-path => (str expected-path-prefix "/" image-2-id ".png")
                (.length (io/as-file (str vrio/screenshots-dir "/" image-1-path))) => (.length image-1-src )
-               (.length (io/as-file (str vrio/screenshots-dir "/" image-2-path))) => (.length image-2-src )))
-       (facts "insert-image! function"
-              (fact "throws a service exception when the image could not be stored on the file system"
-                    (let [image-1-src (io/as-file (io/resource "tapir.png"))]
-                    (image/insert-image! mock/*conn* image-1-src)
-                                         => (throws IExceptionInfo (sutilt/is-service-exception? "Could not store image with id 3 on filesystem: Disk full" "img-cannot-store-on-fs"))
-                    (provided (vrio/store-image! anything anything anything) =throws=> (IOException. "Disk full"))))
-
-              (fact "throws a service exception when the image metadata could not be stored in the database"
-                    (let [image-1-src (io/as-file (io/resource "tapir.png"))]
-                      (image/insert-image! mock/*conn* image-1-src)
-                      => (throws IExceptionInfo (sutilt/is-service-exception? "Could not record new image in the database: Database error" "img-cannot-store-on-db"))
-                      (provided (p/insert-image! anything anything) =throws=> (SQLException. "Database error"))))))
+               (.length (io/as-file (str vrio/screenshots-dir "/" image-2-path))) => (.length image-2-src ))))
