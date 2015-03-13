@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS baseline_screenshot
 CREATE TABLE IF NOT EXISTS analysis
 (
   id            BIGINT AUTO_INCREMENT CONSTRAINT analysis_pk PRIMARY KEY,
-  creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  creation_time TIMESTAMP                NOT NULL DEFAULT CURRENT_TIMESTAMP,
   run_id        INTEGER UNIQUE           NOT NULL REFERENCES run,
   baseline_id   INTEGER                  NOT NULL REFERENCES baseline
 );
@@ -72,3 +72,33 @@ CREATE TABLE IF NOT EXISTS diff
   analysis_id INTEGER        NOT NULL REFERENCES analysis
 );
 
+CREATE TABLE IF NOT EXISTS baseline_node
+(
+  id     BIGINT AUTO_INCREMENT CONSTRAINT baseline_node_pk PRIMARY KEY,
+  parent BIGINT REFERENCES baseline_node,
+  CHECK (id <> parent)
+);
+
+CREATE TABLE IF NOT EXISTS baseline_tree
+(
+  id            INTEGER AUTO_INCREMENT PRIMARY KEY,
+  suite_id      BIGINT NOT NULL UNIQUE REFERENCES suite,
+  baseline_root BIGINT NOT NULL UNIQUE REFERENCES baseline_node
+);
+
+CREATE TABLE IF NOT EXISTS bl_node_screenshot
+(
+  baseline_node BIGINT NOT NULL REFERENCES baseline_node,
+  screenshot_id BIGINT NOT NULL REFERENCES screenshot,
+  UNIQUE (baseline_node, screenshot_id)
+);
+
+CREATE TABLE IF NOT EXISTS baseline_branch
+(
+  name          VARCHAR(32),
+  baseline_tree INTEGER REFERENCES baseline_tree,
+  branch_root   BIGINT  NOT NULL REFERENCES baseline_node,
+  head          BIGINT  NOT NULL UNIQUE REFERENCES baseline_node,
+  PRIMARY KEY (baseline_tree, name)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS branch_head ON baseline_branch (head);

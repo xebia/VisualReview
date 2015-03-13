@@ -126,7 +126,7 @@
     :exists? (fn [ctx]
                (try
                  (let [[project-id suite-id] (parse-longs [project-id suite-id])]
-                   (when-let [suite (p/get-suite (tx-conn ctx) project-id suite-id)]
+                   (when-let [suite (p/get-full-suite (tx-conn ctx) project-id suite-id)]
                      {::suite suite}))
                  (catch NumberFormatException _)))
     :handle-ok ::suite))
@@ -162,7 +162,7 @@
     :exists? (fn [ctx]
                (if (get-request? ctx)
                  (when-let [suite (p/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))]
-                   (let [runs (:runs (p/get-suite (tx-conn ctx) (:project-id suite) (:id suite)))]
+                   (let [runs (:runs (p/get-full-suite (tx-conn ctx) (:project-id suite) (:id suite)))]
                      {::runs runs ::suite suite}))
                  (when-let [project-id (p/get-project-by-name (tx-conn ctx) (-> ctx ::data :project-name) :id)]
                    {::project-id project-id})))
@@ -256,9 +256,9 @@
                      screenshot (process-screenshot (tx-conn ctx) project-id suite-id run-id screenshot-name path properties meta file)]
                  {::screenshot screenshot ::new? true})
                (catch [:subtype ::p/unique-constraint-violation] _
-                 {::screenshot {:error "Screenshot with identical name and properties was already uploaded in this run"
+                 {::screenshot {:error              "Screenshot with identical name and properties was already uploaded in this run"
                                 :conflicting-entity (select-keys (::data ctx) [:meta :properties :screenshot-name])}
-                  ::new? false})))
+                  ::new?       false})))
     :new? ::new?
     :respond-with-entity? true
     :handle-created ::screenshot

@@ -3,8 +3,8 @@
  :server-port "7000"
 
  ;; Database
- :db-uri "file:./.visualreview/visualreview.db"
- :db-user ""
+ :db-uri "tcp://localhost/~/.visualreview/h2db"
+ :db-user "sa"
  :db-password ""
 
  ;; File system
