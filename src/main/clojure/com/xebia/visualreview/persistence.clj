@@ -19,7 +19,8 @@
             [taoensso.timbre :as timbre]
             [slingshot.slingshot :as ex]
             [cheshire.core :as json]
-            [com.xebia.visualreview.util :refer :all])
+            [com.xebia.visualreview.util :refer :all]
+            [com.xebia.visualreview.persistence.database :as db])
   (:import [java.sql Timestamp]
            [java.util Date]
            [java.sql SQLException]))
@@ -60,38 +61,38 @@
 
 (defn get-suite-by-name
   ([conn project-name suite-name]
-    (get-suite-by-name conn project-name suite-name identity))
+   (get-suite-by-name conn project-name suite-name identity))
   ([conn project-name suite-name row-fn]
-    (query-single conn
-      ["SELECT suite.* FROM suite JOIN project ON project_id = project.id WHERE project.name = ? AND suite.name = ?" project-name suite-name]
-      :row-fn row-fn)))
+   (query-single conn
+     ["SELECT suite.* FROM suite JOIN project ON project_id = project.id WHERE project.name = ? AND suite.name = ?" project-name suite-name]
+     :row-fn row-fn)))
 
 (defn get-suite-by-id
   ([conn project-id suite-id]
-    (get-suite-by-id conn project-id suite-id identity))
+   (get-suite-by-id conn project-id suite-id identity))
   ([conn project-id suite-id row-fn]
-    (query-single conn
-      ["SELECT suite.* FROM suite JOIN project ON suite.project_id = project.id WHERE suite.id = ? AND project.id = ?" suite-id project-id]
-      :row-fn row-fn)))
+   (query-single conn
+     ["SELECT suite.* FROM suite JOIN project ON suite.project_id = project.id WHERE suite.id = ? AND project.id = ?" suite-id project-id]
+     :row-fn row-fn)))
 
 (defn get-project-by-name
   ([conn project-name]
-    (get-project-by-name conn project-name identity))
+   (get-project-by-name conn project-name identity))
   ([conn project-name row-fn]
-    (query-single conn ["SELECT * FROM project WHERE name = ?" project-name] :row-fn row-fn)))
+   (query-single conn ["SELECT * FROM project WHERE name = ?" project-name] :row-fn row-fn)))
 
 (defn get-project-by-id
   ([conn project-id]
-    (get-project-by-id conn project-id identity))
+   (get-project-by-id conn project-id identity))
   ([conn project-id row-fn]
-    (query-single conn ["SELECT project.* FROM project WHERE id = ?" project-id] :row-fn row-fn)))
-
+   (query-single conn ["SELECT project.* FROM project WHERE id = ?" project-id] :row-fn row-fn)))
+(declare create-baseline-tree!)
 (defn create-suite-for-project!
   "Creates a new suite with an empty baseline for the given project. Returns the created suite's id."
   [conn project-name suite-name]
   (let [project-id (get-project-by-name conn project-name :id)
         new-suite-id (insert-single! conn :suite {:project-id project-id :name suite-name})]
-    (insert-single! conn :baseline {:suite-id new-suite-id})
+    (create-baseline-tree! conn new-suite-id)
     new-suite-id))
 
 ;; Images
@@ -106,37 +107,46 @@
     (str directory "/" id ".png")))
 
 ;; Baseline
-(defn get-baseline-screenshot [conn suite-id screenshot-name properties]
+(defn get-baseline-screenshot [conn suite-id branch-name screenshot-name properties]
   (query-single conn
-    ["SELECT screenshot.*, image.directory FROM screenshot, image
-     JOIN baseline_screenshot ON screenshot.id = baseline_screenshot.screenshot_id
-     JOIN baseline ON baseline_screenshot.baseline_id = baseline.id
-     JOIN suite ON baseline.suite_id = suite.id
-     WHERE suite.id = ? AND screenshot.screenshot_name = ?
-     AND screenshot.image_id = image.id
-     AND screenshot.properties = ?" suite-id screenshot-name (json/generate-string properties)]))
+    ["SELECT screenshot.* FROM baseline_tree tr
+     JOIN baseline_branch br ON br.baseline_tree = tr.id
+     JOIN bl_node_screenshot bl_ss ON bl_ss.baseline_node = br.head
+     JOIN screenshot ON screenshot.id = bl_ss.screenshot_id
+     WHERE tr.suite_id = ? AND br.name = ? AND screenshot.screenshot_name = ?
+     AND screenshot.properties = ?" suite-id branch-name screenshot-name (json/generate-string properties)]))
 
-(defn get-baseline [conn suite-id]
-  (query-single conn ["SELECT * FROM baseline WHERE suite_id = ?" suite-id]))
+(defn get-baseline-head
+  ([conn suite-id] (get-baseline-head conn suite-id "master"))
+  ([conn suite-id branch-name]
+   (query-single conn ["SELECT br.head FROM suite
+   JOIN baseline_tree t ON suite.id = t.suite_id
+   JOIN baseline_branch br ON t.baseline_root = br.head
+   WHERE suite_id = ? AND br.name = ?" suite-id branch-name]
+     :row-fn :head)))
 
 (defn create-baseline-screenshot!
   "Adds the given screenshot-id to the given baseline."
-  [conn baseline-id screenshot-id]
-  (insert-single! conn :baseline-screenshot {:baseline-id   baseline-id
-                                             :screenshot-id screenshot-id}))
+  [conn baseline-node screenshot-id]
+  (insert-single! conn :bl-node-screenshot {:baseline-node baseline-node
+                                            :screenshot-id screenshot-id}))
+
+(defn create-bl-node-screenshots!
+  [conn node-id screenshot-id]
+  (insert-single! conn :bl-node-screenshot {:baseline-node node-id :screenshot-id screenshot-id}))
 
 (defn set-baseline! [conn diff-id screenshot-id new-screenshot-id]
   (first
-    (update! conn :baseline-screenshot {:screenshot-id new-screenshot-id}
-             ["screenshot_id = ? AND baseline_id =
-              (SELECT analysis.baseline_id FROM diff
+    (update! conn :bl-node-screenshot {:screenshot-id new-screenshot-id}
+             ["screenshot_id = ? AND baseline_node =
+              (SELECT analysis.baseline_node FROM diff
               JOIN analysis ON analysis.id = diff.analysis_id
               WHERE diff.id = ?)" screenshot-id diff-id])))
 
 ;; Analysis
-(defn- create-analysis! [conn baseline-id run-id]
+(defn- create-analysis! [conn baseline-node run-id]
   "Returns the generated analysis id"
-  (insert-single! conn :analysis {:baseline-id baseline-id :run-id run-id}))
+  (insert-single! conn :analysis {:baseline-node baseline-node :run-id run-id}))
 
 (defn get-analysis
   [conn run-id]
@@ -206,14 +216,14 @@
   If the suite does not yet exist it will be created along with a new baseline.
   Creating a run also creates an analysis for the run, this may change in the future.
   Returns the created run id."
-  [conn {:keys [project-name suite-name]}]
+  [conn {:keys [project-name suite-name branch-name] :or {branch-name "master"}}]
   (let [suite-id (or (get-suite-by-name conn project-name suite-name :id)
                      (create-suite-for-project! conn project-name suite-name))
-        baseline (get-baseline conn suite-id)
+        baseline (get-baseline-head conn suite-id branch-name)
         new-run-id (insert-single! conn :run {:suite-id   suite-id
                                               :start-time (Timestamp. (.getTime (Date.)))
                                               :status     "running"})
-        _ (create-analysis! conn (:id baseline) new-run-id)]
+        _ (create-analysis! conn baseline new-run-id)]
     new-run-id))
 
 (defn get-run
@@ -238,7 +248,7 @@
          :result-set-fn vec))
 
 ;; Suites
-(defn get-suite
+(defn get-full-suite
   "Returns the suite with its list of runs"
   [conn project-id suite-id]
   (when-let [suite (get-suite-by-id conn project-id suite-id #(dissoc % :project-id))]
@@ -289,3 +299,83 @@
 
 (defn update-diff-status! [conn diff-id status]
   (update! conn :diff {:status status} ["id = ?" diff-id]))
+
+(defn get-baseline-tree
+  [conn suite-id]
+  (query-single conn ["SELECT * FROM baseline_tree WHERE suite_id = ?" suite-id]))
+
+(defn create-baseline-tree!
+  "Creates a new baseline tree for the given suite.
+  The baseline will be empty (no screenshots). Returns the generated root-id"
+  [conn suite-id]
+  (let [root-id (insert-single! conn :baseline-node {})
+        tree-id (insert-single! conn :baseline-tree {:suite-id suite-id :baseline-root root-id})]
+    (insert-single! conn :baseline-branch {:baseline-tree tree-id
+                                           :name          "master"
+                                           :head          root-id
+                                           :branch-root   root-id})
+    root-id))
+
+(defn- node-root-sql
+  "Returns the sql for getting the root node of a tree given the node_id.
+  This query is vendor specific and only works for H2"
+  [node-id clauses]
+  {:pre [(number? node-id)]}
+  (str "WITH RECURSIVE T(id, parent) AS "
+       "(SELECT id, parent FROM baseline_node WHERE id = " node-id
+       " UNION ALL "
+       "SELECT b.id, b.parent FROM T JOIN baseline_node b ON b.id = T.parent) "
+       clauses))
+
+(defn- get-tree-for-node [conn node-id]
+  (query-single conn
+    [(node-root-sql node-id "SELECT bl.* FROM T JOIN baseline_tree bl ON bl.baseline_root = T.id WHERE parent IS ?") nil]))
+
+(defn- copy-baseline-refs [conn from-id to-id]
+  (j/db-do-prepared conn
+    "INSERT INTO BL_NODE_SCREENSHOT SELECT ?, SCREENSHOT_ID FROM BL_NODE_SCREENSHOT WHERE baseline_node = ?"
+    [to-id from-id]))
+
+(defn- create-baseline-child! [conn tree-id branch-name]
+  {:pre [(number? tree-id) (string? branch-name)]}
+  (when-let [parent-id (query-single conn ["SELECT * FROM baseline_branch WHERE baseline_tree = ? AND name = ?" tree-id branch-name]
+                         :row-fn :head)]
+    (let [child-id (insert-single! conn :baseline-node {:parent parent-id})]
+      (copy-baseline-refs conn parent-id child-id)
+      (update! conn :baseline-branch {:head child-id} ["head = ?" parent-id]))))
+
+(defn create-baseline-branch! [conn parent-id branch-name]
+  {:pre [(number? parent-id)]}
+  (j/with-db-transaction [conn conn]
+    (let [tree-id (:id (get-tree-for-node conn parent-id))
+          child-id (insert-single! conn :baseline-node {:parent parent-id})]
+      (copy-baseline-refs conn parent-id child-id)
+      (insert-single! conn :baseline-branch {:name          branch-name
+                                             :baseline-tree tree-id
+                                             :head          child-id
+                                             :branch-root   child-id}))))
+
+(comment
+  (get-baseline-tree db/conn 1)
+  (do
+    (create-project! db/conn "Test project")
+    (create-suite-for-project! db/conn "Test project" "My suite")
+    (create-run! db/conn {:project-name "Test project" :suite-name "My suite"})
+    (dotimes [i 4]
+      (let [ss-id (save-screenshot! db/conn 1 (str "Rocket-" i) "1/1/1" 2347 "{}" "{}")]
+        (create-bl-node-screenshots! db/conn 1 ss-id)))
+    )
+  (create-baseline-child! db/conn 1 "master")
+  (create-baseline-branch! db/conn 2 "storybranch")
+  (create-baseline-child! db/conn 1 "storybranch")
+  (query db/conn ["SELECT * FROM baseline_node"])
+  (clojure.pprint/pprint (query db/conn ["SELECT * FROM bl_node_screenshot"]))
+  (query db/conn ["SELECT * FROM baseline_tree"])
+  (query db/conn ["SELECT * FROM baseline_branch"])
+
+  (copy-baseline-refs db/conn 1 3)
+
+  (do
+    (j/execute! db/conn ["DROP ALL OBJECTS"])
+    (db/run-init-script db/conn))
+  )

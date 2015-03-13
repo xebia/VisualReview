@@ -21,7 +21,7 @@
             [com.xebia.visualreview.mock :as mock]
             [com.xebia.visualreview.test-util :refer [start-server stop-server]]))
 
-(timbre/set-level! :warn)
+#_(timbre/set-level! :warn)
 
 (def project-name "Test Project A")
 (def suite-name "Test suite")
@@ -60,7 +60,7 @@
           after-screenshot (:after diff)]
       (:status analysis-response) => 200
       (fact "The analysis contains a baseline for the suite and other information"
-        analysis => (contains {:baselineId   1
+        analysis => (contains {:baselineNode   1
                                :creationTime #""
                                :projectName  project-name
                                :suiteName    suite-name}))
@@ -100,7 +100,7 @@
     (let [run-id (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir-hat)
           {:keys [analysis diffs]} (:body (api/get-analysis run-id))
           [chess-diff tapir-diff] diffs]
-      analysis => (contains {:id 2 :baselineId 1 :runId 2})
+      analysis => (contains {:id 2 :baselineNode 1 :runId 2})
 
       (fact "The tapir diff is pending and the image differs from its previous version"
         tapir-diff => (contains {:percentage 8.89 :status "pending"})
