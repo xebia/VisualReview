@@ -203,12 +203,12 @@
                           run (p/get-run (tx-conn ctx) run-id)]
                       (when run {::run run}))
                     (catch NumberFormatException _)))
-    :handle-ok (fn [ctx] (let [screenshots (p/get-screenshots (tx-conn ctx) (-> ctx ::run :id))]
+    :handle-ok (fn [ctx] (let [screenshots (screenshot/get-screenshots-by-run-id (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
 (defn- process-screenshot [conn suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
-        screenshot (p/get-screenshot-by-id conn screenshot-id)
+        screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
         baseline (p/get-baseline-head conn suite-id)
         [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id "master" screenshot-name properties)]
                                                 [false bs]
