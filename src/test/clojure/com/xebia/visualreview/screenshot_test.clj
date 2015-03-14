@@ -21,6 +21,7 @@
             [com.xebia.visualreview.screenshot :as s]
             [com.xebia.visualreview.screenshot.persistence :as sp]
             [com.xebia.visualreview.persistence :as p]
+            [com.xebia.visualreview.image :as i]
             [com.xebia.visualreview.service-util-test :as sutilt])
   (:import (java.sql SQLException)
            (clojure.lang IExceptionInfo)))
@@ -43,7 +44,7 @@
                       => (throws IExceptionInfo (sutilt/is-service-exception? "Could not store screenshot in database: Database error" ::s/screenshot-cannot-store-in-db))
                       (provided
                         (p/get-run anything anything) => {:id run-id}
-                        (p/insert-image! anything anything) => {:id image-id}
+                        (i/insert-image! anything anything) => {:id image-id}
                         (sp/save-screenshot! anything anything anything anything anything anything anything)
                         =throws=> (SQLException. "Database error"))))
 
@@ -55,7 +56,7 @@
                       => (throws IExceptionInfo (sutilt/is-service-exception? "Could not store screenshot in database: screenshot with name and properties already exists" ::s/screenshot-cannot-store-in-db-already-exists))
                       (provided
                         (p/get-run anything anything) => {:id run-id}
-                        (p/insert-image! anything anything) => {:id image-id}
+                        (i/insert-image! anything anything) => {:id image-id}
                         (sp/save-screenshot! anything anything anything anything anything anything anything)
                         =throws=> (sutilt/slingshot-exception {:type :sql-exception :subtype ::sp/unique-constraint-violation :message "Duplicate thingy"})))))
 

@@ -66,17 +66,6 @@
     (create-baseline-tree! conn new-suite-id)
     new-suite-id))
 
-;; Images
-(defn insert-image! [conn directory]
-  (putil/insert-single! conn :image { :directory directory }))
-
-(defn get-image-path [conn image-id]
-  (let [image (putil/query-single conn
-                            ["SELECT id, directory FROM image WHERE id = ?" image-id])
-        directory (:directory image)
-        id (:id image)]
-    (str directory "/" id ".png")))
-
 ;; Baseline
 (defn get-baseline-screenshot [conn suite-id branch-name screenshot-name properties]
   (putil/query-single conn
