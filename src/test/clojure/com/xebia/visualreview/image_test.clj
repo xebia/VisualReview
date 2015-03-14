@@ -30,7 +30,7 @@
               (fact "throws a service exception when the image could not be stored on the file system"
                     (let [image-1-src (io/as-file (io/resource "tapir.png"))]
                       (image/insert-image! {} image-1-src)
-                                         => (throws IExceptionInfo (sutilt/is-service-exception? "Could not store image with id 3 on filesystem: Disk full" "img-cannot-store-on-fs"))
+                                         => (throws IExceptionInfo (sutilt/is-service-exception? "Could not store image with id 3 on filesystem: Disk full" ::image/image-cannot-store-on-fs))
                       (provided
                         (ip/insert-image! anything anything) => 3
                         (vrio/store-image! anything anything anything) =throws=> (IOException. "Disk full"))))
@@ -38,12 +38,12 @@
               (fact "throws a service exception when the image file could not be read"
                     (let [image-1-src (File. "non-existing-file.nope")]
                       (image/insert-image! {} image-1-src)
-                      => (throws IExceptionInfo (sutilt/is-service-exception? "Cannot store image: file cannot be read" "screenshot-cannot-store-on-fs-cannot-read"))))
+                      => (throws IExceptionInfo (sutilt/is-service-exception? "Cannot store image: file cannot be read" ::image/image-cannot-store-on-fs-cannot-read))))
 
               (fact "throws a service exception when the image metadata could not be stored in the database"
                     (let [image-1-src (io/as-file (io/resource "tapir.png"))]
                       (image/insert-image! {} image-1-src)
-                      => (throws IExceptionInfo (sutilt/is-service-exception? "Could not record new image in the database: Database error" "img-cannot-store-on-db"))
+                      => (throws IExceptionInfo (sutilt/is-service-exception? "Could not record new image in the database: Database error" ::image/image-cannot-store-on-db))
                       (provided (ip/insert-image! anything anything) =throws=> (SQLException. "Database error")))))
 
        (facts "get-image-path"
