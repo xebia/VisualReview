@@ -1,4 +1,4 @@
-# VisualReview
+# VisualReview [![Build Status](https://travis-ci.org/skwakman/VisualReview.svg?branch=master)](https://travis-ci.org/skwakman/VisualReview)
 
 VisualReview's goal is to provide a productive and human-friendly workflow for testing and reviewing your web application's layout
 across several browsers, resolutions and platforms.
