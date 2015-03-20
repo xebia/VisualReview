@@ -25,7 +25,7 @@
 (def project-name-2 "Another Project")
 (def suite-name "Test suite")
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/rebind-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest projects
 

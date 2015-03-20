@@ -42,7 +42,7 @@
 (defn- content-type [response]
   (get-in response [:headers "Content-Type"]))
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/rebind-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest analysis
   (setup-project)
@@ -64,8 +64,8 @@
                (= before-screenshot after-screenshot)) "The before and after images are equal")
 
       (testing "Retrieving images from returned paths"
-        (let [before-image (api/http-get (:path before-screenshot))
-              diff-image (api/http-get (:path (first diffs)))]
+        (let [before-image (api/get-image (:imageId before-screenshot))
+              diff-image (api/get-image (:imageId (first diffs)))]
           (is (= 200 (:status before-image)) "OK status")
           (is (= 200 (:status diff-image)) "OK status")
           (is (= "image/png" (content-type before-image)) "Image has content-type image/png")

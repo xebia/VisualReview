@@ -15,13 +15,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.persistence
-  (:require [taoensso.timbre :as timbre]
-            [slingshot.slingshot :as ex]
+  (:require [slingshot.slingshot :as ex]
             [clojure.java.jdbc :as j]
             [cheshire.core :as json]
             [com.xebia.visualreview.util :refer :all]
-            [com.xebia.visualreview.persistence.util :as putil]
-            [com.xebia.visualreview.persistence.database :as db])
+            [com.xebia.visualreview.persistence.util :as putil])
   (:import [java.sql Timestamp SQLException]
            [java.util Date]))
 (defn- format-dates [run-row]
@@ -87,7 +85,7 @@
 
 (defn get-baseline-node
   [conn node-id]
-  (query-single conn ["SELECT * FROM baseline_node WHERE id = ?" node-id]))
+  (putil/query-single conn ["SELECT * FROM baseline_node WHERE id = ?" node-id]))
 
 (defn create-baseline-screenshot!
   "Adds the given screenshot-id to the given baseline."
@@ -290,14 +288,14 @@
                                              :head          child-id
                                              :branch-root   child-id}))
     (catch SQLException e
-      (when (unique-constraint-violation? e)
+      (when (putil/unique-constraint-violation? e)
         (ex/throw+ {:type    :sql-exception
                     :subtype ::unique-constraint-violation
                     :message (.getMessage e)})))))
 
 (defn get-baseline-branch [conn suite-id branch-name]
   {:pre [(number? suite-id) (string? branch-name)]}
-  (query-single conn
+  (putil/query-single conn
     ["SELECT br.* FROM baseline_branch br
      JOIN baseline_tree tr ON tr.id = br.baseline_tree
      WHERE tr.suite_id = ? AND br.name = ?" suite-id branch-name]))

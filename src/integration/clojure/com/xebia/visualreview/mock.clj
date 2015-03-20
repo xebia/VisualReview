@@ -20,7 +20,8 @@
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.persistence.database :as db]
             [com.xebia.visualreview.api-test :as api]
-            [com.xebia.visualreview.test-util :as util]))
+            [com.xebia.visualreview.test-util :as util])
+  (:import [java.io File]))
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
@@ -29,7 +30,7 @@
                        :init-pool-size 1
                        :max-pool-size  1})
 
-(defn delete-recursively [fname]
+(defn delete-recursively! [fname]
   (let [func (fn [func f]
                (when (.isDirectory f)
                  (doseq [f2 (.listFiles f)]
@@ -43,25 +44,26 @@
   (timbre/log :info "Setting up test database")
   (j/with-db-connection [conn *conn*]
     (j/execute! conn ["DROP ALL OBJECTS"])
-    (com.xebia.visualreview.persistence.database/run-init-script conn)))
+    (db/run-init-script conn)))
 
 (defmacro setup-screenshots-dir [& body]
-  `(with-redefs [io/screenshots-dir "target/temp/screenshots"]
-     (do (delete-recursively io/screenshots-dir)
-         (.mkdirs (clojure.java.io/file io/screenshots-dir))
+  `(with-redefs [io/screenshots-dir test-screenshot-dir]
+     (do (delete-recursively! io/screenshots-dir)
+         (.mkdirs ^File (clojure.java.io/file io/screenshots-dir))
          ~@body)))
 
 (defmacro rebind-db-spec [& body]
   `(with-redefs [db/conn *conn*] ~@body))
-
 
 (defn test-server-fixture [f]
   (util/start-server)
   (f)
   (util/stop-server))
 
-(defn rebind-screenshot-dir-fixture [f]
+(defn setup-screenshot-dir-fixture [f]
   (println "Rebinding screenshot dir to" test-screenshot-dir)
+  (delete-recursively! io/screenshots-dir)
+  (.mkdirs ^File (clojure.java.io/file io/screenshots-dir))
   (with-redefs [io/screenshots-dir test-screenshot-dir]
     (f)))
 

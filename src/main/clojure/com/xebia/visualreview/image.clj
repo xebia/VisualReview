@@ -19,8 +19,8 @@
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.image.persistence :as ip]
             [com.xebia.visualreview.service-util :as sutil])
-  (:import (java.util Calendar)
-           (java.io File)))
+  (:import [java.util Calendar]
+           [java.io File]))
 
 (defn insert-image!
   "Stores an image. Returns the image ID.

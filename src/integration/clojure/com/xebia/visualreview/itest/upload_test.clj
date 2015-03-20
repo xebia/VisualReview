@@ -35,7 +35,7 @@
   (api/put-project! {:name project-name-1})
   (api/put-project! {:name project-name-2}))
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/rebind-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest screenshots
 
@@ -54,7 +54,7 @@
         (is (= 201 (:status response)))
         (are [k v] (= (-> response :body k) v)
           :id 1
-          :path "1/1/1"
+          :imageId 1
           :runId run-id
           :screenshotName "Tapir"
           :size 38116
