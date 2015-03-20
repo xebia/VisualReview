@@ -43,8 +43,9 @@
   (dissoc (http/post (endpoint "runs") (merge default-opts {:body (json/generate-string {:projectName project-name
                                                                                          :suiteName suite-name})})) :headers))
 
-(defn get-runs [params]
-  (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params params})) :headers))
+(defn get-runs [project-name suite-name]
+  (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params {:projectName project-name
+                                                                          :suiteName suite-name}})) :headers))
 
 (defn get-run [run-id]
   (http/get (endpoint "runs" run-id) default-opts))
