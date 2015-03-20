@@ -50,9 +50,9 @@
                                          (contains {:id 2 :name project-name-2})]))
 
   (fact "There no runs or screenshots yet"
-    (api/get-runs {:projectName project-name-1 :suiteName suite-name}) => (contains {:status 404}))
+    (api/get-runs project-name-1 suite-name) => (contains {:status 404}))
 
-  (let [run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name}) :body :id)]
+  (let [run-id (-> (api/post-run! project-name-1 suite-name) :body :id)]
     (fact "We can upload screenshots"
       (upload-tapir run-id meta-info properties) => (contains {:status 201
                                                                :body   {:id             1
@@ -72,6 +72,6 @@
     (fact "We can upload screenshots with the same name and meta, but different properties"
       (upload-chess-image-2 run-id meta-info (assoc properties :resolution "800x600")) => (contains {:status 201})))
 
-  (let [next-run-id (-> (api/post-run! {:projectName project-name-1 :suiteName suite-name}) :body :id)]
+  (let [next-run-id (-> (api/post-run! project-name-1 suite-name) :body :id)]
     (fact "In a new run, we can upload a screenshot with identical name and props as in the previous run"
       (upload-chess-image-2 next-run-id meta-info properties) => (contains {:status 201}))))

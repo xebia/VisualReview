@@ -46,7 +46,7 @@
       (is (= [{:id 1 :name project-name-1} {:id 2 :name project-name-2}] projects))))
 
   (testing "There are no runs or screenshots yet"
-    (is (= 404 (:status (api/get-runs {:projectName project-name-1 :suiteName suite-name}))) "Not found status"))
+    (is (= 404 (:status (api/get-runs project-name-1 suite-name))) "Not found status"))
 
   (let [run-id (-> (api/post-run! project-name-1 suite-name) :body :id)]
     (testing "We can upload screenshots"

@@ -23,7 +23,7 @@
 
 (timbre/merge-config!
   timbre/example-config {:fmt-output-fn :message
-                         :ns-whitelist ["com.xebia.visualreview.integration-test"]})
+                         :ns-whitelist  ["com.xebia.visualreview.integration-test"]})
 
 (background
   (before :contents (setup-db))
@@ -71,25 +71,25 @@
     (before :contents (start-server) :after (stop-server)))
 
   (fact "There are no runs yet"
-    (api/get-runs {:projectName project-name-1 :suiteName suite-name}) => (contains {:status 404}))
+    (api/get-runs project-name-1 suite-name) => (contains {:status 404}))
 
   (fact "You can create runs when a project is created"
-    (let [response (api/post-run! {:projectName project-name-1 :suiteName suite-name})]
+    (let [response (api/post-run! project-name-1 suite-name)]
       (:status response) => 201
       (:body response) => (contains {:suiteId 1 :id 1 :status "running"})))
 
   (fact "The run form-params are validated"
-    (let [response (api/post-run! {})]
+    (let [response (api/post-run! nil nil)]
       (:status response) => 422
       (:body response) => #"'projectName' is missing")
-    (api/post-run! {:projectName project-name-1}) => (contains {:status 422
-                                                                 :body   #"'suiteName' is missing"})
-    (api/post-run! {:projectName "Wrong name" :suiteName ""}) => (contains {:status 422
-                                                                              :body   #"can not be empty"}))
+    (api/post-run! project-name-1 nil) => (contains {:status 422
+                                                    :body   #"'suiteName' is missing"})
+    (api/post-run! "Wrong name" "") => (contains {:status 422
+                                                  :body   #"can not be empty"}))
 
   (fact "The runs resource returns the runs for a suite"
     (let [expected-result (contains {:id 1 :status "running" :projectId 1 :suiteId 1})]
-      (:body (api/get-runs {:projectName project-name-1 :suiteName suite-name})) => (just [expected-result])
+      (:body (api/get-runs project-name-1 suite-name)) => (just [expected-result])
       (:body (api/get-run 1)) => expected-result)))
 
 (facts "About suites"

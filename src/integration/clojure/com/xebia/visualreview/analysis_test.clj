@@ -33,7 +33,7 @@
 (def image-ids (atom {}))
 
 (defn post-run-with-screenshots [& {:as fns}]
-  (let [run-id (-> (api/post-run! {:projectName project-name :suiteName suite-name}) :body :id)]
+  (let [run-id (-> (api/post-run! project-name suite-name) :body :id)]
     (doseq [[k v] fns]
       (swap! image-ids assoc-in [run-id k] (-> (v run-id meta-info properties) :body :id)))
     run-id))
@@ -79,7 +79,7 @@
 
   (fact "There is one run with two pending screenshots"
     (count (:body (api/get-projects))) => 1
-    (count (:body (api/get-runs {:projectName project-name :suiteName suite-name}))) => 1
+    (count (:body (api/get-runs project-name suite-name))) => 1
     (let [[chess-diff tapir-diff] (-> (api/get-analysis 1) :body :diffs)]
       (:status chess-diff) => "pending"
       (:status tapir-diff) => "pending"
