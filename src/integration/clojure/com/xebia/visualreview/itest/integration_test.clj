@@ -18,35 +18,14 @@
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.test-util :refer [start-server stop-server]]
-            [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.persistence.database :as db]))
+            [com.xebia.visualreview.test-util :refer [start-server stop-server]]))
 
 
 (def project-name-1 "A Test Project")
 (def project-name-2 "Another Project")
 (def suite-name "Test suite")
 
-(defn test-server-fixture [f]
-  (start-server)
-  (f)
-  (stop-server))
-
-(defn rebind-screenshot-dir-fixture [f]
-  (with-redefs [io/screenshots-dir "target/temp/screenshots"]
-    (f)))
-
-(defn rebind-db-spec-fixture [f]
-  (println "Rebinding db spec")
-  (with-redefs [db/conn mock/*conn*]
-    (f)))
-
-(defn setup-db-fixture [f]
-  (println "Setting up mock db")
-  (mock/setup-db)
-  (f))
-
-(use-fixtures :each rebind-db-spec-fixture rebind-screenshot-dir-fixture setup-db-fixture test-server-fixture)
+(use-fixtures :each mock/rebind-db-spec-fixture mock/rebind-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest projects
 

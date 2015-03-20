@@ -19,7 +19,8 @@
             [taoensso.timbre :as timbre]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.persistence.database :as db]
-            [com.xebia.visualreview.api-test :as api]))
+            [com.xebia.visualreview.api-test :as api]
+            [com.xebia.visualreview.test-util :as util]))
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
@@ -36,8 +37,10 @@
                (clojure.java.io/delete-file f true))]
     (func func (clojure.java.io/file fname))))
 
+(def test-screenshot-dir "target/temp/screenshots")
+
 (defn setup-db []
-  (timbre/info "Setting up test database")
+  (timbre/log :info "Setting up test database")
   (j/with-db-connection [conn *conn*]
     (j/execute! conn ["DROP ALL OBJECTS"])
     (com.xebia.visualreview.persistence.database/run-init-script conn)))
@@ -50,6 +53,27 @@
 
 (defmacro rebind-db-spec [& body]
   `(with-redefs [db/conn *conn*] ~@body))
+
+
+(defn test-server-fixture [f]
+  (util/start-server)
+  (f)
+  (util/stop-server))
+
+(defn rebind-screenshot-dir-fixture [f]
+  (println "Rebinding screenshot dir to" test-screenshot-dir)
+  (with-redefs [io/screenshots-dir test-screenshot-dir]
+    (f)))
+
+(defn rebind-db-spec-fixture [f]
+  (println "Rebinding db spec to" (:subname *conn*))
+  (with-redefs [db/conn *conn*]
+    (f)))
+
+(defn setup-db-fixture [f]
+  (println "Setting up mock db")
+  (setup-db)
+  (f))
 
 (defn upload-tapir [run-id meta props]
   (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))

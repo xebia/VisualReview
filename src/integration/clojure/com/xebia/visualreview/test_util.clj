@@ -21,9 +21,8 @@
 (def test-server-port 7001)
 
 (defn start-server []
-  (timbre/info "Starting test server on port 7001")
   (starter/start-server test-server-port))
 
 (defn stop-server []
-  (timbre/info "Shutting down test server")
+  (timbre/log :info "Shutting down test server")
   (starter/stop-server))
