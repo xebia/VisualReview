@@ -35,6 +35,9 @@
   (extract-generated-id (first (apply j/insert! conn table row-map :entities ent-fn opts))))
 (defn update! [conn table set-map where-clause & opts]
   (apply j/update! conn table set-map where-clause :entities ent-fn opts))
+
+(defn delete! [conn table where-clause & opts]
+  (apply j/delete! conn table where-clause :entities ent-fn opts))
 (defn query [conn sql-and-params & opts]
   (apply j/query conn sql-and-params :identifiers ident-fn opts))
 (defn query-single [& args]

@@ -32,6 +32,7 @@
 
 (def project-name-1 "A Test Project")
 (def project-name-2 "Another Project")
+(def project-name-3 "A Project that will be deleted")
 (def suite-name "Test suite")
 
 (facts "Projects"
@@ -64,7 +65,16 @@
   (fact "Project name can not be empty"
     (let [response (api/put-project! {:name ""})]
       (:status response) => 422
-      (:body response) => #"can not be empty")))
+      (:body response) => #"can not be empty"))
+
+  (fact "Projects can be deleted"
+        (let [new-project-id (:id (:body (api/put-project! {:name project-name-3})))
+              before-delete-response (api/get-project new-project-id)
+              delete-response (api/delete-project! new-project-id)
+              after-delete-response (api/get-project new-project-id)]
+          (:status before-delete-response) => 200
+          (:status delete-response) => 204
+          (:status after-delete-response) => 404)))
 
 (facts "About Runs"
   (against-background

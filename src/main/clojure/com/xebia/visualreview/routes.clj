@@ -30,7 +30,7 @@
     (routes
       (ANY "/projects" [] (resource/project-resource))
       (context "/projects/:project-id" [project-id]
-        (ANY "/" [] (resource/get-project project-id))
+        (ANY "/" [] (resource/project-by-id project-id))
         (ANY "/suites" [] (resource/suites-resource project-id))
         (context "/suites/:suite-id" [suite-id]
           (ANY "/" [suite-id] (resource/suite-resource project-id suite-id))))

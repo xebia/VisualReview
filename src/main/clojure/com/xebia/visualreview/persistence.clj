@@ -15,14 +15,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.persistence
-  (:require [taoensso.timbre :as timbre]
-            [slingshot.slingshot :as ex]
-            [clojure.java.jdbc :as j]
+  (:require [clojure.java.jdbc :as j]
             [cheshire.core :as json]
             [com.xebia.visualreview.util :refer :all]
             [com.xebia.visualreview.persistence.util :as putil]
+            [com.xebia.visualreview.project :as project]
             [com.xebia.visualreview.persistence.database :as db])
-  (:import [java.sql Timestamp SQLException]
+  (:import [java.sql Timestamp]
            [java.util Date]))
 (defn- format-dates [run-row]
   (-> run-row
@@ -46,22 +45,11 @@
      ["SELECT suite.* FROM suite JOIN project ON suite.project_id = project.id WHERE suite.id = ? AND project.id = ?" suite-id project-id]
      :row-fn row-fn)))
 
-(defn get-project-by-name
-  ([conn project-name]
-   (get-project-by-name conn project-name identity))
-  ([conn project-name row-fn]
-   (putil/query-single conn ["SELECT * FROM project WHERE name = ?" project-name] :row-fn row-fn)))
-
-(defn get-project-by-id
-  ([conn project-id]
-   (get-project-by-id conn project-id identity))
-  ([conn project-id row-fn]
-   (putil/query-single conn ["SELECT project.* FROM project WHERE id = ?" project-id] :row-fn row-fn)))
 (declare create-baseline-tree!)
 (defn create-suite-for-project!
   "Creates a new suite with an empty baseline for the given project. Returns the created suite's id."
   [conn project-name suite-name]
-  (let [project-id (get-project-by-name conn project-name :id)
+  (let [project-id (project/get-project-by-name conn project-name :id)
         new-suite-id (putil/insert-single! conn :suite {:project-id project-id :name suite-name})]
     (create-baseline-tree! conn new-suite-id)
     new-suite-id))
@@ -153,6 +141,7 @@
         baseline (get-baseline-head conn suite-id branch-name)
         new-run-id (putil/insert-single! conn :run {:suite-id   suite-id
                                               :start-time (Timestamp. (.getTime (Date.)))
+                                              :branch-name branch-name
                                               :status     "running"})
         _ (create-analysis! conn baseline new-run-id)]
     new-run-id))
@@ -184,7 +173,8 @@
   [conn project-id suite-id]
   (when-let [suite (get-suite-by-id conn project-id suite-id #(dissoc % :project-id))]
     (assoc suite :runs (get-runs conn project-id suite-id)
-                 :project (get-project-by-id conn project-id))))
+                 :project (project/get-project-by-id conn project-id))))
+
 
 (def ^:private get-suites-sql "SELECT suite.id, suite.name FROM suite JOIN project ON project.id = suite.project_id WHERE project.id = ?")
 (defn get-suites
@@ -192,24 +182,14 @@
   [conn project-id]
   (putil/query conn [get-suites-sql project-id] :result-set-fn vec))
 
-;; Projects
-(defn get-projects
-  "Retrieve the list of projects"
-  [conn]
-  (putil/query conn ["SELECT * FROM project"] :result-set-fn vec))
-
-(defn get-project
-  "Returns the project with list of suites"
+(defn get-suites-by-project-id
+  "Returns all suites of a project"
   [conn project-id]
-  (when-let [pname (get-project-by-id conn project-id :name)]
+  {:pre (number? project-id)}
+  (when-let [pname (project/get-project-by-id conn project-id :name)]
     {:id     project-id
      :name   pname
      :suites (get-suites conn project-id)}))
-
-(defn create-project!
-  "Creates a new project. Returns the new project id."
-  [conn project-name]
-  (putil/insert-single! conn :project {:name project-name}))
 
 (defn save-diff!
   "Stores a new diff. Returns the new diff's id."

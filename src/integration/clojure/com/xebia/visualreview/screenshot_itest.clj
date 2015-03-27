@@ -19,6 +19,7 @@
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
             [com.xebia.visualreview.screenshot :as s]
+            [com.xebia.visualreview.project :as project]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.mock :as mock]))
 
@@ -31,7 +32,7 @@
 
 (facts "Screenshot service"
        (fact "stores and retrieves a screenshot based on a screenshot-id"
-             (let [project-id (p/create-project! mock/*conn* "myProject")
+             (let [project-id (project/create-project! mock/*conn* "myProject")
                    suite-id (p/create-suite-for-project! mock/*conn* "myProject" "mySuite")
                    run-id (p/create-run! mock/*conn* {:project-name "myProject" :suite-name "mySuite"})
                    image-file (io/as-file (io/resource "tapir_hat.png"))
