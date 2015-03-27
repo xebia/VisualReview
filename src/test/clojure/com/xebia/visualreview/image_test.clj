@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.image-itest
+(ns com.xebia.visualreview.image-test
   (:require [com.xebia.visualreview.image :as image]
             [com.xebia.visualreview.image.persistence :as ip]
             [com.xebia.visualreview.io :as vrio]
