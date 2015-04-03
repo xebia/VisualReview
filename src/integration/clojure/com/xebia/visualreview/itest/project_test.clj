@@ -17,15 +17,9 @@
 (ns com.xebia.visualreview.itest.project-test
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.mock :as mock]
-            [taoensso.timbre :as timbre]
             [com.xebia.visualreview.project :as project]
             [com.xebia.visualreview.persistence :as p]))
 
-(timbre/set-level! :debug)
-;
-;(background
-;  (before :facts (mock/setup-db))
-;  (around :facts (mock/rebind-db-spec ?form)))
 (use-fixtures :each mock/rebind-db-spec-fixture mock/setup-db-fixture)
 
 (deftest project-service-store
