@@ -18,7 +18,7 @@ stored data from earlier releases. We do however expect to release a 1.0.0 versi
 ## Getting started
 
 ### Configuring and starting the VisualReview server
-VisualReview server requires Java 7 JRE or higher.
+*Note:* The current master version of VisualReview server requires Java 7 JRE or higher. The preview release however requires Java 8.
 
 * Download and extract a preview release from [here](https://github.com/xebia/VisualReview/releases).
 * Configure the environment variables in start.sh (optional)
