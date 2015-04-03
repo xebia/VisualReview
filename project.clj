@@ -34,16 +34,13 @@
              :skip-stencil   [#".*"]
              :silent         true}                         ; only prints errors
 
-  :aliases {"integration"   ["with-profile" "+integration" "midje"]
-            "unit"          ["with-profile" "+unit" "midje"]
-            "test"          ["midje"]
+  :aliases {"integration"   ["with-profile" "+integration" "test"]
+            "unit"          ["with-profile" "+unit" "test"]
             "npm-install"   ["shell" "npm" "install"]
             "bower-install" ["shell" "bower" "install"]
             "grunt-build"   ["shell" "grunt" "build"]}
 
-  :profiles {:dev         {:dependencies   [[midje "1.6.3"]
-                                            [clj-http "1.0.1"]]
-                           :plugins        [[lein-midje "3.1.3"]]
+  :profiles {:dev         {:dependencies   [[clj-http "1.0.1"]]
                            :resource-paths ["src/test/resources" "src/integration/resources"]}
              :uberjar     {:aot        :all
                            :prep-tasks ^:replace [["npm-install"] ["bower-install"] ["grunt-build"]
