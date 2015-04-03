@@ -33,6 +33,7 @@
     :else x))
 
 (defn get-request? [ctx] (= (-> ctx :request :request-method) :get))
+(defn delete-request? [ctx] (= (-> ctx :request :request-method) :delete))
 (defn put-or-post-request? [ctx] (#{:put :post} (get-in ctx [:request :request-method])))
 (defn content-type [ctx] (get-in ctx [:request :headers "content-type"]))
 

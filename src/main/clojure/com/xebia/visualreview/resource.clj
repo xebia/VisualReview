@@ -16,7 +16,6 @@
 
 (ns com.xebia.visualreview.resource
   (:require [liberator.core :refer [resource defresource]]
-            [liberator.representation :as representation]
             [cheshire.core :as json]
             [slingshot.slingshot :as ex]
             [com.xebia.visualreview.validation :as v]
@@ -25,9 +24,9 @@
             [com.xebia.visualreview.analysis.core :as analysis]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.screenshot :as screenshot])
-  (:import [java.util Map]
-           [com.fasterxml.jackson.core JsonParseException]))
+            [com.xebia.visualreview.screenshot :as screenshot]
+            [com.xebia.visualreview.project :as project])
+  (:import [java.util Map]))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
 (def ^:private project-schema
@@ -46,26 +45,35 @@
     :handle-unprocessable-entity ::error-msg
     :exists? (fn [ctx]
                (or (get-request? ctx)
-                   (when-let [project-id (p/get-project-by-name (tx-conn ctx) (::project-name ctx) :id)]
+                   (when-let [project-id (project/get-project-by-name (tx-conn ctx) (::project-name ctx) :id)]
                      {::project-id project-id})))
     :conflict? (fn [ctx] (::project-id ctx))
     :handle-conflict (fn [ctx] (format "A project with name: '%s' already exists." (::project-name ctx)))
     :put! (fn [ctx]
-            (let [new-project-id (p/create-project! (tx-conn ctx) (::project-name ctx))
-                  project (p/get-project (tx-conn ctx) new-project-id)]
+            (let [new-project-id (project/create-project! (tx-conn ctx) (::project-name ctx))
+                  project (p/get-suites-by-project-id (tx-conn ctx) new-project-id)]
               (io/create-project-directory! new-project-id)
               {::project project}))
     :handle-created ::project
-    :handle-ok (fn [ctx] (p/get-projects (tx-conn ctx)))))
+    :handle-ok (fn [ctx] (project/get-projects (tx-conn ctx)))))
 
-(defn get-project [project-id]
+(defn project-by-id [project-id]
   (json-resource
+    :allowed-methods [:get :delete]
+    :processable? (fn [_]
+                    (try
+                      (when-let [project-id-long (Long/parseLong project-id)]
+                        {::project-id project-id-long})
+                      (catch NumberFormatException _ false)))
     :exists? (fn [ctx]
                (try
-                 (let [project-id (Long/parseLong project-id)]
-                   (when-let [project (p/get-project (tx-conn ctx) project-id)]
-                     {::project project}))
+                 (when-let [project (p/get-suites-by-project-id (tx-conn ctx) (::project-id ctx))]
+                   {::project project})
                  (catch NumberFormatException _)))
+    :delete! (fn [ctx]
+               {::project-deleted (project/delete-project! (tx-conn ctx) (::project-id ctx))})
+    :delete-enacted? (fn [ctx]
+                       (::project-deleted ctx))
     :handle-ok ::project))
 
 ;;;;;;;;;; Suites ;;;;;;;;;;;
@@ -75,7 +83,7 @@
     :exists? (fn [ctx]
                (try
                  (let [[project-id] (parse-longs [project-id])]
-                   (and (p/get-project-by-id (tx-conn ctx) project-id)
+                   (and (project/get-project-by-id (tx-conn ctx) project-id)
                         (when-let [suites (p/get-suites (tx-conn ctx) project-id)]
                           {::suites suites})))
                  (catch NumberFormatException _)))
@@ -125,7 +133,7 @@
                  (when-let [suite (p/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))]
                    (let [runs (:runs (p/get-full-suite (tx-conn ctx) (:project-id suite) (:id suite)))]
                      {::runs runs ::suite suite}))
-                 (when-let [project-id (p/get-project-by-name (tx-conn ctx) (-> ctx ::data :project-name) :id)]
+                 (when-let [project-id (project/get-project-by-name (tx-conn ctx) (-> ctx ::data :project-name) :id)]
                    {::project-id project-id})))
     :can-post-to-missing? false
     :post! (fn [ctx]

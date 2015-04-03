@@ -39,6 +39,9 @@
 (defn get-project [project-id]
   (http/get (endpoint "projects" project-id) (merge default-opts {:as :json})))
 
+(defn delete-project! [project-id]
+  (http/delete (endpoint "projects" project-id) nil))
+
 (defn post-run! [project-name suite-name]
   (dissoc (http/post (endpoint "runs") (merge default-opts {:body (json/generate-string {:projectName project-name
                                                                                          :suiteName suite-name})})) :headers))

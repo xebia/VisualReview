@@ -14,11 +14,19 @@
     </div>
 
     <div ng-repeat="project in projects" ng-hide="projects.$vrIsLoading">
-      <a href="#/{{project.id}}/">
+      <div class="hover-target">
+        <a href="#/{{project.id}}/">
         <span class="project-header">
             {{project.name}}
         </span>
-      </a>
+        </a>
+
+        <div class="float-right">
+          <div ng-hide="deletedProject.$vrIsLoading" ng-click="deleteProject(project.name, project.id)" class="visible-on-hover color-light-gray cursor-pointer icon icon-trash"></div>
+          <div ng-show="deletedProject.$vrIsLoading">deleting ..</div>
+        </div>
+
+      </div>
     </div>
 
     <div ng-hide="projects.$vrIsLoading  || projects.$vrHasError || projects.length > 0">

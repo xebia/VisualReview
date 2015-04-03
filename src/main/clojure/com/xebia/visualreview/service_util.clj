@@ -15,16 +15,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.service-util
-  (:require [slingshot.slingshot :as ex]))
+  (:require [slingshot.slingshot :as ex]
+            [taoensso.timbre :as timbre]))
+
+(defn get-message-from-object-or-exception
+  [object-or-exception]
+  (if (instance? Exception object-or-exception)
+    (.getMessage object-or-exception)
+    (:message object-or-exception)))
 
 (defn throw-service-exception [message code]
   (ex/throw+ {:type :service-exception :code code :message message}))
 
 (defn rethrow-as-service-exception [object-or-exception message code]
-  (if (instance? Exception object-or-exception)
-    (throw-service-exception (format message (.getMessage object-or-exception)) code)
-    (throw-service-exception (format message (:message object-or-exception)) code)))
-
+  (let [exception-msg (get-message-from-object-or-exception object-or-exception)]
+    (throw-service-exception (format message exception-msg) code)))
 
 (defmacro attempt
   "Attempts to execute the given form. If the form throws an exception (of either the Java or slingshot kind),
@@ -36,7 +41,10 @@
   `(ex/try+
      ~form
      (catch Object o#
-       (rethrow-as-service-exception o# ~err-msg ~err-code))))
+       (let [exception-msg# (get-message-from-object-or-exception o#)]
+         (do
+           (timbre/log :debug (str "An error has occured and was caught as a service exception: " exception-msg#))
+           (throw-service-exception (format ~err-msg exception-msg#) ~err-code))))))
 
 (defmacro assume
   "When the given form returns a falsy value, assume will throw a service exception with the given error message and code.
