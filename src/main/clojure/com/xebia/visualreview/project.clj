@@ -16,11 +16,8 @@
 
 (ns com.xebia.visualreview.project
   (:require [com.xebia.visualreview.service-util :as sutil]
-            [com.xebia.visualreview.persistence.util :as putil]))
-
-(defn- query-for-project
-  [conn param-type param-value row-fn]
-  (putil/query-single conn [(str "SELECT * FROM project WHERE " param-type "= ?") param-value] :row-fn row-fn))
+            [com.xebia.visualreview.persistence.util :as putil]
+            [com.xebia.visualreview.project.persistence :as ppersistence]))
 
 (defn get-project-by-name
   "Retrieves a project by project name. Returns nil when this project does not exist."
@@ -29,7 +26,7 @@
   ([conn project-name row-fn]
    {:pre (string? project-name)}
    (sutil/attempt
-    (query-for-project conn "name" project-name row-fn)
+    (ppersistence/query-for-project conn "name" project-name row-fn)
     "Could not retrieve project: %s", ::retrieve-by-name-failed)))
 
 (defn get-project-by-id
@@ -39,7 +36,7 @@
   ([conn project-id row-fn]
    {:pre (number? project-id)}
    (sutil/attempt
-     (query-for-project conn "id" project-id row-fn)
+     (ppersistence/query-for-project conn "id" project-id row-fn)
      "Could not retrieve project by id: %s"
      ::retrieve-by-id-failed)))
 
