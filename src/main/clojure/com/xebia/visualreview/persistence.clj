@@ -15,13 +15,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.persistence
-  (:require [taoensso.timbre :as timbre]
-            [slingshot.slingshot :as ex]
+  (:require [slingshot.slingshot :as ex]
             [clojure.java.jdbc :as j]
             [cheshire.core :as json]
             [com.xebia.visualreview.util :refer :all]
-            [com.xebia.visualreview.persistence.util :as putil]
-            [com.xebia.visualreview.persistence.database :as db])
+            [com.xebia.visualreview.persistence.util :as putil])
   (:import [java.sql Timestamp SQLException]
            [java.util Date]))
 (defn- format-dates [run-row]
@@ -84,6 +82,10 @@
    JOIN baseline_branch br ON t.baseline_root = br.head
    WHERE suite_id = ? AND br.name = ?" suite-id branch-name]
      :row-fn :head)))
+
+(defn get-baseline-node
+  [conn node-id]
+  (putil/query-single conn ["SELECT * FROM baseline_node WHERE id = ?" node-id]))
 
 (defn create-baseline-screenshot!
   "Adds the given screenshot-id to the given baseline."
@@ -276,37 +278,24 @@
       (putil/update! conn :baseline-branch {:head child-id} ["head = ?" parent-id]))))
 
 (defn create-baseline-branch! [conn parent-id branch-name]
-  {:pre [(number? parent-id)]}
-  (j/with-db-transaction [conn conn]
+  {:pre [(number? parent-id) (string? branch-name)]}
+  (try
     (let [tree-id (:id (get-tree-for-node conn parent-id))
           child-id (putil/insert-single! conn :baseline-node {:parent parent-id})]
       (copy-baseline-refs conn parent-id child-id)
       (putil/insert-single! conn :baseline-branch {:name          branch-name
                                              :baseline-tree tree-id
                                              :head          child-id
-                                             :branch-root   child-id}))))
+                                             :branch-root   child-id}))
+    (catch SQLException e
+      (when (putil/unique-constraint-violation? e)
+        (ex/throw+ {:type    :sql-exception
+                    :subtype ::unique-constraint-violation
+                    :message (.getMessage e)})))))
 
-(comment
-  (get-baseline-tree db/conn 1)
-  (do
-    (create-project! db/conn "Test project")
-    (create-suite-for-project! db/conn "Test project" "My suite")
-    (create-run! db/conn {:project-name "Test project" :suite-name "My suite"})
-    (dotimes [i 4]
-      (let [ss-id (save-screenshot! db/conn 1 (str "Rocket-" i) "1/1/1" 2347 "{}" "{}")]
-        (create-bl-node-screenshots! db/conn 1 ss-id)))
-    )
-  (create-baseline-child! db/conn 1 "master")
-  (create-baseline-branch! db/conn 2 "storybranch")
-  (create-baseline-child! db/conn 1 "storybranch")
-  (query db/conn ["SELECT * FROM baseline_node"])
-  (clojure.pprint/pprint (query db/conn ["SELECT * FROM bl_node_screenshot"]))
-  (query db/conn ["SELECT * FROM baseline_tree"])
-  (query db/conn ["SELECT * FROM baseline_branch"])
-
-  (copy-baseline-refs db/conn 1 3)
-
-  (do
-    (j/execute! db/conn ["DROP ALL OBJECTS"])
-    (db/run-init-script db/conn))
-  )
+(defn get-baseline-branch [conn suite-id branch-name]
+  {:pre [(number? suite-id) (string? branch-name)]}
+  (putil/query-single conn
+    ["SELECT br.* FROM baseline_branch br
+     JOIN baseline_tree tr ON tr.id = br.baseline_tree
+     WHERE tr.suite_id = ? AND br.name = ?" suite-id branch-name]))

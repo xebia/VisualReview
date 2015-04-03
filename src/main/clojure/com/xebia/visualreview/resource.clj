@@ -20,7 +20,7 @@
             [cheshire.core :as json]
             [slingshot.slingshot :as ex]
             [com.xebia.visualreview.validation :as v]
-            [com.xebia.visualreview.util :as util]
+            [com.xebia.visualreview.resource.util :refer :all]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.analysis.core :as analysis]
             [com.xebia.visualreview.io :as io]
@@ -28,47 +28,6 @@
             [com.xebia.visualreview.screenshot :as screenshot])
   (:import [java.util Map]
            [com.fasterxml.jackson.core JsonParseException]))
-
-(defn- camelize-response [x]
-  (cond
-    (vector? x) (mapv camelize-response x)
-    (map? x) (reduce (fn [acc [k v]] (conj acc [k (camelize-response v)])) {} ((util/map-keys util/camelize) x))
-    :else x))
-
-(def ^:private hyphenize-request (util/map-keys util/hyphenize))
-
-(defn- get-request? [ctx] (= (-> ctx :request :request-method) :get))
-(defn- put-or-post-request? [ctx] (#{:put :post} (get-in ctx [:request :request-method])))
-(defn- content-type [ctx] (get-in ctx [:request :headers "content-type"]))
-
-(defn json-resource [& args]
-  (apply liberator.core/resource
-         :available-media-types ["application/json"]
-         :known-content-type? (fn [ctx] (if (put-or-post-request? ctx)
-                                          (re-find #"^application/json" (content-type ctx))
-                                          true))
-         :malformed? (fn [{{body :body} :request}]
-                       (try
-                         [false {::parsed-json (-> body
-                                                   slurp
-                                                   (json/parse-string true))}]
-                         (catch JsonParseException _
-                           [true {::message "Malformed JSON request body"}])))
-         :handle-malformed ::message
-         :as-response (fn [d ctx] (representation/as-response (camelize-response d) ctx))
-         args))
-
-(defn- tx-conn [ctx]
-  (-> ctx :request :tx-conn))
-
-(defn- parse-longs [xs] (mapv #(Long/parseLong %) xs))
-
-(defmacro handle-invalid [validation & cs]
-  (assert (even? (count cs)))
-  `(let [err# (:error ~validation)]
-     (case (:subtype err#)
-       ~@cs
-       (:message err#))))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
 (def ^:private project-schema
@@ -79,7 +38,7 @@
     :allowed-methods [:get :put]
     :processable? (fn [ctx]
                     (or (get-request? ctx)
-                        (let [v (v/validations project-schema (::parsed-json ctx))]
+                        (let [v (v/validations project-schema (:parsed-json ctx))]
                           (if (:valid? v)
                             {::project-name (-> v :data :name)}
                             [false {::error-msg (handle-invalid v
@@ -155,7 +114,7 @@
     :processable? (fn [ctx]
                     (let [v (v/validations run-create-schema (if (get-request? ctx)
                                                                (-> ctx :request :params)
-                                                               (::parsed-json ctx)))]
+                                                               (:parsed-json ctx)))]
                       (if (:valid? v)
                         {::data (hyphenize-request (:data v))}
                         [false {::error-msg (handle-invalid v
@@ -316,7 +275,7 @@
     :processable? (fn [ctx]
                     (try
                       (let [[run-id diff-id] (parse-longs [run-id diff-id])
-                            v (v/validations update-diff-status-schema (::parsed-json ctx))]
+                            v (v/validations update-diff-status-schema (:parsed-json ctx))]
                         (if (:valid? v)
                           {::run-id run-id ::diff-id diff-id ::new-status (-> v :data :status)}
                           [false {::error-msg (handle-invalid v
