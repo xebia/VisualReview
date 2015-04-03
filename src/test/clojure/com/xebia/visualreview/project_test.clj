@@ -15,12 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.project-test
-  (:require [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.image.persistence :as ip]
-            [com.xebia.visualreview.io :as vrio]
-            [com.xebia.visualreview.service-util-test :as sutilt]
-            [midje.sweet :refer :all]
-            [clojure.java.io :as io]
+  (:require [midje.sweet :refer :all]
             [com.xebia.visualreview.project :as project]
             [com.xebia.visualreview.persistence.util :as putil]))
 
