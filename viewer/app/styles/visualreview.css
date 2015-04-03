@@ -522,3 +522,15 @@ only screen and (min-device-pixel-ratio: 2) {
   height: 40px;
   font-size: 18px;
 }
+
+.visible-on-hover {
+    visibility:hidden;
+}
+
+.hover-target:hover .visible-on-hover {
+    visibility:visible;
+}
+
+.color-light-gray {
+    color: #dedede;
+}

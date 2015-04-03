@@ -9,6 +9,9 @@ angular.module('visualDiffViewerApp')
         },
         create: {
           method: 'PUT'
+        },
+        remove: {
+          method: 'DELETE', url: '/api/projects/:projectId'
         }
       }
     );

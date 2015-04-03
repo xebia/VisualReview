@@ -7,7 +7,7 @@ angular.module('visualDiffViewerApp')
     };
 
 
-    $scope.createNewProject = function() {
+    $scope.createNewProject = function () {
       var newProjectName = $scope.newProjectName;
       if (!newProjectName) {
         return;
@@ -25,6 +25,12 @@ angular.module('visualDiffViewerApp')
       });
     };
 
+    $scope.deleteProject = function (projectName, projectId) {
+      if (confirm("Are you sure you want to delete '" + projectName + "' ?")) {
+        $scope.deletedProject = ResourceActionWrapper(ProjectResource.remove({projectId: projectId}));
+        $scope.deletedProject.$promise.then(getProjects)
+      }
+    };
 
     getProjects();
   });
