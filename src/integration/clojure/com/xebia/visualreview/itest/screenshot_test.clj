@@ -18,6 +18,7 @@
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.mock :as mock]
             [com.xebia.visualreview.persistence :as p]
+            [com.xebia.visualreview.project :as project]
             [clojure.java.io :as io]
             [com.xebia.visualreview.screenshot :as s]))
 
@@ -26,7 +27,7 @@
 (deftest screenshot-service
 
   (testing "Storing and retrieving a screenshot based on a screenshot-id"
-    (p/create-project! mock/*conn* "myProject")
+    (project/create-project! mock/*conn* "myProject")
     (p/create-suite-for-project! mock/*conn* "myProject" "mySuite")
     (let [run-id (p/create-run! mock/*conn* {:project-name "myProject" :suite-name "mySuite"})
           image-file (io/as-file (io/resource "tapir_hat.png"))

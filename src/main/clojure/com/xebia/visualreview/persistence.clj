@@ -20,8 +20,8 @@
             [com.xebia.visualreview.util :refer :all]
             [com.xebia.visualreview.persistence.util :as putil]
             [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.persistence.database :as db])
-  (:import [java.sql Timestamp]
+            [slingshot.slingshot :as ex])
+  (:import [java.sql Timestamp SQLException]
            [java.util Date]))
 (defn- format-dates [run-row]
   (-> run-row
