@@ -26,6 +26,7 @@ Icons used (by css name):
 * os-android
 * os-windows
 * os-mac
+* trash
 
 ## Octicons
 By [Github](https://github.com/github/octicons)<br/>

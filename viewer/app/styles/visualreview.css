@@ -140,18 +140,21 @@ a:link{
 .icon-os-linux:before {
     content: "q";
 }
+.icon-trash:before {
+    content: "r";
+}
 
 .navbar {
     position:fixed;
-    top:0px;
-    left:0px;
+    top:0;
+    left:0;
     width:100%;
     z-index: 10000;
 
     background-color:#fff;
     border: solid 1px #979797;
     padding: 9px;
-    box-shadow: 0px 2px 4px 0px;
+    box-shadow: 0 2px 4px 0;
 }
 
 .logo-image {
@@ -213,7 +216,7 @@ only screen and (min-device-pixel-ratio: 2) {
 
 .navbar-image-controls input {
     vertical-align: top;
-    margin-left: 0px;
+    margin-left: 0;
     cursor: pointer;
 }
 
@@ -242,7 +245,7 @@ only screen and (min-device-pixel-ratio: 2) {
 
 }
 .navbar-status:hover {
-    box-shadow: 0px 2px 4px 0px;
+    box-shadow: 0 2px 4px 0;
 }
 
 .navbar-status-icon {
@@ -283,6 +286,10 @@ only screen and (min-device-pixel-ratio: 2) {
     float: left;
 }
 
+.float-right {
+    float: right;
+}
+
 .overflow-auto {
     overflow: auto;
 }
@@ -294,7 +301,7 @@ only screen and (min-device-pixel-ratio: 2) {
 
 .screenshot-thumbnail-container {
     margin: 10px;
-    padding: 0px 2px 2px 2px;
+    padding: 0 2px 2px 2px;
     height: auto;
     width: auto;
     float: left;
@@ -303,7 +310,7 @@ only screen and (min-device-pixel-ratio: 2) {
 
 .screenshot-thumbnail-table {
     width: 1100px;
-    margin: 0px auto;
+    margin: 0 auto;
 }
 
 .screenshot-thumbnail-status {
@@ -312,14 +319,13 @@ only screen and (min-device-pixel-ratio: 2) {
     font-size: 12pt;
     color: #FFFFFF;
     vertical-align: middle;
-    padding: 0px;
+    padding: 0;
 }
 
 .counter-container {
     position:fixed;
-    bottom:0px;
-    right:0px;
-    color: red;
+    bottom:0;
+    right:0;
     text-align: right;
     vertical-align: bottom;
 
@@ -359,9 +365,7 @@ only screen and (min-device-pixel-ratio: 2) {
 .project-image {
     width: 150px;
     height: 150px;
-    border-width: 1px;
-    border-style: solid;
-    border-color:#FFFFFF;
+    border: 1px solid #FFFFFF;
     background-color: #555555;
 }
 
@@ -383,7 +387,7 @@ only screen and (min-device-pixel-ratio: 2) {
 .project-container {
     margin: 0 auto;
     padding: 20px;
-    width: 700px;
+    width: 400px;
     color: #fff;
 }
 
@@ -440,7 +444,7 @@ only screen and (min-device-pixel-ratio: 2) {
 }
 
 .screenshot-metadata-separator {
-    padding: 0px 2px 0px 2px;
+    padding: 0 2px 0 2px;
 }
 
 /** generic styles */
@@ -502,10 +506,10 @@ only screen and (min-device-pixel-ratio: 2) {
     position:absolute;
     visibility: hidden;
 
-    margin-top: 0px;
+    margin-top: 0;
     overflow: hidden;
 
-    box-shadow: 0px 2px 4px 0px;
+    box-shadow: 0 2px 4px 0;
 }
 
 .btn {
