@@ -15,19 +15,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.project-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.persistence.util :as putil]))
+            [com.xebia.visualreview.persistence.util :as putil]
+            [com.xebia.visualreview.test-util :refer :all]))
 
-(facts "Project service"
-       (facts "get-project-by-name"
-              (fact "retrieves a project from the database"
-                    (project/get-project-by-name {} "some name")
-                    => {:id 1234}
-                    (provided
-                      (putil/query-single anything anything anything anything) => {:id 1234}))
-              (fact "trhrows a  nil when the project does not exist"
-                    (project/get-project-by-name {} "some name")
-                    => nil
-                    (provided
-                      (putil/query-single anything anything anything anything) => nil))))
+(deftest get-project-by-name
+  (with-mock [putil/query-single {:id 1234}]
+    (is (= {:id 1234} (project/get-project-by-name {} "some name")) "retrieves a project from the database"))
+  (with-mock [putil/query-single nil]
+    (is (nil? (project/get-project-by-name {} "some name")) "returns nil when the project doesn't exist")))
