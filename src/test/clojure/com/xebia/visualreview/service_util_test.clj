@@ -18,26 +18,14 @@
   (:require [clojure.test :refer :all]
             [slingshot.slingshot :as ex]
             [slingshot.test]
-            [com.xebia.visualreview.service-util :as util]))
-
-(defn service-exception? [ex]
-  (and (map? ex)
-       (contains? ex :type)
-       (contains? ex :code)
-       (contains? ex :message)
-       (= (:type ex) :service-exception)))
+            [com.xebia.visualreview.service-util :as util]
+            [com.xebia.visualreview.test-util :refer :all]))
 
 (defn throw-java-exception-with-message [message]
   (throw (Exception. message)))
 
 (defn throw-slingshot-exception-with-message [message]
   (ex/throw+ {:type :my-exception :message message}))
-
-(defn slingshot-exception
-  "Creates a slingshot Throwable object so it can be used in Midje's =throws=> prerequisite.
-  Credits go to from http://stackoverflow.com/questions/17069584/why-cant-i-use-midge-to-mock-a-function-that-throws-using-slingshots-throw."
-  [exception-map]
-  (slingshot.support/get-throwable (slingshot.support/make-context exception-map (str "throw+: " map) nil (slingshot.support/stack-trace))))
 
 (deftest attempt-macro
   (testing "When body throws a Java exception"
