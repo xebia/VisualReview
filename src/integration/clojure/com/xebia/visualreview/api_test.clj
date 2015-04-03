@@ -18,7 +18,7 @@
   (:require [clj-http.client :as http]
             [cheshire.core :as json]
             [clojure.java.io :as io]
-            [com.xebia.visualreview.test-util :as test]))
+            [com.xebia.visualreview.itest-util :as test]))
 
 (def ^:private default-opts {:content-type        :json
                              :as                  :json
@@ -42,11 +42,13 @@
 (defn delete-project! [project-id]
   (http/delete (endpoint "projects" project-id) nil))
 
-(defn post-run! [params]
-  (dissoc (http/post (endpoint "runs") (merge default-opts {:body (json/generate-string params)})) :headers))
+(defn post-run! [project-name suite-name]
+  (dissoc (http/post (endpoint "runs") (merge default-opts {:body (json/generate-string {:projectName project-name
+                                                                                         :suiteName suite-name})})) :headers))
 
-(defn get-runs [params]
-  (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params params})) :headers))
+(defn get-runs [project-name suite-name]
+  (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params {:projectName project-name
+                                                                          :suiteName suite-name}})) :headers))
 
 (defn get-run [run-id]
   (http/get (endpoint "runs" run-id) default-opts))

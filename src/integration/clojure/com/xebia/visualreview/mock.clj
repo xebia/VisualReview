@@ -19,7 +19,11 @@
             [taoensso.timbre :as timbre]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.persistence.database :as db]
-            [com.xebia.visualreview.api-test :as api]))
+            [com.xebia.visualreview.api-test :as api]
+            [com.xebia.visualreview.itest-util :as util])
+  (:import [java.io File]
+           [java.nio.file Files Paths SimpleFileVisitor FileVisitResult Path LinkOption]
+           [java.nio.file.attribute BasicFileAttributes]))
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
@@ -28,28 +32,70 @@
                        :init-pool-size 1
                        :max-pool-size  1})
 
-(defn delete-recursively [fname]
-  (let [func (fn [func f]
-               (when (.isDirectory f)
-                 (doseq [f2 (.listFiles f)]
-                   (func func f2)))
-               (clojure.java.io/delete-file f true))]
-    (func func (clojure.java.io/file fname))))
+(defn- path-exists? [^Path path]
+  (Files/exists path (into-array LinkOption nil)))
+
+(defn delete-recursively!
+  "Deletes all files and subdirectories recursively. Will not follow or delete symlinks."
+  [filename]
+  (let [path (Paths/get filename (into-array String nil))]
+    (when (path-exists? path)
+      (let [file-visitor (proxy [SimpleFileVisitor] []
+                           (preVisitDirectory [_ ^BasicFileAttributes attrs]
+                             (if (.isSymbolicLink attrs)
+                               FileVisitResult/SKIP_SUBTREE
+                               FileVisitResult/CONTINUE))
+                           (visitFile [file ^BasicFileAttributes attrs]
+                             (when-not (.isSymbolicLink attrs)
+                               (Files/delete file))
+                             FileVisitResult/CONTINUE)
+                           (postVisitDirectory [dir _]
+                             (Files/delete dir)
+                             FileVisitResult/CONTINUE))]
+        (Files/walkFileTree path file-visitor)))))
+
+(def test-screenshot-dir "target/temp/screenshots")
 
 (defn setup-db []
-  (timbre/info "Setting up test database")
+  (timbre/log :info "Setting up test database")
   (j/with-db-connection [conn *conn*]
     (j/execute! conn ["DROP ALL OBJECTS"])
-    (com.xebia.visualreview.persistence.database/run-init-script conn)))
+    (db/run-init-script conn)))
 
 (defmacro setup-screenshots-dir [& body]
-  `(with-redefs [io/screenshots-dir "target/temp/screenshots"]
-     (do (delete-recursively io/screenshots-dir)
-         (.mkdirs (clojure.java.io/file io/screenshots-dir))
+  `(with-redefs [io/screenshots-dir test-screenshot-dir]
+     (do (delete-recursively! io/screenshots-dir)
+         (.mkdirs ^File (clojure.java.io/file io/screenshots-dir))
          ~@body)))
 
 (defmacro rebind-db-spec [& body]
   `(with-redefs [db/conn *conn*] ~@body))
+
+(defn test-server-fixture [f]
+  (util/start-server)
+  (f)
+  (util/stop-server))
+
+(defn setup-screenshot-dir-fixture [f]
+  (println "Rebinding screenshot dir to" test-screenshot-dir)
+  (with-redefs [io/screenshots-dir test-screenshot-dir]
+    (delete-recursively! io/screenshots-dir)
+    (.mkdirs ^File (clojure.java.io/file io/screenshots-dir))
+    (f)))
+
+(defn rebind-db-spec-fixture [f]
+  (println "Rebinding db spec to" (:subname *conn*))
+  (with-redefs [db/conn *conn*]
+    (f)))
+
+(defn setup-db-fixture [f]
+  (println "Setting up mock db")
+  (setup-db)
+  (f))
+
+(defn logging-fixture [f]
+  (timbre/with-logging-config {:fmt-output-fn :message}
+                              (f)))
 
 (defn upload-tapir [run-id meta props]
   (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))
@@ -59,3 +105,4 @@
   (api/upload-screenshot! run-id {:file "chess1.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
 (defn upload-chess-image-2 [run-id meta props]
   (api/upload-screenshot! run-id {:file "chess2.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
+

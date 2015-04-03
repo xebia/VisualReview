@@ -18,7 +18,7 @@
   (:require [com.xebia.visualreview.service-util :as sutil])
   (:import [com.xebia.visualreview PixelComparator DiffReport]
            [javax.imageio ImageIO]
-           (java.io File)))
+           [java.io File]))
 
 (defn generate-diff-report
   "Takes 2 inputfiles and returns a map with:

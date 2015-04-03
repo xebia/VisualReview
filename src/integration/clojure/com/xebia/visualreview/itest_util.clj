@@ -14,16 +14,15 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.test-util
+(ns com.xebia.visualreview.itest-util
   (:require [taoensso.timbre :as timbre]
             [com.xebia.visualreview.starter :as starter]))
 
 (def test-server-port 7001)
 
 (defn start-server []
-  (timbre/info "Starting test server on port 7001")
   (starter/start-server test-server-port))
 
 (defn stop-server []
-  (timbre/info "Shutting down test server")
+  (timbre/log :info "Shutting down test server")
   (starter/stop-server))
