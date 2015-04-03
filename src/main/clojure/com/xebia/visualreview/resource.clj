@@ -16,7 +16,6 @@
 
 (ns com.xebia.visualreview.resource
   (:require [liberator.core :refer [resource defresource]]
-            [liberator.representation :as representation]
             [cheshire.core :as json]
             [slingshot.slingshot :as ex]
             [com.xebia.visualreview.validation :as v]
@@ -27,8 +26,7 @@
             [com.xebia.visualreview.image :as image]
             [com.xebia.visualreview.screenshot :as screenshot]
             [com.xebia.visualreview.project :as project])
-  (:import [java.util Map]
-           [com.fasterxml.jackson.core JsonParseException]))
+  (:import [java.util Map]))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
 (def ^:private project-schema
