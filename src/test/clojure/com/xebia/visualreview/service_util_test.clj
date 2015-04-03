@@ -15,16 +15,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.service-util-test
-  (:require [com.xebia.visualreview.service-util :as util]
-            [midje.sweet :refer :all]
-            [slingshot.slingshot :as ex])
-  (:import [clojure.lang IExceptionInfo]))
+  (:require [clojure.test :refer :all]
+            [slingshot.slingshot :as ex]
+            [slingshot.test]
+            [com.xebia.visualreview.service-util :as util]))
 
-(defn is-service-exception? [message code]
-  (chatty-checker [exception] (and
-                    (= :service-exception (get-in (.getData exception) [:object :type]))
-                    (= message  (get-in (.getData exception) [:object :message]))
-                    (= code  (get-in (.getData exception) [:object :code])))))
+(defn service-exception? [ex]
+  (and (map? ex)
+       (contains? ex :type)
+       (contains? ex :code)
+       (contains? ex :message)
+       (= (:type ex) :service-exception)))
 
 (defn throw-java-exception-with-message [message]
   (throw (Exception. message)))
@@ -38,25 +39,25 @@
   [exception-map]
   (slingshot.support/get-throwable (slingshot.support/make-context exception-map (str "throw+: " map) nil (slingshot.support/stack-trace))))
 
-(facts "service-util"
-       (facts "attempt"
-              (facts "throws a slingshot exception of type 'service-exception'"
-                     (fact "when the form throws a java exception"
-                           (util/attempt (throw-java-exception-with-message "my exception message") "something went wrong: %s" :1234)
-                           => (throws IExceptionInfo (is-service-exception? "something went wrong: my exception message", :1234)))
-                     (fact "when the form throws a slingshot exception"
-                           (util/attempt (throw-slingshot-exception-with-message "my exception message") "something went wrong: %s" :1234)
-                           => (throws IExceptionInfo (is-service-exception? "something went wrong: my exception message", :1234))))
+(deftest attempt-macro
+  (testing "When body throws a Java exception"
+    (is (thrown+-with-msg? service-exception? #"something went wrong: my exception message"
+                          (util/attempt
+                            (throw-java-exception-with-message "my exception message")
+                            "something went wrong: %s" :1234))))
+  (testing "When body throws a Slingshot exception"
+    (is (thrown+-with-msg? service-exception? #"something went wrong: my exception message"
+                          (util/attempt
+                            (throw-slingshot-exception-with-message "something went wrong: my exception message")
+                            "something went wrong: %s" :1234))))
 
-              (fact "returns the form's value when no exception occured"
-                    (util/attempt "my return value" "errormessage" :errorcode)
-                    => "my return value"))
+  (testing "When no exception is thrown"
+    (is (= "my return value" (util/attempt (str "my return " "value") "errormesage" :errorcode)) "Evaluates the body and returns its value")))
 
-       (facts "assume"
-              (fact "throws a service exception when the form returns false"
-                    (util/assume (= (+ 2 2) 5) "two plus two is not five" :225))
-                    => (throws IExceptionInfo (is-service-exception? "two plus two is not five" :225))
+(deftest assume-macro
+  (testing "When the form returns false"
+    (is (thrown+-with-msg? service-exception? #"two"
+                          (util/assume (= (+ 2 2) 5) "two plus two is not five" :225))))
 
-              (fact "does not throw an exception when the form returns true"
-                    (util/assume (= (+ 2 2) 4) "two plus two should be five" :225)
-                    => nil)))
+  (testing "When the form returns true"
+    (is (nil? (util/assume (= (+ 2 2) 4) "two plus two should be five" :225)) "Does not throw an exception")))
