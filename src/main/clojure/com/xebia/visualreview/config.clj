@@ -20,15 +20,15 @@
             [com.xebia.visualreview.validation :as v])
   (:import [java.io FileNotFoundException]))
 
-(def ^{:private true :doc "Expected keys and related validators for configuration data"}
-config-schema
-  {:server-port     [Long []]
+(def ^{:private true
+       :doc     "Expected keys and related validators for configuration data"}config-schema
+  {:server-port     [Number []]
    :db-uri          [String []]
    :db-user         [String []]
    :db-password     [String [::v/optional]]
    :screenshots-dir [String [::v/optional]]})
 
-(def default-config {:server-port "7000"
+(def default-config {:server-port     "7000"
                      :screenshots-dir ".visualreview"})
 
 (defonce env {})
@@ -42,4 +42,3 @@ config-schema
      (let [conf (merge default-config (-> resource slurp edn/read-string))]
        (alter-var-root #'env (fn [_] (v/validate config-schema conf))))
      (throw (FileNotFoundException. (format "The configuration file %s could not be found" cfg))))))
-

@@ -15,14 +15,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.config-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [com.xebia.visualreview.config :refer :all]))
 
-(facts "About init!"
-  (fact "validates and parses configuration variables"
-    (init! "test_config.edn") => {:server-port     7001
-                                  :db-uri          "dummy:123//db"
-                                  :db-user         "test-user"
-                                  :db-password     "test-password"
-                                  :screenshots-dir ".visualreview/screenshots-test"})
-  )
+(deftest initialisation
+  (let [parsed-config (init! "test_config.edn")]
+    (are [key val] (= val (key parsed-config))
+      :server-port 7001
+      :db-uri "dummy:123//db"
+      :db-user "test-user"
+      :db-password "test-password"
+      :screenshots-dir ".visualreview/screenshots-test")))

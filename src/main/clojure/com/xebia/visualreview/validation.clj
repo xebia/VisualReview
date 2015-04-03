@@ -31,11 +31,10 @@
       (ex/throw+ (make-error ::invalid ::wrong-type (format error-message (name key)))))))
 
 (defn- coerce-to-type [entry-key value entry-type]
-  (if (= (type value) entry-type)
+  (if (isa? (type value) entry-type)
     value
     (condp = entry-type
-      Long (coerce entry-key value #(Long/parseLong %) "'%s' is not a number")
-      Integer (coerce entry-key value #(Integer/parseInt %) "'%s' is not a number")
+      Number (coerce entry-key value #(Long/parseLong %) "'%s' is not a number")
       String (coerce entry-key value str "'%s' is not parsable to string")
       Map (coerce entry-key value #(if (map? %) % (hash-map %)) "'%s' is not of the right type")
       (ex/throw+ (make-error ::unsupported ::empty (format "Unsupported schema type: %s" entry-type))))))
