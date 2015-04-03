@@ -18,7 +18,7 @@
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.test-util :refer [start-server stop-server]]))
+            [com.xebia.visualreview.itest-util :refer [start-server stop-server]]))
 
 (def project-name-1 "Test Project A")
 (def project-name-2 "Test Project B")

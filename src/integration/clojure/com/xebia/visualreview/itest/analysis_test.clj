@@ -18,7 +18,7 @@
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.test-util :refer [start-server stop-server]]))
+            [com.xebia.visualreview.itest-util :refer [start-server stop-server]]))
 
 (def project-name "Test Project A")
 (def suite-name "Test suite")
@@ -42,7 +42,7 @@
 (defn- content-type [response]
   (get-in response [:headers "Content-Type"]))
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest analysis
   (setup-project)

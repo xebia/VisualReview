@@ -18,7 +18,7 @@
   (:require [clj-http.client :as http]
             [cheshire.core :as json]
             [clojure.java.io :as io]
-            [com.xebia.visualreview.test-util :as test]))
+            [com.xebia.visualreview.itest-util :as test]))
 
 (def ^:private default-opts {:content-type        :json
                              :as                  :json

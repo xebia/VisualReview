@@ -23,7 +23,6 @@
 
 (use-fixtures :each mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
 
-
 (deftest screenshot-service
 
   (testing "Storing and retrieving a screenshot based on a screenshot-id"

@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.test-util
+(ns com.xebia.visualreview.itest-util
   (:require [taoensso.timbre :as timbre]
             [com.xebia.visualreview.starter :as starter]))
 

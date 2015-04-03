@@ -27,7 +27,6 @@
 
 (use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
 
-
 (deftest image-service
 
   (testing "Storing and retrieving an image based on an image-id"
