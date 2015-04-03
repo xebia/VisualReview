@@ -58,4 +58,14 @@
     (testing "Project name can not be empty"
       (let [response (api/put-project! {:name ""})]
         (is (= 422 (:status response)) "Unprocessable entity status code")
-        (is (re-find #"can not be empty" (:body response)) "Return error message")))))
+        (is (re-find #"can not be empty" (:body response)) "Return error message"))))
+
+  (testing "Deleting projects"
+    (testing "Project can be deleted and returns true"
+      (let [created-project (:body (api/put-project! {:name "my soon-to-be-deleted project"}))
+            project-before-deletion (:body (api/get-project (:id created-project)))
+            response-status (:status (api/delete-project! (:id project-before-deletion)))
+            project-after-deletion-status (:status (api/get-project (:id project-before-deletion)))]
+        (is (not(nil? project-before-deletion)))
+        (is (= response-status 204))
+        (is (= project-after-deletion-status 404))))))
