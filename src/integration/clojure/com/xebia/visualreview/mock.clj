@@ -22,7 +22,7 @@
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.itest-util :as util])
   (:import [java.io File]
-           [java.nio.file Files Paths SimpleFileVisitor FileVisitResult]
+           [java.nio.file Files Paths SimpleFileVisitor FileVisitResult Path LinkOption]
            [java.nio.file.attribute BasicFileAttributes]))
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
@@ -32,23 +32,27 @@
                        :init-pool-size 1
                        :max-pool-size  1})
 
+(defn- path-exists? [^Path path]
+  (Files/exists path (into-array LinkOption nil)))
+
 (defn delete-recursively!
   "Deletes all files and subdirectories recursively. Will not follow or delete symlinks."
   [filename]
-  (let [path (Paths/get filename (into-array String nil))
-        file-visitor (proxy [SimpleFileVisitor] []
-                       (preVisitDirectory [_ ^BasicFileAttributes attrs]
-                         (if (.isSymbolicLink attrs)
-                           FileVisitResult/SKIP_SUBTREE
-                           FileVisitResult/CONTINUE))
-                       (visitFile [file ^BasicFileAttributes attrs]
-                         (when-not (.isSymbolicLink attrs)
-                           (Files/delete file))
-                         FileVisitResult/CONTINUE)
-                       (postVisitDirectory [dir _]
-                         (Files/delete dir)
-                         FileVisitResult/CONTINUE))]
-    (Files/walkFileTree path file-visitor)))
+  (let [path (Paths/get filename (into-array String nil))]
+    (when (path-exists? path)
+      (let [file-visitor (proxy [SimpleFileVisitor] []
+                           (preVisitDirectory [_ ^BasicFileAttributes attrs]
+                             (if (.isSymbolicLink attrs)
+                               FileVisitResult/SKIP_SUBTREE
+                               FileVisitResult/CONTINUE))
+                           (visitFile [file ^BasicFileAttributes attrs]
+                             (when-not (.isSymbolicLink attrs)
+                               (Files/delete file))
+                             FileVisitResult/CONTINUE)
+                           (postVisitDirectory [dir _]
+                             (Files/delete dir)
+                             FileVisitResult/CONTINUE))]
+        (Files/walkFileTree path file-visitor)))))
 
 (def test-screenshot-dir "target/temp/screenshots")
 
