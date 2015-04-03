@@ -15,7 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.logging
-  (:require [taoensso.timbre :as timbre :only [log]]))
+  (:require [taoensso.timbre :as timbre]))
 
 ; use defmacro
 (defn info [message]

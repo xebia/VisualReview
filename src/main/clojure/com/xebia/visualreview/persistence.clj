@@ -96,8 +96,9 @@
               WHERE diff.id = ?)" screenshot-id diff-id])))
 
 ;; Analysis
-(defn- create-analysis! [conn baseline-node run-id]
+(defn- create-analysis!
   "Returns the generated analysis id"
+  [conn baseline-node run-id]
   (putil/insert-single! conn :analysis {:baseline-node baseline-node :run-id run-id}))
 
 (defn get-analysis

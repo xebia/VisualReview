@@ -49,7 +49,6 @@
 (defn get-runs [project-name suite-name]
   (dissoc (http/get (endpoint "runs") (merge default-opts {:query-params {:projectName project-name
                                                                           :suiteName suite-name}})) :headers))
-
 (defn get-run [run-id]
   (http/get (endpoint "runs" run-id) default-opts))
 

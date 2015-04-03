@@ -15,7 +15,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.resource.util
-  (:require [liberator.representation :as representation]
+  (:require [liberator.core :as liberator]
+            [liberator.representation :as representation]
             [cheshire.core :as json]
             [com.xebia.visualreview.util :as util])
   (:import [com.fasterxml.jackson.core JsonParseException]))
@@ -38,7 +39,7 @@
 (defn content-type [ctx] (get-in ctx [:request :headers "content-type"]))
 
 (defn json-resource [& args]
-  (apply liberator.core/resource
+  (apply liberator/resource
          :available-media-types ["application/json"]
          :known-content-type? (fn [ctx] (if (put-or-post-request? ctx)
                                           (re-find #"^application/json" (content-type ctx))

@@ -47,30 +47,6 @@
 (deftest analysis
   (setup-project)
 
-  (testing "Retrieving analysis for a run"
-    (let [analysis-response (api/get-analysis 1)
-          {:keys [analysis diffs]} (:body analysis-response)
-          [before-screenshot after-screenshot] ((juxt :before :after) (first diffs))]
-      (is (= 200 (:status analysis-response)) "OK status")
-      (are [k v] (if (fn? v) (v (k analysis)) (= (k analysis) v))
-        :baselineNode 1
-        :creationTime string?
-        :projectName project-name
-        :suiteName suite-name)
-      (is (= 2 (count diffs)) "The diff contains two entries")
-      (is (= "pending" (:status (first diffs))) "The first status is pending")
-      (is (= "pending" (:status (second diffs))) "The second status is pending")
-      (is (and (zero? (:percentage (first diffs)))
-               (= before-screenshot after-screenshot)) "The before and after images are equal")
-
-      (testing "Retrieving images from returned paths"
-        (let [before-image (api/get-image (:imageId before-screenshot))
-              diff-image (api/get-image (:imageId (first diffs)))]
-          (is (= 200 (:status before-image)) "OK status")
-          (is (= 200 (:status diff-image)) "OK status")
-          (is (= "image/png" (content-type before-image)) "Image has content-type image/png")
-          (is (= "image/png" (content-type diff-image)) "Diff has content-type image/png")))))
-
   (testing "Analysis status"
     (is (= 1 (count (:body (api/get-runs project-name suite-name)))) "There is one run")
     (let [[chess-diff tapir-diff] (-> (api/get-analysis 1) :body :diffs)]
@@ -78,9 +54,8 @@
       (is (= "pending" (:status tapir-diff)) "The tapir diff is pending")
 
       ;; TODO: Support a nil before-screenshot. That is more correct for the very first screenshot version
-      "The before and after screenshots are the same for the first run"
-      (are [diff] (= (-> diff :before :id) (-> diff :after :id))
-        chess-diff tapir-diff)))
+      (is (= (-> chess-diff :before :id) (-> chess-diff :after :id)) "The before and after screenshots are the same for the first run")
+      (is (= (-> tapir-diff :before :id) (-> tapir-diff :after :id)) "The before and after screenshots are the same for the first run")))
 
   (testing "Diff approval process"
     (let [response (api/update-diff-status! 1 1 "ejected")]

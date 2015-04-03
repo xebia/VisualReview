@@ -62,15 +62,6 @@
     (j/execute! conn ["DROP ALL OBJECTS"])
     (db/run-init-script conn)))
 
-(defmacro setup-screenshots-dir [& body]
-  `(with-redefs [io/screenshots-dir test-screenshot-dir]
-     (do (delete-recursively! io/screenshots-dir)
-         (.mkdirs ^File (clojure.java.io/file io/screenshots-dir))
-         ~@body)))
-
-(defmacro rebind-db-spec [& body]
-  `(with-redefs [db/conn *conn*] ~@body))
-
 (defn test-server-fixture [f]
   (util/start-server)
   (f)
@@ -94,8 +85,7 @@
   (f))
 
 (defn logging-fixture [f]
-  (timbre/with-logging-config {:fmt-output-fn :message}
-                              (f)))
+  (timbre/with-logging-config {:fmt-output-fn :message} (f)))
 
 (defn upload-tapir [run-id meta props]
   (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))

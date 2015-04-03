@@ -15,10 +15,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.service-util-test
-  (:use [midje.sweet])
   (:require [com.xebia.visualreview.service-util :as util]
+            [midje.sweet :refer :all]
             [slingshot.slingshot :as ex])
-  (:import (clojure.lang IExceptionInfo)))
+  (:import [clojure.lang IExceptionInfo]))
 
 (defn is-service-exception? [message code]
   (chatty-checker [exception] (and
