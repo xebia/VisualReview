@@ -19,7 +19,7 @@
             [com.xebia.visualreview.config :refer :all]))
 
 (deftest initialisation
-  (let [parsed-config (init! "test_config.edn")]
+  (let [parsed-config (init! "src/test/resources/test_config.edn")]
     (are [key val] (= val (key parsed-config))
       :server-port 7001
       :db-uri "dummy:123//db"
