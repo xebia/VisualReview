@@ -18,7 +18,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.xebia.visualreview.validation :as v])
-  (:import [java.io FileNotFoundException]))
+  (:import [java.io FileNotFoundException File]))
 
 (def ^{:private true
        :doc     "Expected keys and related validators for configuration data"}config-schema
@@ -29,16 +29,17 @@
    :screenshots-dir [String [::v/optional]]})
 
 (def default-config {:server-port     "7000"
-                     :screenshots-dir ".visualreview"})
+                     :screenshots-dir "screenshots"})
 
 (defonce env {})
 
-(def ^:private config-file "config.edn")
+(def ^:private config-file "./config.edn")
 (defn init!
   "Reads the config.edn resource file on the classpath (or the given arg). Parses it and sets the env var"
   ([] (init! config-file))
   ([cfg]
-   (if-let [resource (io/resource cfg)]
-     (let [conf (merge default-config (-> resource slurp edn/read-string))]
+   (let [^File config-file (io/file cfg)]
+     (if (.canRead config-file)
+      (let [conf (merge default-config (-> config-file slurp edn/read-string))]
        (alter-var-root #'env (fn [_] (v/validate config-schema conf))))
-     (throw (FileNotFoundException. (format "The configuration file %s could not be found" cfg))))))
+     (throw (FileNotFoundException. (format "The configuration file %s could not be found" cfg)))))))
