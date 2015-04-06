@@ -3,8 +3,8 @@
  :server-port "7000"
 
  ;; Database
- :db-uri "tcp://localhost/./visualreview"
- :db-user "sa"
+ :db-uri "file:./.visualreview/visualreview.db"
+ :db-user ""
  :db-password ""
 
  ;; File system
