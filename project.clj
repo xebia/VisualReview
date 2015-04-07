@@ -1,4 +1,4 @@
-(defproject visualreview "0.0.1-SNAPSHOT"
+(defproject visualreview "0.0.2-SNAPSHOT"
   :description "Provides a productive and human-friendly workflow for catching visual regressions by comparing screenshots"
   :url "https://github.com/xebia/VisualReview"
   :license {:name "Apache Licence 2.0"
