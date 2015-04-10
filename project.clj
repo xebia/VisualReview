@@ -32,7 +32,7 @@
   :resource {:resource-paths ["viewer/dist"]
              :target-path    "target/classes/public"
              :skip-stencil   [#".*"]
-             :silent         true}                         ; only prints errors
+             :silent         false}
 
   :aliases {"integration"   ["with-profile" "+integration" "test"]
             "unit"          ["with-profile" "+unit" "test"]
