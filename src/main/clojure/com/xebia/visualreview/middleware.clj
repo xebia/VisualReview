@@ -15,9 +15,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.middleware
-  (:require [taoensso.timbre :as timbre]
-            [slingshot.slingshot :as s]
+  (:require [slingshot.slingshot :as s]
             [com.xebia.visualreview.persistence.database :as db]
+            [com.xebia.visualreview.logging :as log]
             [clojure.java.jdbc :as j])
   (:import [java.sql SQLException]))
 
@@ -27,13 +27,13 @@
       (f request)
       (catch [:type :service-exception] {:keys [message code]}
         (do
-          (timbre/log :error (str "A service exception occured, code " code ", message " message))
+          (log/error (str "A service exception occured, code " code ", message " message))
           {:status  500
            :headers {}
            :body    (str "Internal service exception occured")}))
       (catch Exception e
         (do
-          (timbre/log :error e (str "A request triggered an unhandled exception, as a result the request was met with a HTTP status 500 response." (.getMessage e)))
+          (log/error e (str "A request triggered an unhandled exception, as a result the request was met with a HTTP status 500 response." (.getMessage e)))
           {:status  500
            :headers {}
            :body    "Internal error occurred"})))))
@@ -44,9 +44,9 @@
       (try
         (handler (assoc req :tx-conn conn))
         (catch SQLException e
-          (timbre/log :error "SQLException caught.")
+          (log/error "SQLException caught.")
           (throw e))
         (catch Exception e
-          (timbre/log :error "Exception occured whilst inside transaction. Transaction was rolled back.")
+          (log/error "Exception occured whilst inside transaction. Transaction was rolled back.")
           (j/db-set-rollback-only! conn)
           (throw e))))))

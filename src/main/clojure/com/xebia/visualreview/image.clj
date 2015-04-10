@@ -15,8 +15,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.image
-  (:require [taoensso.timbre :as timbre]
-            [com.xebia.visualreview.io :as io]
+  (:require [com.xebia.visualreview.io :as io]
+            [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.image.persistence :as ip]
             [com.xebia.visualreview.service-util :as sutil])
   (:import [java.util Calendar]
@@ -32,7 +32,7 @@
        directory (str (.get now Calendar/YEAR) "/" (.get now Calendar/MONTH) "/" (.get now Calendar/DAY_OF_MONTH) "/" (.get now Calendar/HOUR_OF_DAY))
        image-id (sutil/attempt (ip/insert-image! conn directory) "Could not record new image in the database: %s" ::image-cannot-store-on-db)]
     (sutil/attempt (io/store-png-image! file directory image-id) (str "Could not store image with id " image-id " on filesystem: %s") ::image-cannot-store-on-fs)
-    (timbre/log :debug (str "created image with id " image-id))
+    (log/debug (str "created image with id " image-id))
   image-id))
 
 (defn get-image-path

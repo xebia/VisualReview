@@ -16,7 +16,7 @@
 
 (ns com.xebia.visualreview.service-util
   (:require [slingshot.slingshot :as ex]
-            [taoensso.timbre :as timbre]))
+            [com.xebia.visualreview.logging :as log]))
 
 (defn get-message-from-object-or-exception
   [object-or-exception]
@@ -43,7 +43,7 @@
      (catch Object o#
        (let [exception-msg# (get-message-from-object-or-exception o#)]
          (do
-           (timbre/log :debug (str "An error has occured and was caught as a service exception: " exception-msg#))
+           (log/debug (str "An error has occured and was caught as a service exception: " exception-msg#))
            (throw-service-exception (format ~err-msg exception-msg#) ~err-code))))))
 
 (defmacro assume

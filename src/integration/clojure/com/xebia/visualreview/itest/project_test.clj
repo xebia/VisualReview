@@ -20,7 +20,7 @@
             [com.xebia.visualreview.project :as project]
             [com.xebia.visualreview.persistence :as p]))
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-db-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-db-fixture)
 
 (deftest project-service-store
   (testing "stores and retrieves a project by name"

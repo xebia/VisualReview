@@ -16,13 +16,13 @@
 
 (ns com.xebia.visualreview.itest.screenshot-test
   (:require [clojure.test :refer :all]
+            [clojure.java.io :as io]
             [com.xebia.visualreview.mock :as mock]
             [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.project :as project]
-            [clojure.java.io :as io]
             [com.xebia.visualreview.screenshot :as s]))
 
-(use-fixtures :each mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
+(use-fixtures :each mock/logging-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
 
 (deftest screenshot-service
 

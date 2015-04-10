@@ -20,9 +20,9 @@
              [params :as params]
              [keyword-params :refer [wrap-keyword-params]]
              [multipart-params :refer [wrap-multipart-params]]]
-            [taoensso.timbre :as timbre]
-            [com.xebia.visualreview.routes :as routes]
             [ring.adapter.jetty :refer [run-jetty]]
+            [com.xebia.visualreview.routes :as routes]
+            [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.middleware :as middleware]))
 
 (def app (-> routes/main-router
@@ -37,10 +37,10 @@
   (when-let [ws @server]
     (.stop ^Server ws)
     (reset! server nil)
-    (timbre/log :info "VisualReview server stopped")))
+    (log/info "VisualReview server stopped")))
 
 (defn start-server [port]
   (try
     (reset! server (run-jetty #'app {:join? false :port port}))
-    (timbre/log :info (str "VisualReview server started at port " port))
-    (catch Exception e (timbre/log :fatal (str "Could not start server on port " port ": " (.getMessage e))))))
+    (log/info (str "VisualReview server started at port " port))
+    (catch Exception e (log/fatal (str "Could not start server on port " port ": " (.getMessage e))))))

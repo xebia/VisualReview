@@ -73,7 +73,7 @@
   [value validations]
   (if-some [err (some identity (map #(when-not (conforms? value %) %) validations))]
            (do
-             (taoensso.timbre/log :info (format "Validation %s failed" err))
+             (log/info (format "Validation %s failed" err))
              (ex/throw+ (make-error ::invalid err (format "Validation %s failed" err))))
            value))
 

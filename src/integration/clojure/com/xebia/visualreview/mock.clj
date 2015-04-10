@@ -16,11 +16,12 @@
 
 (ns com.xebia.visualreview.mock
   (:require [clojure.java.jdbc :as j]
-            [taoensso.timbre :as timbre]
+            [clojure.java.io :as jio]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.persistence.database :as db]
             [com.xebia.visualreview.api-test :as api]
-            [com.xebia.visualreview.itest-util :as util])
+            [com.xebia.visualreview.itest-util :as util]
+            [com.xebia.visualreview.logging :as log])
   (:import [java.io File]
            [java.nio.file Files Paths SimpleFileVisitor FileVisitResult Path LinkOption]
            [java.nio.file.attribute BasicFileAttributes]))
@@ -57,7 +58,7 @@
 (def test-screenshot-dir "target/temp/screenshots")
 
 (defn setup-db []
-  (timbre/log :info "Setting up test database")
+  (log/info "Setting up test database")
   (j/with-db-connection [conn *conn*]
     (j/execute! conn ["DROP ALL OBJECTS"])
     (db/run-init-script conn)))
@@ -71,7 +72,7 @@
   (println "Rebinding screenshot dir to" test-screenshot-dir)
   (with-redefs [io/screenshots-dir test-screenshot-dir]
     (delete-recursively! io/screenshots-dir)
-    (.mkdirs ^File (clojure.java.io/file io/screenshots-dir))
+    (.mkdirs ^File (jio/file io/screenshots-dir))
     (f)))
 
 (defn rebind-db-spec-fixture [f]
@@ -85,7 +86,9 @@
   (f))
 
 (defn logging-fixture [f]
-  (timbre/with-logging-config {:fmt-output-fn :message} (f)))
+  (log/set-log-level! :debug)
+  (log/set-log-msg-format!)
+  (f))
 
 (defn upload-tapir [run-id meta props]
   (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))

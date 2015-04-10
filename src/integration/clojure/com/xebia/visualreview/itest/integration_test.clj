@@ -20,12 +20,11 @@
             [com.xebia.visualreview.mock :as mock]
             [com.xebia.visualreview.itest-util :refer [start-server stop-server]]))
 
-
 (def project-name-1 "A Test Project")
 (def project-name-2 "Another Project")
 (def suite-name "Test suite")
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest projects
 

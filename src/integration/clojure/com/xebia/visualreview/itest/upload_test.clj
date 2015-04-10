@@ -35,7 +35,7 @@
   (api/put-project! {:name project-name-1})
   (api/put-project! {:name project-name-2}))
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest screenshots
 

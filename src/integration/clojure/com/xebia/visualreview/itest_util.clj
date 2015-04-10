@@ -15,7 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.itest-util
-  (:require [taoensso.timbre :as timbre]
+  (:require [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.starter :as starter]))
 
 (def test-server-port 7001)
@@ -24,5 +24,5 @@
   (starter/start-server test-server-port))
 
 (defn stop-server []
-  (timbre/log :info "Shutting down test server")
+  (log/info "Shutting down test server")
   (starter/stop-server))
