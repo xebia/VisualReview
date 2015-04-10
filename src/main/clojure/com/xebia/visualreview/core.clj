@@ -19,17 +19,18 @@
             [com.xebia.visualreview.starter :as starter]
             [com.xebia.visualreview.config :as config]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.persistence.database :as db]
-            [taoensso.timbre :as timbre])
+            [com.xebia.visualreview.logging :as log]
+            [com.xebia.visualreview.persistence.database :as db])
   (:gen-class))
 
 (defn- config-settings []
   (try+
     (config/init!)
     (catch [:type :com.xebia.visualreview.validation/invalid] exception
-      (timbre/log :fatal (str "Server configuration error: " (exception :message))))))
+      (log/fatal (str "Server configuration error: " (exception :message))))))
 
 (defn -main [& _]
+  (log/set-log-msg-format!)
   (when-let [{:keys [server-port db-uri db-user db-password screenshots-dir]} (config-settings)]
     (try
       (io/init-screenshots-dir! screenshots-dir)
@@ -37,7 +38,7 @@
       (starter/start-server server-port)
       :ok
       (catch Exception e
-        (timbre/log :fatal (str "Error initializing: " (.getMessage e)))
+        (log/fatal (str "Error initializing: " (.getMessage e)))
         (starter/stop-server)
         (db/close-connection)
         (System/exit 1)))))

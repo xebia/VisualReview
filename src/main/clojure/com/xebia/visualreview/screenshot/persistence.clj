@@ -17,15 +17,15 @@
 (ns com.xebia.visualreview.screenshot.persistence
   (:require [slingshot.slingshot :as ex]
             [cheshire.core :as json]
-            [taoensso.timbre :as timbre]
-            [com.xebia.visualreview.persistence.util :as putil])
-  (:import (java.sql SQLException)))
+            [com.xebia.visualreview.persistence.util :as putil]
+            [com.xebia.visualreview.logging :as log])
+  (:import [java.sql SQLException]))
 
 (defn save-screenshot!
   "Stores a reference with data of a new screenshot. Returns the new screenshot id."
   [conn run-id screenshot-name size properties meta image-id]
   (try
-    (timbre/log :debug (str "saving screenshot with image-id " image-id))
+    (log/debug (str "saving screenshot with image-id " image-id))
     (putil/insert-single! conn :screenshot {:run-id          run-id
                                             :screenshot-name screenshot-name
                                             :image-id        image-id

@@ -25,7 +25,7 @@
 (defn- YYYYMMDDH [^Calendar calendar]
   (apply str (interpose "/" (mapv #(.get calendar %) [Calendar/YEAR Calendar/MONTH Calendar/DAY_OF_MONTH Calendar/HOUR_OF_DAY]))))
 
-(use-fixtures :each mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
 
 (deftest image-service
 
