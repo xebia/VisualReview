@@ -52,7 +52,6 @@
     :put! (fn [ctx]
             (let [new-project-id (project/create-project! (tx-conn ctx) (::project-name ctx))
                   project (p/get-suites-by-project-id (tx-conn ctx) new-project-id)]
-              (io/create-project-directory! new-project-id)
               {::project project}))
     :handle-created ::project
     :handle-ok (fn [ctx] (project/get-projects (tx-conn ctx)))))
@@ -139,7 +138,6 @@
     :post! (fn [ctx]
              (let [new-run-id (p/create-run! (tx-conn ctx) (::data ctx))
                    run (p/get-run (tx-conn ctx) new-run-id)]
-               (io/create-run-directory! (::project-id ctx) (:suite-id run) (:id run))
                {::run run}))
     :handle-created ::run
     :handle-ok ::runs))

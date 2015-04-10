@@ -29,7 +29,7 @@
 
   (let [image-1-src (io/as-file (io/resource "tapir.png"))]
     (with-mock [ip/insert-image! 3
-                vrio/store-image! (throw (IOException. "Disk full"))]
+                vrio/store-png-image! (throw (IOException. "Disk full"))]
       (is (thrown+-with-msg? service-exception? #"Could not store image with id 3 on filesystem: Disk full"
                              (image/insert-image! {} image-1-src))
           "throws a service exception when the image could not be stored on the file system")))
