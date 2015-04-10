@@ -31,7 +31,7 @@
   (let [now (Calendar/getInstance)
        directory (str (.get now Calendar/YEAR) "/" (.get now Calendar/MONTH) "/" (.get now Calendar/DAY_OF_MONTH) "/" (.get now Calendar/HOUR_OF_DAY))
        image-id (sutil/attempt (ip/insert-image! conn directory) "Could not record new image in the database: %s" ::image-cannot-store-on-db)]
-    (sutil/attempt (io/store-image! file directory image-id) (str "Could not store image with id " image-id " on filesystem: %s") ::image-cannot-store-on-fs)
+    (sutil/attempt (io/store-png-image! file directory image-id) (str "Could not store image with id " image-id " on filesystem: %s") ::image-cannot-store-on-fs)
     (timbre/log :debug (str "created image with id " image-id))
   image-id))
 

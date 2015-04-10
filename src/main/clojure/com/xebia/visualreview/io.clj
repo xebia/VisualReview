@@ -15,9 +15,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.io
-  (:import [java.io File FileNotFoundException]
-           [java.nio.file NotDirectoryException Files AccessDeniedException LinkOption]
-           [java.nio.file.attribute FileAttribute])
+  (:import [java.io FileNotFoundException File]
+           [java.nio.file NotDirectoryException Files AccessDeniedException])
   (:require [clojure.java.io :as io]))
 
 (def screenshots-dir "screenshots")
@@ -25,7 +24,7 @@
 (defn init-screenshots-dir! [dir]
   (let [dir (or dir "screenshots")
         file (io/file dir)
-        path (.toPath file)
+        path (.toPath ^File file)
         ex-msg (fn [s] (str "The screenshot directory \"" dir "\" " s))]
     (cond
       (not (.exists file)) (throw (IllegalArgumentException. ^String (ex-msg "does not exist.")))
@@ -34,23 +33,6 @@
       (not (Files/isWritable path)) (throw (AccessDeniedException. dir nil (ex-msg "is not writable.")))
       :else (alter-var-root #'screenshots-dir (fn [_] dir)))))
 
-(defn create-project-directory! [project-id]
-  {:pre [project-id]}
-  (.mkdir ^File (io/file screenshots-dir (str project-id))))
-
-(defn create-run-directory!
-  "Creates the path <project-id>/<suite-id>/<run-id> relative to the screenshots-dir.
-  Will automatically create any missing parent directory."
-  [project-id suite-id run-id]
-  {:pre [project-id suite-id run-id]}
-  (let [[project-dir suite-dir run-dir] (mapv str [project-id suite-id run-id])
-        diffs-file (.toPath (io/file screenshots-dir project-dir suite-dir "diffs"))
-        run-file (.toPath (io/file screenshots-dir project-dir suite-dir run-dir))]
-    (when (Files/notExists run-file (make-array LinkOption 0))
-      (Files/createDirectories run-file (make-array FileAttribute 0)))
-    (when (Files/notExists diffs-file (make-array LinkOption 0))
-      (Files/createDirectories diffs-file (make-array FileAttribute 0)))))
-
 (defn get-file [file-path]
   {:pre [file-path]}
   (let [file (io/file screenshots-dir file-path)]
@@ -58,7 +40,7 @@
       file
       (throw (FileNotFoundException. (format "File at %s does not exist." (str (.getPath file))))))))
 
-(defn store-image!
+(defn store-png-image!
   "Stores the given file to the given path"
   [file directory id]
   {:pre [file directory id]}
