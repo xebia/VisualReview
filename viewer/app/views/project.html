@@ -2,20 +2,20 @@
 
   <div navbar project-id="project.id" project-name="project.name"></div>
 
-  <div class="project-container overflow-auto">
+  <div class="color-light list-header overflow-auto">
     <h1 ng-hide="project.$vrIsLoading">List of suites in {{project.name}}</h1>
 
-    <div ng-show="project.$vrIsLoading" class="text-small">
+    <div ng-show="project.$vrIsLoading" class="text-small color-light">
       Retrieving...
     </div>
 
-    <div ng-show="project.$vrHasError" class="text-small text-red">
+    <div ng-show="project.$vrHasError" class="text-small color-red">
       Could not retrieve list of suites. {{project.$vrErrorMessage}}
     </div>
 
     <div ng-repeat="suite in project.suites" ng-hide="project.$vrIsLoading">
       <a class="text-decoration-none" href="#/{{project.id}}/{{suite.id}}/">
-        <span class="project-header">
+        <span class="text-big font-bold color-light text-decoration-underline">
             {{suite.name}}
         </span>
 
