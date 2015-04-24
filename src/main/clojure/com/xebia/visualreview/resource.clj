@@ -221,7 +221,7 @@
                      screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties meta file)]
                  {::screenshot screenshot ::new? true})
                (catch [:type :service-exception :code ::screenshot/screenshot-cannot-store-in-db-already-exists] _
-                 {::screenshot {:error "Screenshot with identical name and properties was already uploaded in this run"
+                 {::screenshot {:error              "Screenshot with identical name and properties was already uploaded in this run"
                                 :conflicting-entity (select-keys (::data ctx) [:meta :properties :screenshot-name])}
                   ::new?       false})))
     :new? ::new?
@@ -229,12 +229,13 @@
     :handle-created ::screenshot
     :handle-ok ::screenshot))
 
-;; Analysis
 (defn screenshots-resource [run-id]
   (fn [req]
     (if (get-request? {:request req})
       (get-screenshots run-id)
       (upload-screenshot run-id))))
+
+;; Analysis
 (defn- full-path [path id & {:keys [prefix] :or {prefix "/screenshots"}}]
   (str prefix "/" path "/" id ".png"))
 
@@ -297,10 +298,11 @@
              {::updated-diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
     :handle-created ::updated-diff))
 
-(defresource image [image-id]
-             :available-media-types ["image/png"]
-             :allowed-methods [:get]
-             :exists? (fn [ctx]
-                        {:image-path (image/get-image-path (tx-conn ctx) image-id)})
-             :handle-ok (fn [ctx]
-                          (io/get-file (:image-path ctx))))
+(defn image [image-id]
+  (resource
+    :available-media-types ["image/png"]
+    :allowed-methods [:get]
+    :exists? (fn [ctx]
+               {:image-path (image/get-image-path (tx-conn ctx) image-id)})
+    :handle-ok (fn [ctx]
+                 (io/get-file (:image-path ctx)))))
