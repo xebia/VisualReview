@@ -17,9 +17,9 @@
             <div ng-repeat="aShot in screenshots" style="clear:both;">
                <div class="row cursor-pointer navbar-screenshot-dropdown-item" ng-class="{'navbar-screenshot-dropdown-item-selected': aShot === screenshot}"
                        ng-click="selectScreenshot($index)">
-                 <div class="row-column-left vertical-middle margin-right-2">{{aShot.before.screenshotName}}</div>
+                 <div class="row-column-left vertical-middle margin-right-2">{{aShot.after.screenshotName}}</div>
                  <div class="row-column-right vertical-middle navbar-screenshot-dropdown-metadata">
-                   <div screenshot-metadata meta="aShot.before.meta" properties="aShot.before.properties">
+                   <div screenshot-metadata meta="aShot.after.meta" properties="aShot.after.properties">
                    </div>
                  </div>
                </div>
@@ -27,23 +27,28 @@
           </div>
         </div>
         <div class="row cursor-pointer" vr-dropdown-toggle>
-          <div class="row-column navbar-screenshot-name">{{screenshot.before.screenshotName}} ({{screenshot.percentage | number}}%)</div>
+          <div class="row-column navbar-screenshot-name">{{screenshot.after.screenshotName}} ({{screenshot.percentage | number}}%)</div>
           <div class="navbar-image-controls-separator row-column">
           </div>
           <div class="row-column">
-            <div screenshot-metadata meta="screenshot.before.meta" properties="screenshot.before.properties">
+            <div screenshot-metadata meta="screenshot.after.meta" properties="screenshot.after.properties">
             </div>
 
           </div>
         </div>
       </div>
 
-
     </div>
 
     <div class="navbar-image-controls" ng-show="screenshot">
       <div>
-        <input type="radio" id="radio-baseline" name="imageVersionDisplay" ng-model="screenshotType" value="before">
+        <input type="radio"
+               id="radio-baseline"
+               name="imageVersionDisplay"
+               ng-model="screenshotType"
+               value="before"
+               ng-disabled="!screenshot.before">
+
         <label for="radio-baseline" class="unselectable">baseline</label>
       </div>
       <div>
