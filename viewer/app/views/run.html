@@ -1,5 +1,5 @@
 <div ng-if="analysis" keyboard>
-  <div class="counter-container">
+  <div class="counter-container" ng-show="diffs.length > 0">
     <div class="text-center text-shadow-radial">
       <div ng-click="selectPreviousScreenshot()" transparent="selectedDiffIndex == 0" class="counter-arrow">∧</div>
       <div>{{selectedDiffIndex + 1}} / {{diffs.length}}</div>
@@ -29,4 +29,11 @@
     </div>
   </div>
 
+</div>
+
+<div ng-show="analysis && diffs.length == 0">
+  <div class="color-light list-header overflow-auto text-center">
+    <p>No screenshots found in this run</p>
+    <a class="text-decoration-none font-size-small" href="#/{{run.projectId}}/{{run.suiteId}}/"><span class="color-light">< back to suite</span></a>
+  </div>
 </div>
