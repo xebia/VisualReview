@@ -23,6 +23,7 @@ angular.module('visualDiffViewerApp')
         case 'mountain_lion':
         case 'mavericks':
         case 'yosemite':
+        case 'mac os x':
           return 'mac';
 
         case 'linux':
@@ -32,7 +33,7 @@ angular.module('visualDiffViewerApp')
           return 'android';
 
         default:
-          return SCREENSHOT_METADATA_OS_UNKNOWN;
+          return SCREENSHOT_METADATA_UNKNOWN;
       }
     }
   })
