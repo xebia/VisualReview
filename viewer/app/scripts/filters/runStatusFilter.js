@@ -9,15 +9,15 @@ angular.module('visualDiffViewerApp')
 
       angular.forEach(input, function(value, key) {
         switch(value.status) {
-          case 'ACCEPTED':
+          case 'accepted':
             result.nrOfAccepted++;
             break;
 
-          case 'REJECTED':
+          case 'rejected':
             result.nrOfRejected++;
             break;
 
-          case 'PENDING':
+          case 'pending':
             result.nrOfPending++;
             break;
         }

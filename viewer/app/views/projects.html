@@ -2,44 +2,44 @@
 
   <div navbar></div>
 
-  <div class="project-container overflow-auto">
+  <div class="color-light list-header overflow-auto">
     <h1>List of projects</h1>
 
-    <div ng-show="projects.$vrIsLoading" class="text-small">
+    <div ng-show="projects.$vrIsLoading" class="text-small color-light">
       Retrieving...
     </div>
 
-    <div ng-show="projects.$vrHasError" class="text-small text-red">
+    <div ng-show="projects.$vrHasError" class="text-small color-red">
       Could not retrieve list of projects. {{projects.$vrErrorMessage}}
     </div>
 
     <div ng-repeat="project in projects" ng-hide="projects.$vrIsLoading">
       <div class="hover-target">
         <a href="#/{{project.id}}/">
-        <span class="project-header">
+        <span class="text-big font-bold color-light text-decoration-underline">
             {{project.name}}
         </span>
         </a>
 
         <div class="float-right">
-          <div ng-hide="deletedProject.$vrIsLoading" ng-click="deleteProject(project.name, project.id)" class="visible-on-hover color-light-gray cursor-pointer icon icon-trash"></div>
-          <div ng-show="deletedProject.$vrIsLoading">deleting ..</div>
+          <div ng-hide="deletedProject.$vrIsLoading" ng-click="deleteProject(project.name, project.id)" class="visible-on-hover color-light-gray clickable icon-trash"></div>
         </div>
 
       </div>
     </div>
+    <div ng-show="deletedProject.$vrIsLoading" class="text-small">deleting ..</div>
 
     <div ng-hide="projects.$vrIsLoading  || projects.$vrHasError || projects.length > 0">
       No projects found.
     </div>
     <br><br>
     <div>
-      <a href="" class="link-small" ng-click="showNewProjectForm = true" ng-show="!showNewProjectForm">Create new project</a>
+      <a href="" class="color-light font-size-small" ng-click="showNewProjectForm = true" ng-show="!showNewProjectForm">Create new project</a>
       <div ng-show="showNewProjectForm">
         <form novalidate ng-submit="createNewProject()">
           <input class="form-control" type="text" ng-model="newProjectName" placeholder="Project name" ng-disabled="createdProject.$vrIsLoading">
           <button class="btn" ng-disabled="createdProject.$vrIsLoading">{{createdProject.$vrIsLoading ? 'Creating..' : 'Create'}}</button>
-          <br><span class="text-small text-red">{{createdProject.$vrErrorMessage}}</span>
+          <br><span class="text-small color-red">{{createdProject.$vrErrorMessage}}</span>
 
         </form>
 

@@ -26,6 +26,10 @@ angular.module('visualDiffViewerApp')
           scope.$emit('vr-screenshot-select',index)
         }
 
+        scope.setStatus = function(newStatus) {
+          scope.$emit('vr-screenshot-status-button-selection', newStatus);
+        }
+
       }
     };
   });

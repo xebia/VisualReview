@@ -2,20 +2,20 @@
 
     <div navbar project-id="suite.project.id" project-name="suite.project.name" suite-id="suite.id" suite-name="suite.name"></div>
 
-    <div class="project-container overflow-auto">
-        <h1 ng-hide="suite.$vrIsLoading">List of runs in project {{suite.project.name}} - suite {{suite.name}}</h1>
+    <div class="color-light list-header overflow-auto">
+        <h1 ng-hide="suite.$vrIsLoading">List of runs in <br/> project {{suite.project.name}} - suite {{suite.name}}</h1>
 
-        <div ng-show="suite.$vrIsLoading" class="text-small">
+        <div ng-show="suite.$vrIsLoading" class="text-small color-light">
             Retrieving...
         </div>
 
-        <div ng-show="suite.$vrHasError" class="text-small text-red">
+        <div ng-show="suite.$vrHasError" class="text-small color-red">
             Could not retrieve list of runs. {{suite.$vrErrorMessage}}
         </div>
 
         <div ng-repeat="run in suite.runs" ng-hide="suite.$vrIsLoading">
             <a class="text-decoration-none" href="#/{{suite.project.id}}/{{suite.id}}/{{run.id}}">
-                <span class="project-header">
+                <span class="text-big font-bold color-light text-decoration-underline">
                     {{run.id}} - {{run.startTime | date : 'medium'}}
                 </span>
             </a>
