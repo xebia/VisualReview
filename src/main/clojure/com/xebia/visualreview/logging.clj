@@ -80,3 +80,5 @@
 
 (defmacro report [& msgs]
   `(timbre/log :report ~@msgs))
+
+(set-log-msg-format!)
