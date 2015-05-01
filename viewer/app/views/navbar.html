@@ -1,70 +1,117 @@
-<div class="navbar row">
+<!--
+  ~ Copyright 2015 Xebia B.V.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License")
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<div class="position-fixed-top-left size-full-width z-index-top" style="box-shadow: 0 2px 4px 0;">
+  <div class="flexbox-row-container flexbox-row-nowrap size-height-navbar" style="width: 100%;">
 
-  <a href="#/"><div class="row-column logo-image"></div></a>
-  <div class="row-column"> <div class="navbar-separator"></div></div>
-  <div class="row-column" ng-show="projectId">
-    <div class="navbar-breadcrumb">
-      <a href="#/{{projectId}}/">{{projectName}}</a>
-      <span ng-show="suiteName"> > <a href="#/{{projectId}}/{{suiteId}}">{{suiteName}}</a></span>
-      <span ng-show="creationTime"> > <a href="#/{{projectId}}/{{suiteId}}/{{runId}}">{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})</a></span>
-    </div>
+    <div class="flexbox-row-item" style="flex-grow: 1;">
 
-    <div ng-show="screenshot">
-      <div vr-dropdown="screenshotSelector">
-
-        <div vr-dropdown-contents class="navbar-screenshot-dropdown">
-          <div class="navbar-screenshot-dropdown-inner">
-            <div ng-repeat="aShot in screenshots" style="clear:both;">
-               <div class="row cursor-pointer navbar-screenshot-dropdown-item" ng-class="{'navbar-screenshot-dropdown-item-selected': aShot === screenshot}"
-                       ng-click="selectScreenshot($index)">
-                 <div class="row-column-left vertical-middle margin-right-2">{{aShot.after.screenshotName}}</div>
-                 <div class="row-column-right vertical-middle navbar-screenshot-dropdown-metadata">
-                   <div screenshot-metadata meta="aShot.after.meta" properties="aShot.after.properties">
-                   </div>
-                 </div>
-               </div>
+      <div class="flexbox-row-container size-full-width">
+        <div class="flexbox-row-item flexbox-row-item-grow-1 flexbox-row-item-center background-light" style="flex-grow: 1"> <!-- display: flex; flex-grow: 1; background-color:white; align-items: center;" -->
+          <div class="icon-vr-diamond color-purple font-size-medium padding-left-4 padding-right-4"></div>
+          <div class="font-size-small">
+            <div class="ellipsis-container size-max-width-1 padding-bottom-05 padding-right-1" style="flex-grow: 0"
+                 ng-show="projectId">
+              <i><a href="#/{{projectId}}/">{{projectName}}</a></i>
+              <span ng-show="suiteName"> > <i><a href="#/{{projectId}}/{{suiteId}}">{{suiteName}}</a></i></span>
+              <span ng-show="creationTime"> > <i><a href="#/{{projectId}}/{{suiteId}}/{{runId}}">{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})</a></i></span>
+            </div>
+            <div class="ellipsis-container size-max-width-1 padding-right-2" ng-show="screenshot">
+              <i><b>show: </b> all</i>
             </div>
           </div>
         </div>
-        <div class="row cursor-pointer" vr-dropdown-toggle>
-          <div class="row-column navbar-screenshot-name">{{screenshot.after.screenshotName}} ({{screenshot.percentage | number}}%)</div>
-          <div class="navbar-image-controls-separator row-column">
-          </div>
-          <div class="row-column">
-            <div screenshot-metadata meta="screenshot.after.meta" properties="screenshot.after.properties">
-            </div>
 
+
+        <div class="flexbox-row-item flexbox-row-item-center clickable"
+             style="align-items: stretch;" screenshot-status-background="screenshot.status" ng-show="screenshot">
+          <div vr-dropdown-contents="screenshotStatusButton" class="z-index-top">
+            <div ng-repeat="otherStatus in ['pending', 'accepted', 'rejected']">
+              <div screenshot-status-background="otherStatus" class="clickable">
+                <div ng-click="setStatus(otherStatus)" vr-dropdown-toggle="screenshotStatusButton" class="padding-2 font-size-extra-large icon-{{otherStatus | lowercase}}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="relative-container" vr-dropdown-toggle="screenshotStatusButton">
+            <div class="relative-vertical-center">
+              <div class="padding-left-2 padding-right-2">
+                <div class="font-size-extra-large icon-{{screenshot.status | lowercase}}">
+                </div>
+              </div>
+            </div>
+            <div class="icon-chevron-down font-size-xsmall absolute-bottom-right"></div>
+          </div>
+          <div vr-dropdown-contents="screenshotSelector" class="z-index-top">
+            <table style="border-collapse: collapse;">
+              <tr ng-repeat="aShot in screenshots" class="padding-2 clickable gray-on-hover"
+                  ng-class="{'font-type-semibold': aShot === screenshot}"
+                  ng-click="selectScreenshot($index)">
+                <td class="padding-2 nowrap-container">
+                  <span class="icon-{{aShot.status | lowercase}}"></span>
+                </td>
+                <td class="padding-2 nowrap-container">
+                  {{aShot.after.screenshotName}}
+                </td>
+                <td class="padding-2 nowrap-container">
+                  <span screenshot-metadata meta="aShot.after.meta" properties="aShot.after.properties"></span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="flexbox-row-item flexbox-row-item-center flexbox-row-item-content-center clickable" style="flex-grow: 0; justify-content: center; max-width: 800px; min-width: 200px;"
+         screenshot-status-background="screenshot.status" ng-show="screenshot" vr-dropdown-toggle="screenshotSelector">
+      <div class="ellipsis-container padding-left-2 padding-right-2 font-type-semibold font-size-large flexbox-row-item-content-center">
+        {{screenshot.after.screenshotName}}
+      </div>
+      <div class="flexbox-row-item flexbox-row-item-center" style="align-items: stretch;">
+
+
+        <div class="padding-left-2 padding-right-2 ellipsis-container font-size-medium">
+            <span screenshot-metadata meta="screenshot.after.meta" properties="screenshot.after.properties"></span>
+          </div>
+
+      </div>
+      <div class="flexbox-row-item relative-container" style="align-self: flex-end;">
+        <div class="icon-chevron-down font-size-xsmall absolute-bottom-right"></div>
+      </div>
+    </div>
+
+    <div class="flexbox-row-item background-light " style="flex-grow: 1;">
+      <div class="flexbox-row-container size-full-width">
+        <div class="flexbox-row-item flexbox-row-item-center padding-left-2 padding-right-2 nowrap-container font-size-small" style="flex-grow: 1; justify-content:flex-end;"
+             ng-show="screenshot">
+          <div>
+            <input type="radio" id="radio-baseline" name="imageVersionDisplay" value="before" ng-model="screenshotType" ng-disabled="!screenshot.before">
+            <label for="radio-baseline" class="unselectable">baseline</label>
+          </div>
+          <div>
+            <input type="radio" id="radio-actual" name="imageVersionDisplay" value="after" ng-model="screenshotType" >
+            <label for="radio-actual" class="navbar-image-controls-space unselectable">actual</label>
+          </div>
+          <div class="navbar-image-controls-separator"></div>
+          <div>
+            <input type="checkbox" id="checkbox-difference" name="imageDifferenceDisplay" ng-model="showDiff">
+            <label for="checkbox-difference" class="unselectable">show diff ({{screenshot.percentage}} %)</label>
           </div>
         </div>
       </div>
-
     </div>
-
-    <div class="navbar-image-controls" ng-show="screenshot">
-      <div>
-        <input type="radio"
-               id="radio-baseline"
-               name="imageVersionDisplay"
-               ng-model="screenshotType"
-               value="before"
-               ng-disabled="!screenshot.before">
-
-        <label for="radio-baseline" class="unselectable">baseline</label>
-      </div>
-      <div>
-        <input type="radio" id="radio-actual" name="imageVersionDisplay" ng-model="screenshotType" value="after">
-        <label for="radio-actual" class="navbar-image-controls-space unselectable">actual</label>
-      </div>
-      <div class="navbar-image-controls-separator"></div>
-      <div>
-        <input type="checkbox" id="checkbox-difference" name="imageDifferenceDisplay" ng-model="showDiff">
-        <label for="checkbox-difference" class="unselectable">show difference</label>
-      </div>
-    </div>
-  </div>
-  <div class="row-column row-column-right margin-right-2" ng-show="screenshot">
-    <div vr-screenshot-status-button current-status="{{screenshot.status}}"></div>
-
-
   </div>
 </div>

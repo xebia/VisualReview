@@ -9,14 +9,34 @@
   <title></title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
-  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <link rel="shortcut icon" href="styles/favicon/visualreview.ico?v=1">
+  <link rel="icon" sizes="16x16 32x32 64x64" href="styles/favicon/visualreview.ico?v=1">
+  <link rel="icon" type="image/png" sizes="196x196" href="styles/favicon/visualreview-192.png?v=1">
+  <link rel="icon" type="image/png" sizes="160x160" href="styles/favicon/visualreview-160.png?v=1">
+  <link rel="icon" type="image/png" sizes="96x96" href="styles/favicon/visualreview-96.png?v=1">
+  <link rel="icon" type="image/png" sizes="64x64" href="styles/favicon/visualreview-64.png?v=1">
+  <link rel="icon" type="image/png" sizes="32x32" href="styles/favicon/visualreview-32.png?v=1">
+  <link rel="icon" type="image/png" sizes="16x16" href="styles/favicon/visualreview-16.png?v=1">
+  <link rel="apple-touch-icon" href="styles/favicon/visualreview-57.png?v=1">
+  <link rel="apple-touch-icon" sizes="114x114" href="styles/favicon/visualreview-114.png?v=1">
+  <link rel="apple-touch-icon" sizes="72x72" href="styles/favicon/visualreview-72.png?v=1">
+  <link rel="apple-touch-icon" sizes="144x144" href="styles/favicon/visualreview-144.png?v=1">
+  <link rel="apple-touch-icon" sizes="60x60" href="styles/favicon/visualreview-60.png?v=1">
+  <link rel="apple-touch-icon" sizes="120x120" href="styles/favicon/visualreview-120.png?v=1">
+  <link rel="apple-touch-icon" sizes="76x76" href="styles/favicon/visualreview-76.png?v=1">
+  <link rel="apple-touch-icon" sizes="152x152" href="styles/favicon/visualreview-152.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="styles/favicon/visualreview-180.png?v=1">
+  <meta name="msapplication-TileColor" content="#FFFFFF">
+  <meta name="msapplication-TileImage" content="styles/favicon/visualreview-144.png?v=1">
+  <meta name="msapplication-config" content="styles/favicon/browserconfig.xml">
+
 
   <!-- build:css(.tmp) styles/main.css -->
   <link rel="stylesheet" href="styles/visualreview.css">
 
   <!-- endbuild -->
 </head>
-<body ng-app="visualDiffViewerApp" ng-cloak>
+<body ng-app="visualDiffViewerApp">
 
 <!--[if lt IE 9]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -25,6 +45,17 @@
 
 <!-- Add your site or application content here -->
 <div class="container" ng-view=""></div>
+
+<div class="background-radial-gray position-fixed-bottom size-full z-index-bottom">
+  <div class="spinner" ng-show="isLoading">
+    <div class="bounce1"></div>
+    <div class="bounce2"></div>
+    <div class="bounce3"></div>
+  </div>
+  <!--<div class="background-logo-center size-full" ng-hide="contentLoaded">-->
+    <!--&nbsp;-->
+  <!--</div>-->
+</div>
 
 
 <!-- build:js scripts/plugins.js -->
@@ -47,10 +78,9 @@
 <script src="scripts/controllers/SuiteCtrl.js"></script>
 <script src="scripts/directives/keyboard.js"></script>
 <script src="scripts/directives/navbar.js"></script>
-<script src="scripts/directives/runStatusImage.js"></script>
-<script src="scripts/directives/runStatus.js"></script>
+<script src="scripts/directives/transparent.js"></script>
 <script src="scripts/directives/dropdown.js"></script>
-<script src="scripts/directives/screenshotStatusButton.js"></script>
+<script src="scripts/directives/screenshotStatusBackground.js"></script>
 <script src="scripts/directives/screenshotMetadata.js"></script>
 <script src="scripts/filters/runStatusFilter.js"></script>
 <script src="scripts/services/ProjectResource.js"></script>

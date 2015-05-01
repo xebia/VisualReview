@@ -1,10 +1,10 @@
 <div ng-if="analysis" keyboard>
   <div class="counter-container">
-    <div class="center">
-      <div ng-click="selectPreviousScreenshot()" class="counter-arrow {{selectedDiffIndex == 0 ? 'dark' : ''}}">∧</div>
+    <div class="text-center text-shadow-radial">
+      <div ng-click="selectPreviousScreenshot()" transparent="selectedDiffIndex == 0" class="counter-arrow">∧</div>
       <div>{{selectedDiffIndex + 1}} / {{diffs.length}}</div>
-      <div ng-click="selectNextScreenshot()"
-           class="counter-arrow {{(selectedDiffIndex + 1) == diffs.length ? 'dark' : ''}}">∨
+      <div ng-click="selectNextScreenshot()" transparent="(selectedDiffIndex + 1) == diffs.length"
+           class="counter-arrow">∨
       </div>
     </div>
   </div>
@@ -22,10 +22,11 @@
        screenshots="diffs">
   </div>
 
-  <div class="screenshot-container">
+  <div class="size-max-width-1 padding-top-2 padding-bottom-8 text-center" style="max-width:100%;">
     <div>
       <img ng-show="showDiff" ng-src="/api/image/{{diffs[selectedDiffIndex].imageId}}" style="position:absolute;"/>
       <img ng-src="/api/image/{{diffs[selectedDiffIndex][selectedScreenshot].imageId}}"/>
     </div>
   </div>
+
 </div>
