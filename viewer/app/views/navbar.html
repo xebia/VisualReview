@@ -33,55 +33,68 @@
             </div>
           </div>
         </div>
-        <div vr-dropdown-contents="screenshotSelector">
-          <table style="border-collapse: collapse;">
-            <tr ng-repeat="aShot in screenshots" class="padding-2 cursor-pointer gray-on-hover"
-                ng-class="{'font-type-semibold': aShot === screenshot}"
-                ng-click="selectScreenshot($index)">
-              <td class="padding-2">
-                <span class="icon-{{aShot.status | lowercase}}"></span>
-              </td>
-              <td class="padding-2">
-                {{aShot.before.screenshotName}}
-              </td>
-              <td class="padding-2">
-                <span screenshot-metadata meta="aShot.before.meta" properties="aShot.before.properties"></span>
-              </td>
-            </tr>
 
-          </table>
-        </div>
-        <div class="flexbox-row-item flexbox-row-item-center" screenshot-status-background="screenshot.status" ng-show="screenshot">
-          <div vr-dropdown-toggle="screenshotStatusButton">
-            <div class="padding-left-2 padding-right-2 cursor-pointer">
-              <div class="font-size-extra-large icon-{{screenshot.status | lowercase}}">
-              </div>
-            </div>
-            <div vr-dropdown-contents="screenshotStatusButton">
-              <div ng-repeat="otherStatus in ['pending', 'accepted', 'rejected']" class="cursor-pointer">
-                <div ng-click="setStatus(otherStatus)" vr-dropdown-toggle="screenshotStatusButton" class="padding-2 font-size-extra-large icon-{{otherStatus | lowercase}}" screenshot-status-background="otherStatus">
-                </div>
+
+        <div class="flexbox-row-item flexbox-row-item-center clickable"
+             style="align-items: stretch;" screenshot-status-background="screenshot.status" ng-show="screenshot">
+          <div vr-dropdown-contents="screenshotStatusButton" class="z-index-top">
+            <div ng-repeat="otherStatus in ['pending', 'accepted', 'rejected']">
+              <div screenshot-status-background="otherStatus" class="clickable">
+                <div ng-click="setStatus(otherStatus)" vr-dropdown-toggle="screenshotStatusButton" class="padding-2 font-size-extra-large icon-{{otherStatus | lowercase}}"></div>
               </div>
             </div>
           </div>
+          <div class="relative-container" vr-dropdown-toggle="screenshotStatusButton">
+            <div class="relative-vertical-center">
+              <div class="padding-left-2 padding-right-2">
+                <div class="font-size-extra-large icon-{{screenshot.status | lowercase}}">
+                </div>
+              </div>
+            </div>
+            <div class="icon-chevron-down font-size-xsmall absolute-bottom-right"></div>
+          </div>
+          <div vr-dropdown-contents="screenshotSelector" class="z-index-top">
+            <table style="border-collapse: collapse;">
+              <tr ng-repeat="aShot in screenshots" class="padding-2 clickable gray-on-hover"
+                  ng-class="{'font-type-semibold': aShot === screenshot}"
+                  ng-click="selectScreenshot($index)">
+                <td class="padding-2 nowrap-container">
+                  <span class="icon-{{aShot.status | lowercase}}"></span>
+                </td>
+                <td class="padding-2 nowrap-container">
+                  {{aShot.before.screenshotName}}
+                </td>
+                <td class="padding-2 nowrap-container">
+                  <span screenshot-metadata meta="aShot.before.meta" properties="aShot.before.properties"></span>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
+
       </div>
     </div>
 
-    <div class="flexbox-row-item flexbox-row-item-center flexbox-row-item-content-center cursor-pointer" style="flex-grow: 0; justify-content: center; max-width: 800px; min-width: 200px;"
-         screenshot-status-background="screenshot.status" vr-dropdown-toggle="screenshotSelector" ng-show="screenshot">
+    <div class="flexbox-row-item flexbox-row-item-center flexbox-row-item-content-center clickable" style="flex-grow: 0; justify-content: center; max-width: 800px; min-width: 200px;"
+         screenshot-status-background="screenshot.status" ng-show="screenshot" vr-dropdown-toggle="screenshotSelector">
       <div class="ellipsis-container padding-left-2 padding-right-2 font-type-semibold font-size-large flexbox-row-item-content-center">
         {{screenshot.before.screenshotName}}
+      </div>
+      <div class="flexbox-row-item flexbox-row-item-center" style="align-items: stretch;">
+
+
+        <div class="padding-left-2 padding-right-2 ellipsis-container font-size-medium">
+            <span screenshot-metadata meta="screenshot.before.meta" properties="screenshot.before.properties"></span>
+          </div>
+
+      </div>
+      <div class="flexbox-row-item relative-container" style="align-self: flex-end;">
+        <div class="icon-chevron-down font-size-xsmall absolute-bottom-right"></div>
       </div>
     </div>
 
     <div class="flexbox-row-item background-light " style="flex-grow: 1;">
-      <div class="flexbox-row-container size-full-width" vr-dropdown-toggle="screenshotSelector">
-        <div class="flexbox-row-item flexbox-row-item-center" screenshot-status-background="screenshot.status" style="cursor: pointer;">
-          <div class="padding-left-2 padding-right-2 ellipsis-container">
-            <span screenshot-metadata meta="screenshot.before.meta" properties="screenshot.before.properties"></span>
-          </div>
-        </div>
+      <div class="flexbox-row-container size-full-width">
         <div class="flexbox-row-item flexbox-row-item-center padding-left-2 padding-right-2 nowrap-container font-size-small" style="flex-grow: 1; justify-content:flex-end;"
              ng-show="screenshot">
           <div>

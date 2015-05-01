@@ -267,6 +267,10 @@ a:link{
     max-width: 300px;
 }
 
+.font-size-xsmall {
+    font-size: 6pt;
+}
+
 .font-size-small {
     font-size: 9pt;
 }
@@ -346,10 +350,6 @@ a:link{
     overflow: hidden;
 
     box-shadow: 0 2px 4px 0;
-}
-
-.cursor-pointer {
-    cursor:pointer;
 }
 
 .gray-on-hover:hover {
@@ -485,3 +485,36 @@ a:link{
     font-size: 18px;
 }
 
+.clickable {
+    cursor:pointer
+}
+
+.clickable:hover.background-light-red {
+    background-color: #e37272;
+}
+
+.clickable:hover.background-light-green  {
+    background-color: #b4d0a0;
+}
+
+.clickable:hover.background-light-gray {
+    background-color: #c8c8c8;
+}
+
+.clickable-group > .clickable:hover.background-light-gray {
+    background-color: #c8c8c8;
+}
+
+.relative-container {
+    position: relative;
+}
+
+.relative-vertical-center {
+    top: 50%; transform: translateY(25%);
+}
+
+.absolute-bottom-right {
+    position:absolute;
+    bottom:0;
+    right:0;
+}

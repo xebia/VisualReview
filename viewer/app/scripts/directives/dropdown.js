@@ -64,8 +64,11 @@ angular.module('visualDiffViewerApp')
       link: function(scope, element, attrs) {
         var selfDropdownName = attrs.vrDropdownToggle;
 
-        var toggleDropdown = function () {
+        var toggleDropdown = function (e) {
           $rootScope.$broadcast(VR_DROPDOWN_TOGGLE_MESSAGE, selfDropdownName);
+          if (e) {
+            e.stopPropagation();
+          }
           scope.$digest();
         };
 
