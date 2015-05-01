@@ -42,5 +42,5 @@
 (defn start-server [port]
   (try
     (reset! server (run-jetty #'app {:join? false :port port}))
-    (log/info (str "VisualReview server started at port " port))
+    (log/info (str "VisualReview server started on port " port))
     (catch Exception e (log/fatal (str "Could not start server on port " port ": " (.getMessage e))))))

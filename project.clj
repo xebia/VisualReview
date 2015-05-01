@@ -50,6 +50,8 @@
                            :resource-paths ["src/integration/resources"]}
              :unit        {:test-paths ^:replace ["src/test/clojure"]}}
 
+  :jvm-opts ["-Djava.util.logging.config.file=src/main/resources/logging.properties"]
+
   :jar-name "visualreview-%s.jar"
   :uberjar-name "visualreview-%s-standalone.jar"
   :javac-options ["-target" "1.7" "-source" "1.7"])
