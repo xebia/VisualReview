@@ -11,15 +11,15 @@ angular.module('visualDiffViewerApp')
 
       angular.forEach($scope.diffs, function (result) {
         switch (result.status) {
-          case "PENDING" :
+          case "pending" :
             $scope.totalUndecided++;
             break;
 
-          case "REJECTED" :
+          case "rejected" :
             $scope.totalRejected++;
             break;
 
-          case "ACCEPTED" :
+          case "accepted" :
             $scope.totalAccepted++;
         }
       });
@@ -35,13 +35,13 @@ angular.module('visualDiffViewerApp')
 
     function toggleAccepted() {
       var currResult = $scope.diffs[$scope.selectedDiffIndex];
-      currResult.status == "ACCEPTED" ? currResult.status = "PENDING" : currResult.status = "ACCEPTED";
+      currResult.status == "accepted" ? currResult.status = "pending" : currResult.status = "accepted";
       saveState();
     }
 
     function toggleRejected() {
       var currResult = $scope.diffs[$scope.selectedDiffIndex];
-      currResult.status == "REJECTED" ? currResult.status = "PENDING" : currResult.status = "REJECTED";
+      currResult.status == "rejected" ? currResult.status = "pending" : currResult.status = "rejected";
       saveState();
     }
 
