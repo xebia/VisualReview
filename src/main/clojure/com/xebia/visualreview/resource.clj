@@ -291,13 +291,21 @@
                  {::diff diff}))
     :can-post-to-missing? false
     :post! (fn [ctx]
-             (let [baseline-screenshot (p/get-baseline-screenshot-by-diff-id (tx-conn ctx) diff-id)]
-               (when-not baseline-screenshot
+             ;; First checks to see if this diff has a baseline-screenshot. If it has, it updates the diff
+             ;; Otherwise, if the new-status is "accepted", it sets the after-screenshot as the new baseline
+             ;; if it was not set before. If the new-status is "pending" or "rejected" it removes the baseline
+             ;; regardless of whether it existed before
+             (let [baseline-screenshot (p/get-baseline-screenshot-by-diff-id (tx-conn ctx) diff-id)
+                   after-id (-> ctx ::diff :after)]
+               (when-not baseline-screenshot                ; new screenshot
                  (let [run (p/get-run (tx-conn ctx) run-id)
-                       baseline-node (p/get-baseline-head (tx-conn ctx) (:suite-id run))
-                       bl (p/get-bl-node-screenshot (tx-conn ctx) baseline-node (-> ctx ::diff :after))]
-                   (when-not bl
-                     (p/create-bl-node-screenshot! (tx-conn ctx) baseline-node (-> ctx ::diff :after))))))
+                       baseline-node (p/get-baseline-head (tx-conn ctx) (:suite-id run))]
+                   (if (= (::new-status ctx) "accepted")    ; set as baseline-screenshot
+                     (let [bl (p/get-bl-node-screenshot (tx-conn ctx) baseline-node after-id)]
+                       (when (nil? bl)
+                         (p/create-bl-node-screenshot! (tx-conn ctx) baseline-node after-id)))
+                     (p/delete-bl-node-screenshot! (tx-conn ctx) baseline-node after-id)))))
+
              (update-diff-status! (tx-conn ctx) (::diff ctx) (::new-status ctx))
              {::updated-diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
     :handle-created ::updated-diff))

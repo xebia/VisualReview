@@ -87,6 +87,10 @@
   [conn node-id screenshot-id]
   (putil/insert-single! conn :bl-node-screenshot {:baseline-node node-id :screenshot-id screenshot-id}))
 
+(defn delete-bl-node-screenshot!
+  [conn node-id screenshot-id]
+  (putil/delete! conn :bl-node-screenshot ["baseline_node = ? AND screenshot_id = ?" node-id screenshot-id]))
+
 (defn get-bl-node-screenshot
   [conn node-id screenshot-id]
   (putil/query-single conn ["SELECT * FROM bl_node_screenshot WHERE baseline_node = ? AND screenshot_id = ?" node-id screenshot-id]))
