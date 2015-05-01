@@ -53,9 +53,8 @@
       (is (= "pending" (:status chess-diff)) "The chess diff is pending")
       (is (= "pending" (:status tapir-diff)) "The tapir diff is pending")
 
-      ;; TODO: Support a nil before-screenshot. That is more correct for the very first screenshot version
-      (is (= (-> chess-diff :before :id) (-> chess-diff :after :id)) "The before and after screenshots are the same for the first run")
-      (is (= (-> tapir-diff :before :id) (-> tapir-diff :after :id)) "The before and after screenshots are the same for the first run")))
+      (is (nil? (-> chess-diff :before)) "There is no baseline for the chess image yet")
+      (is (nil? (-> tapir-diff :before)) "There is no baseline for the chess image yet")))
 
   (testing "Diff approval process"
     (let [response (api/update-diff-status! 1 1 "ejected")]
@@ -96,3 +95,4 @@
       (is (= 1.03 (:percentage chess-diff)) "The chess image is changed with respect to the previous run")
       (is (= "pending" (:status chess-diff)) "The chess diff is pending")
       (is (= (:chess (@image-ids (dec run-id))) (-> chess-diff :before :id)) "The chess image is compared to the previous run"))))
+

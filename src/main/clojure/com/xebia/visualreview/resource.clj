@@ -171,25 +171,21 @@
     :handle-ok (fn [ctx] (let [screenshots (screenshot/get-screenshots-by-run-id (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
+(defn- proces-diff [conn run-id before-file after-file before-id after-id]
+  (let [analysis (p/get-analysis conn run-id)
+        diff-report (analysis/generate-diff-report before-file after-file)
+        diff-file-id (image/insert-image! conn (:diff diff-report))
+        new-diff-id (p/save-diff! conn diff-file-id before-id after-id (:percentage diff-report) (:id analysis))
+        diff (p/get-diff conn run-id new-diff-id)]
+    {:report diff-report :diff diff}))
+
 (defn- process-screenshot [conn suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
-        baseline (p/get-baseline-head conn suite-id)
-        [new-screenshot? baseline-screenshot] (if-let [bs (p/get-baseline-screenshot conn suite-id "master" screenshot-name properties)]
-                                                [false bs]
-                                                (do
-                                                  (p/create-baseline-screenshot! conn baseline (:id screenshot))
-                                                  [true screenshot]))
-        analysis (p/get-analysis conn run-id)
-        after-file-id (:image-id screenshot)
-        after-file tempfile
-        before-file-id (or (:image-id baseline-screenshot) after-file-id)
-        before-file (if new-screenshot? after-file (io/get-file (image/get-image-path conn before-file-id)))
-        diff-report (analysis/generate-diff-report before-file after-file)
-        diff-file-id (image/insert-image! conn (:diff diff-report))
-        new-diff-id (p/save-diff! conn diff-file-id (:id baseline-screenshot) screenshot-id (:percentage diff-report) (:id analysis))
-        diff (p/get-diff conn run-id new-diff-id)]
-    (when (and (not new-screenshot?) (zero? (:percentage diff-report)))
+        baseline-screenshot (p/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
+        before-file (when baseline-screenshot (io/get-file (image/get-image-path conn (:image-id baseline-screenshot))))
+        {:keys [report diff]} (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id)]
+    (when (and baseline-screenshot (zero? (:percentage report)))
       (update-diff-status! conn diff "accepted"))
     screenshot))
 
@@ -241,12 +237,13 @@
 
 (defn- transform-diff [diff]
   {:id         (:id diff)
-   :before     {:id             (:before diff)
-                :image-id       (:before-image-id diff)
-                :size           (:before-size diff)
-                :meta           (:before-meta diff)
-                :properties     (:before-properties diff)
-                :screenshotName (:before-name diff)}
+   :before     (when (:before diff)
+                 {:id             (:before diff)
+                  :image-id       (:before-image-id diff)
+                  :size           (:before-size diff)
+                  :meta           (:before-meta diff)
+                  :properties     (:before-properties diff)
+                  :screenshotName (:before-name diff)})
    :after      {:id             (:after diff)
                 :image-id       (:after-image-id diff)
                 :size           (:after-size diff)
@@ -294,6 +291,13 @@
                  {::diff diff}))
     :can-post-to-missing? false
     :post! (fn [ctx]
+             (let [baseline-screenshot (p/get-baseline-screenshot-by-diff-id (tx-conn ctx) diff-id)]
+               (when-not baseline-screenshot
+                 (let [run (p/get-run (tx-conn ctx) run-id)
+                       baseline-node (p/get-baseline-head (tx-conn ctx) (:suite-id run))
+                       bl (p/get-bl-node-screenshot (tx-conn ctx) baseline-node (-> ctx ::diff :after))]
+                   (when-not bl
+                     (p/create-bl-node-screenshot! (tx-conn ctx) baseline-node (-> ctx ::diff :after))))))
              (update-diff-status! (tx-conn ctx) (::diff ctx) (::new-status ctx))
              {::updated-diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
     :handle-created ::updated-diff))

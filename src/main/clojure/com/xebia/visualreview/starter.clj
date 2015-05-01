@@ -34,10 +34,12 @@
 (defonce server (atom nil))
 
 (defn stop-server []
-  (when-let [ws @server]
-    (.stop ^Server ws)
-    (reset! server nil)
-    (log/info "VisualReview server stopped")))
+  (if-let [ws @server]
+    (do
+      (.stop ^Server ws)
+      (reset! server nil)
+      (log/info "VisualReview server stopped"))
+    (log/info "VisualReview server not running")))
 
 (defn start-server [port]
   (try

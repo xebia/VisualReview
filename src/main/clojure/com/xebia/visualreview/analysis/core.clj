@@ -15,7 +15,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.analysis.core
-  (:require [com.xebia.visualreview.service-util :as sutil])
+  (:require [com.xebia.visualreview.service-util :as sutil]
+            [clojure.java.io :as io])
   (:import [com.xebia.visualreview PixelComparator DiffReport]
            [javax.imageio ImageIO]
            [java.io File]))
@@ -23,12 +24,17 @@
 (defn generate-diff-report
   "Takes 2 inputfiles and returns a map with:
   :diff => A image file of the diff,
-  :percentage => A double with the percentage difference found"
+  :percentage => A double with the percentage difference found
+
+  If file1 or file2 is nil, the diff will be a default transparant 1x1 png and
+  percentage will be 0.0"
   [file1 file2]
-  (let [result ^DiffReport (PixelComparator/processImage file1 file2)
-        diff-file (File/createTempFile "vr-diff-" ".tmp")
-        write-success? (ImageIO/write (.getDiffImage result) "png" diff-file)]
-    (do
-      (sutil/assume (true? write-success?) (str "Could not write diff image to temporary file " (.getAbsolutePath() diff-file)) ::diff-could-not-write-on-fs))
-      {:diff diff-file
-       :percentage (.getPercentage result)}))
+  (if (or (nil? file1) (nil? file2))
+    {:diff (io/file (io/resource "1x1.png")) :percentage 0.0}
+    (let [result ^DiffReport (PixelComparator/processImage file1 file2)
+          diff-file (File/createTempFile "vr-diff-" ".tmp")
+          write-success? (ImageIO/write (.getDiffImage result) "png" diff-file)]
+      (do
+        (sutil/assume (true? write-success?) (str "Could not write diff image to temporary file " (.getAbsolutePath () diff-file)) ::diff-could-not-write-on-fs))
+      {:diff       diff-file
+       :percentage (.getPercentage result)})))

@@ -64,6 +64,12 @@
      WHERE tr.suite_id = ? AND br.name = ? AND screenshot.screenshot_name = ?
      AND screenshot.properties = ?" suite-id branch-name screenshot-name (json/generate-string properties)]))
 
+(defn get-baseline-screenshot-by-diff-id [conn diff-id]
+  (putil/query-single conn
+    ["SELECT screenshot.* FROM diff
+     JOIN screenshot ON screenshot.id = diff.before
+     WHERE diff.id = ?" diff-id]))
+
 (defn get-baseline-head
   ([conn suite-id] (get-baseline-head conn suite-id "master"))
   ([conn suite-id branch-name]
@@ -77,15 +83,13 @@
   [conn node-id]
   (putil/query-single conn ["SELECT * FROM baseline_node WHERE id = ?" node-id]))
 
-(defn create-baseline-screenshot!
-  "Adds the given screenshot-id to the given baseline."
-  [conn baseline-node screenshot-id]
-  (putil/insert-single! conn :bl-node-screenshot {:baseline-node baseline-node
-                                            :screenshot-id screenshot-id}))
-
-(defn create-bl-node-screenshots!
+(defn create-bl-node-screenshot!
   [conn node-id screenshot-id]
   (putil/insert-single! conn :bl-node-screenshot {:baseline-node node-id :screenshot-id screenshot-id}))
+
+(defn get-bl-node-screenshot
+  [conn node-id screenshot-id]
+  (putil/query-single conn ["SELECT * FROM bl_node_screenshot WHERE baseline_node = ? AND screenshot_id = ?" node-id screenshot-id]))
 
 (defn set-baseline! [conn diff-id screenshot-id new-screenshot-id]
   (first
@@ -115,23 +119,23 @@
 (defn get-full-analysis [conn run-id]
   (let [analysis (get-analysis conn run-id)
         diffs (putil/query conn
-                     ["SELECT diff.*,
-                     sbefore.size before_size,
-                     sbefore.meta before_meta,
-                     sbefore.properties before_properties,
-                     sbefore.screenshot_name before_name,
-                     sbefore.image_id before_image_id,
-                     safter.size after_size,
-                     safter.meta after_meta,
-                     safter.properties after_properties,
-                     safter.screenshot_name after_name,
-                     safter.image_id after_image_id FROM analysis
-                     JOIN diff ON diff.analysis_id = analysis.id
-                     JOIN screenshot safter ON safter.id = diff.after
-                     JOIN screenshot sbefore ON sbefore.id = diff.before
-                     WHERE analysis.run_id = ?" run-id]
-                     :row-fn (comp (putil/parse-json-fields :before-meta :before-properties :after-meta :after-properties) format-dates)
-                     :result-set-fn vec)]
+                ["SELECT diff.*,
+                  sbefore.size before_size,
+                  sbefore.meta before_meta,
+                  sbefore.properties before_properties,
+                  sbefore.screenshot_name before_name,
+                  sbefore.image_id before_image_id,
+                  safter.size after_size,
+                  safter.meta after_meta,
+                  safter.properties after_properties,
+                  safter.screenshot_name after_name,
+                  safter.image_id after_image_id FROM analysis
+                  JOIN diff ON diff.analysis_id = analysis.id
+                  JOIN screenshot safter ON safter.id = diff.after
+                  LEFT JOIN screenshot sbefore ON sbefore.id = diff.before
+                  WHERE analysis.run_id = ?" run-id]
+                :row-fn (comp (putil/parse-json-fields :before-meta :before-properties :after-meta :after-properties) format-dates)
+                :result-set-fn vec)]
     {:analysis analysis :diffs diffs}))
 
 ;; Runs
@@ -199,11 +203,11 @@
   "Stores a new diff. Returns the new diff's id."
   [conn image-id before after percentage analysis-id]
   (putil/insert-single! conn :diff {:before      before
-                              :after       after
-                              :percentage  percentage
-                              :status      "pending"
-                              :analysis-id analysis-id
-                              :image-id    image-id}))
+                                    :after       after
+                                    :percentage  percentage
+                                    :status      "pending"
+                                    :analysis-id analysis-id
+                                    :image-id    image-id}))
 
 (defn get-diff [conn run-id diff-id]
   (putil/query-single conn

@@ -64,7 +64,7 @@ CREATE TABLE diff_image
 CREATE TABLE diff
 (
   id          SERIAL CONSTRAINT diff_pk PRIMARY KEY,
-  before      INTEGER        NOT NULL REFERENCES screenshot,
+  before      INTEGER        REFERENCES screenshot,
   after       INTEGER        NOT NULL REFERENCES screenshot,
   percentage  NUMERIC(5, 2)  NOT NULL,
   diff_image  INTEGER UNIQUE NOT NULL REFERENCES diff_image,
