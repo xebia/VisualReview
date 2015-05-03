@@ -9,7 +9,7 @@
                  [compojure "1.3.1"]                        ;routes
                  [liberator "0.12.2"]                       ;resources
                  [cheshire "5.4.0"]
-                 [com.taoensso/timbre "3.3.1"]              ;logging
+                 [ch.qos.logback/logback-classic "1.1.3"]   ;logging
                  [slingshot "0.12.1"]                       ;improved exception handling
                  [org.clojure/java.jdbc "0.3.6"]
                  [com.mchange/c3p0 "0.9.5"]                 ;database connection pooling

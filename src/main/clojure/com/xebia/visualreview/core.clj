@@ -26,11 +26,10 @@
 (defn- config-settings []
   (try+
     (config/init!)
-    (catch [:type :com.xebia.visualreview.validation/invalid] exception
-      (log/fatal (str "Server configuration error: " (exception :message))))))
+    (catch Exception e
+      (log/error (str "Server configuration error: " (.getMessage e))))))
 
 (defn -main [& _]
-  (log/set-log-msg-format!)
   (when-let [{:keys [server-port db-uri db-user db-password screenshots-dir]} (config-settings)]
     (try
       (io/init-screenshots-dir! screenshots-dir)
@@ -38,7 +37,7 @@
       (starter/start-server server-port)
       :ok
       (catch Exception e
-        (log/fatal (str "Error initializing: " (.getMessage e)))
+        (log/error (str "Error initializing: " (.getMessage e)))
         (starter/stop-server)
         (db/close-connection)
         (System/exit 1)))))

@@ -87,7 +87,6 @@
 
 (defn logging-fixture [f]
   (log/set-log-level! :warn)
-  (log/set-log-msg-format!)
   (f))
 
 (defn upload-tapir [run-id meta props]
