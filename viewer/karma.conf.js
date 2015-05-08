@@ -21,12 +21,21 @@ module.exports = function(config) {
       'app/bower_components/angular-sanitize/angular-sanitize.js',
       'app/scripts/app.js',
       'app/scripts/**/*.js',
-      'test/mock/**/*.js',
+      'app/views/**/*.html',
       'test/spec/**/*.js'
     ],
 
     // list of files / patterns to exclude
     exclude: [],
+
+    preprocessors: {
+      "app/views/**/*.html": ["ng-html2js"]
+    },
+
+    ngHtml2JsPreprocessor: {
+      stripPrefix: 'app/',
+      moduleName: 'visualDiffViewerApp'
+    },
 
     // web server port
     port: 8080,
@@ -48,7 +57,7 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
 
 
     // Continuous Integration mode
