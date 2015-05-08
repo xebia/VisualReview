@@ -1,0 +1,7 @@
+<div ng-if="projectId && projectName" class="ellipsis-container nowrap-container">
+	<i><a href="#/{{projectId}}/">{{projectName}}</a></i>
+	<span ng-if="suiteId && suiteName"> > <i><a href="#/{{projectId}}/{{suiteId}}">{{suiteName}}</a></i>
+		<span ng-if="runId && creationTime"> > <i><a href="#/{{projectId}}/{{suiteId}}/{{runId}}">{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})</a></i>
+		</span>
+	</span>
+</div>

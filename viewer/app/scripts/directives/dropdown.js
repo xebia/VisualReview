@@ -17,17 +17,28 @@
 'use strict';
 
 angular.module('visualDiffViewerApp')
-  .constant('VR_DROPDOWN_TOGGLE_MESSAGE', "vr-dropdown-toggle")
-  .directive('vrDropdownContents', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE) {
+  .constant('VR_DROPDOWN_TOGGLE_MESSAGE', 'vr-dropdown-toggle')
+  .controller('dropdownCtrl', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE) {
+    this.toggleDropdown = function (clickEvent, selfDropdownName, scope) {
+        $rootScope.$broadcast(VR_DROPDOWN_TOGGLE_MESSAGE, selfDropdownName);
+        if (clickEvent) {
+          clickEvent.stopPropagation();
+        }
+
+        scope.$digest();
+    };
+  })
+  .directive('dropdownContents', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE) {
     return {
       restrict: 'AE',
-      link: function (scope, element, attrs) {
+      controller: 'dropdownCtrl',
+      link: function (scope, element, attrs, ctrl) {
         element.addClass("vr-dropdown-menu-contents");
-        var selfDropdownName = attrs.vrDropdownContents,
+        var selfDropdownName = attrs.dropdownContents,
             isOpened = false,
             initialHeight = 0,
             toggleDropdown = function(e) {
-              $rootScope.$broadcast(VR_DROPDOWN_TOGGLE_MESSAGE, selfDropdownName);
+              ctrl.toggleDropdown(e, selfDropdownName, scope);
             };
 
         element.bind('click', toggleDropdown);
@@ -59,17 +70,14 @@ angular.module('visualDiffViewerApp')
       }
     }
   })
-  .directive('vrDropdownToggle', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE) {
+  .directive('dropdownToggle', function () {
     return {
-      link: function(scope, element, attrs) {
-        var selfDropdownName = attrs.vrDropdownToggle;
+      controller: 'dropdownCtrl',
+      link: function(scope, element, attrs, ctrl) {
+        var selfDropdownName = attrs.dropdownToggle;
 
         var toggleDropdown = function (e) {
-          $rootScope.$broadcast(VR_DROPDOWN_TOGGLE_MESSAGE, selfDropdownName);
-          if (e) {
-            e.stopPropagation();
-          }
-          scope.$digest();
+          ctrl.toggleDropdown(e, selfDropdownName, scope);
         };
 
         element.bind('click', toggleDropdown);

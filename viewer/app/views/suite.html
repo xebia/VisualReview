@@ -1,6 +1,7 @@
 <div>
-
-    <div navbar project-id="suite.project.id" project-name="suite.project.name" suite-id="suite.id" suite-name="suite.name"></div>
+    <div class="position-fixed-top-left size-full-width z-index-top color-light font-size-small padding-2">
+        <div vr-breadcrumb project-id="suite.project.id" project-name="suite.project.name" suite-id="suite.id" suite-name="suite.name"></div>
+    </div>
 
     <div class="color-light list-header overflow-auto">
         <h1 ng-hide="suite.$vrIsLoading">List of runs in <br/> project {{suite.project.name}} - suite {{suite.name}}</h1>

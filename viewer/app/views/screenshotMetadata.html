@@ -1,10 +1,10 @@
 <span title="{{os}} - {{browser}} {{version}} - {{resolution}}">
     <span ng-class="'icon-os-'+(os | screenshotMetadataOs)" style="vertical-align:middle;"
-          ng-show="(os | screenshotMetadataOs) != unknown"></span>
-    <span ng-show="(os | screenshotMetadataOs) == unknown">{{os}}</span>
+          ng-if="(os | screenshotMetadataOs) != unknown"></span>
+    <span ng-if="(os | screenshotMetadataOs) == unknown">{{os}}</span>
 
-    <span ng-class="'icon-browser-' + (browser | screenshotMetadataBrowser)" style="vertical-align:middle;" ng-show="(browser | screenshotMetadataBrowser) != unknown"></span>
-    <span ng-show="(browser | screenshotMetadataBrowser) == unknown">
+    <span ng-class="'icon-browser-' + (browser | screenshotMetadataBrowser)" style="vertical-align:middle;" ng-if="(browser | screenshotMetadataBrowser) != unknown"></span>
+    <span ng-if="(browser | screenshotMetadataBrowser) == unknown">
         {{browser}}
     </span>
     <span>{{version}}</span>
