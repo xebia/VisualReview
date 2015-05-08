@@ -69,11 +69,16 @@ angular.module('visualDiffViewerApp')
       },
       templateUrl: 'views/screenshotMetadata.html',
       link: function(scope) {
-        function takeFromPropertiesOrMeta(field) {
-          scope[field] = (scope.properties && scope.properties[field]) || (scope.meta && scope.meta[field]);
+
+        function takeFromPropertiesOrMeta(field, meta, properties) {
+          scope[field] = (properties && properties[field]) || (meta && meta[field]);
         }
 
-        ['os', 'browser', 'version', 'resolution'].forEach(takeFromPropertiesOrMeta);
+        scope.$watchGroup(['meta', 'properties'], function(newValues) {
+          ['os', 'browser', 'version', 'resolution'].forEach(function (field) {
+            takeFromPropertiesOrMeta(field, newValues[0], newValues[1]);
+          });
+        });
 
         scope.unknown = SCREENSHOT_METADATA_UNKNOWN;
       }

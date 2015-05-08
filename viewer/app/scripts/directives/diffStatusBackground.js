@@ -17,12 +17,13 @@
 'use strict';
 
 angular.module('visualDiffViewerApp')
-  .directive('screenshotStatusBackground', function () {
+  .directive('diffStatusBackground', function () {
     return {
       restrict: 'AE',
       link: function (scope, element, attrs) {
-        var getStyleByScreenshotStatus = function (screenshotStatus) {
-          switch(screenshotStatus) {
+
+        var getStyleByDiffStatus = function (diffStatus) {
+          switch(diffStatus) {
             case 'pending':
               return 'background-light-gray';
             case 'rejected':
@@ -32,9 +33,9 @@ angular.module('visualDiffViewerApp')
           }
         };
 
-        scope.$watch(attrs.screenshotStatusBackground, function(newValue, oldValue) {
-          element.removeClass(getStyleByScreenshotStatus(oldValue));
-          element.addClass(getStyleByScreenshotStatus(newValue));
+        scope.$watch(attrs.diffStatusBackground, function(newValue, oldValue) {
+          element.removeClass(getStyleByDiffStatus(oldValue));
+          element.addClass(getStyleByDiffStatus(newValue));
         });
       }
     }

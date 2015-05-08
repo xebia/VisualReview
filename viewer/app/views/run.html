@@ -1,27 +1,107 @@
-<div ng-if="analysis" keyboard>
+<div ng-show="analysis" keyboard>
   <div class="counter-container" ng-show="diffs.length > 0">
     <div class="text-center text-shadow-radial">
-      <div ng-click="selectPreviousScreenshot()" transparent="selectedDiffIndex == 0" class="counter-arrow">∧</div>
+      <div ng-click="selectPreviousDiff()" transparent="selectedDiffIndex == 0" class="counter-arrow">∧</div>
       <div>{{selectedDiffIndex + 1}} / {{diffs.length}}</div>
-      <div ng-click="selectNextScreenshot()" transparent="(selectedDiffIndex + 1) == diffs.length"
+      <div ng-click="selectNextDiff()" transparent="(selectedDiffIndex + 1) == diffs.length"
            class="counter-arrow">∨
       </div>
     </div>
   </div>
 
-  <div navbar
-       project-id="run.projectId"
-       project-name="analysis.projectName"
-       suite-id="run.suiteId"
-       suite-name="analysis.suiteName"
-       run-id="runId"
-       creation-time="run.startTime"
-       screenshot="diffs[selectedDiffIndex]"
-       show-diff="showDiff"
-       screenshot-type="selectedScreenshot"
-       screenshots="diffs">
+  <div class="run-navbar">
+    <div class="run-navbar-inner">
+      <!-- breadcrumb, filter, screenshot status -->
+      <div class="run-navbar-column-context">
+        <div class="run-navbar-inner-row-container background-light">
+          <div class="icon-vr-diamond color-purple font-size-medium padding-left-4 padding-right-4"></div>
+          <div class="font-size-small">
+            <div class="ellipsis-container size-max-width-1 padding-bottom-05 padding-right-1"
+                 ng-show="run.projectId">
+              <div breadcrumb
+                   project-id="run.projectId"
+                   project-name="analysis.projectName"
+                   suite-id="run.suiteId",
+                   suite-name="analysis.suiteName"
+                   run-id="run.id"
+                   creation-time="run.startTime"></div>
+            </div>
+            <div class="ellipsis-container size-max-width-1 padding-right-2" ng-show="diffs">
+              <i><b>show: </b> all</i>
+            </div>
+          </div>
+        </div>
+
+        <!-- screenshot status-->
+        <div diff-status-selector="diffs[selectedDiffIndex]"
+						 on-status-selected="statusUpdated()"
+						 diff-status-background="diffs[selectedDiffIndex].status"
+						 class="run-navbar-column-status clickable">
+				</div>
+
+
+      </div>
+
+      <!-- screenshot name + metadata-->
+      <div class="run-navbar-column-screenshot clickable"
+           diff-status-background="diffs[selectedDiffIndex].status" ng-show="diffs[selectedDiffIndex]" dropdown-toggle="screenshotSelector">
+
+        <div dropdown-contents="screenshotSelector" class="z-index-top">
+          <table style="border-collapse: collapse;">
+            <tr ng-repeat="aDiff in diffs" class="padding-2 clickable gray-on-hover"
+                ng-class="{'font-type-semibold': aDiff === diffs[selectedDiffIndex]}"
+                ng-click="selectDiff($index)">
+              <td class="padding-2 nowrap-container">
+                <span class="icon-{{aDiff.status | lowercase}}"></span>
+              </td>
+              <td class="padding-2 nowrap-container">
+                {{aDiff.after.screenshotName}}
+              </td>
+              <td class="padding-2 nowrap-container">
+                <span screenshot-metadata meta="aDiff.after.meta" properties="aDiff.after.properties"></span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="run-navbar-screenshot-name">
+          {{diffs[selectedDiffIndex].after.screenshotName}}
+        </div>
+        <div class="run-navbar-screenshot-metadata">
+
+          <div class="padding-left-2 padding-right-2 ellipsis-container font-size-medium">
+            <span screenshot-metadata meta="diffs[selectedDiffIndex].after.meta" properties="diffs[selectedDiffIndex].after.properties"></span>
+          </div>
+
+        </div>
+        <div class="run-navbar-dropdown-icon-outer">
+          <div class="run-navbar-dropdown-icon icon-chevron-down"></div>
+        </div>
+      </div>
+
+
+      <!-- baseline & diff selection -->
+      <div class="run-navbar-column-controls background-light">
+        <div class="run-navbar-inner-row-container font-size-small nowrap-container" ng-show="diffs">
+            <div class="padding-right-2">
+              <input type="radio" id="radio-baseline" name="imageVersionDisplay" value="before" ng-model="selectedScreenshot" ng-disabled="!diffs[selectedDiffIndex].before">
+              <label for="radio-baseline" class="unselectable">baseline</label>
+            </div>
+            <div class="padding-right-2">
+              <input type="radio" id="radio-actual" name="imageVersionDisplay" value="after" ng-model="selectedScreenshot" >
+              <label for="radio-actual" class="navbar-image-controls-space unselectable">actual</label>
+            </div>
+            <div class="padding-right-2">
+              <input type="checkbox" id="checkbox-difference" name="imageDifferenceDisplay" ng-model="showDiff">
+              <label for="checkbox-difference" class="unselectable">show diff ({{diffs[selectedDiffIndex].percentage}} %)</label>
+            </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
+  <!-- image -->
   <div class="size-max-width-1 padding-top-2 padding-bottom-8 text-center" style="max-width:100%;">
     <div>
       <img ng-show="showDiff" ng-src="/api/image/{{diffs[selectedDiffIndex].imageId}}" style="position:absolute;"/>

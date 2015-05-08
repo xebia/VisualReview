@@ -1,0 +1,17 @@
+<div dropdown-contents="screenshotStatusButton" class="z-index-top">
+	<div ng-repeat="status in allStatusses">
+		<div diff-status-background="status" class="clickable">
+			<div ng-click="setStatus(status)" dropdown-toggle="screenshotStatusButton" class="padding-2 font-size-extra-large icon-{{status | lowercase}}"></div>
+		</div>
+	</div>
+</div>
+
+<div dropdown-toggle="screenshotStatusButton">
+	<div class="vertical-middle padding-left-2 padding-right-2">
+		<div class="font-size-extra-large icon-{{selectedDiff.status | lowercase}}">
+		</div>
+	</div>
+</div>
+<div class="run-navbar-dropdown-icon-outer">
+	<div class="run-navbar-dropdown-icon icon-chevron-down"></div>
+</div>
