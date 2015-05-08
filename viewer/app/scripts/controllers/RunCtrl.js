@@ -46,7 +46,9 @@ angular.module('visualDiffViewerApp')
     }
 
     function selectBaselineScreenshot() {
-      $scope.selectedScreenshot = "before";
+      if ($scope.diffs[$scope.selectedDiffIndex].before) {
+        $scope.selectedScreenshot = "before";
+      }
     }
 
     function selectActualScreenshot() {

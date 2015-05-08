@@ -25,7 +25,7 @@
 (defn insert-image!
   "Stores an image. Returns the image ID.
   Throws a service-exception when the image could not be stored."
-  [conn file]
+  [conn ^File file]
   {:pre [conn file (instance? File file)]}
   (sutil/assume (.canRead file) (str "Cannot store image: file cannot be read") ::image-cannot-store-on-fs-cannot-read)
   (let [now (Calendar/getInstance)

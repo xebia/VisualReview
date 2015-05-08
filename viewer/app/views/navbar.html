@@ -62,10 +62,10 @@
                   <span class="icon-{{aShot.status | lowercase}}"></span>
                 </td>
                 <td class="padding-2 nowrap-container">
-                  {{aShot.before.screenshotName}}
+                  {{aShot.after.screenshotName}}
                 </td>
                 <td class="padding-2 nowrap-container">
-                  <span screenshot-metadata meta="aShot.before.meta" properties="aShot.before.properties"></span>
+                  <span screenshot-metadata meta="aShot.after.meta" properties="aShot.after.properties"></span>
                 </td>
               </tr>
             </table>
@@ -78,13 +78,13 @@
     <div class="flexbox-row-item flexbox-row-item-center flexbox-row-item-content-center clickable" style="flex-grow: 0; justify-content: center; max-width: 800px; min-width: 200px;"
          screenshot-status-background="screenshot.status" ng-show="screenshot" vr-dropdown-toggle="screenshotSelector">
       <div class="ellipsis-container padding-left-2 padding-right-2 font-type-semibold font-size-large flexbox-row-item-content-center">
-        {{screenshot.before.screenshotName}}
+        {{screenshot.after.screenshotName}}
       </div>
       <div class="flexbox-row-item flexbox-row-item-center" style="align-items: stretch;">
 
 
         <div class="padding-left-2 padding-right-2 ellipsis-container font-size-medium">
-            <span screenshot-metadata meta="screenshot.before.meta" properties="screenshot.before.properties"></span>
+            <span screenshot-metadata meta="screenshot.after.meta" properties="screenshot.after.properties"></span>
           </div>
 
       </div>
@@ -98,7 +98,7 @@
         <div class="flexbox-row-item flexbox-row-item-center padding-left-2 padding-right-2 nowrap-container font-size-small" style="flex-grow: 1; justify-content:flex-end;"
              ng-show="screenshot">
           <div>
-            <input type="radio" id="radio-baseline" name="imageVersionDisplay" value="before" ng-model="screenshotType">
+            <input type="radio" id="radio-baseline" name="imageVersionDisplay" value="before" ng-model="screenshotType" ng-disabled="!screenshot.before">
             <label for="radio-baseline" class="unselectable">baseline</label>
           </div>
           <div>

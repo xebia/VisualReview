@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS analysis
 CREATE TABLE IF NOT EXISTS diff
 (
   id          BIGINT AUTO_INCREMENT CONSTRAINT diff_pk PRIMARY KEY,
-  before      INTEGER        NOT NULL REFERENCES screenshot ON DELETE CASCADE,
+  before      INTEGER        REFERENCES screenshot ON DELETE CASCADE,
   after       INTEGER        NOT NULL REFERENCES screenshot ON DELETE CASCADE,
   percentage  NUMERIC(5, 2)  NOT NULL,
   image_id        BIGINT       UNIQUE REFERENCES image,
