@@ -69,25 +69,24 @@
   (util/stop-server))
 
 (defn setup-screenshot-dir-fixture [f]
-  (println "Rebinding screenshot dir to" test-screenshot-dir)
+  (log/debug "Rebinding screenshot dir to" test-screenshot-dir)
   (with-redefs [io/screenshots-dir test-screenshot-dir]
     (delete-recursively! io/screenshots-dir)
     (.mkdirs ^File (jio/file io/screenshots-dir))
     (f)))
 
 (defn rebind-db-spec-fixture [f]
-  (println "Rebinding db spec to" (:subname *conn*))
+  (log/debug "Rebinding db spec to" (:subname *conn*))
   (with-redefs [db/conn *conn*]
     (f)))
 
 (defn setup-db-fixture [f]
-  (println "Setting up mock db")
+  (log/info "Setting up mock db")
   (setup-db)
   (f))
 
 (defn logging-fixture [f]
-  (log/set-log-level! :debug)
-  (log/set-log-msg-format!)
+  (log/set-log-level! :warn)
   (f))
 
 (defn upload-tapir [run-id meta props]
