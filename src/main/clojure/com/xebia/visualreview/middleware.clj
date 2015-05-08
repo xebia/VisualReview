@@ -30,13 +30,19 @@
           (log/error (str "A service exception occured, code " code ", message " message))
           {:status  500
            :headers {}
-           :body    (str "Internal service exception occured")}))
+           :body    (str "Internal service error occured")}))
+      (catch SQLException e
+        (do
+          (log/error (str "An error occured involving the database: " (.getMessage e)) e)
+          {:status 500
+           :headers {}
+           :body "Internal database error occured"}))
       (catch Exception e
         (do
-          (log/error e (str "A request triggered an unhandled exception, as a result the request was met with a HTTP status 500 response." (.getMessage e)))
+          (log/error (str "A request triggered an unhandled exception, as a result the request was met with a HTTP status 500 response." (.getMessage e)) e)
           {:status  500
            :headers {}
-           :body    "Internal error occurred"})))))
+           :body    "Internal error occured"})))))
 
 (defn wrap-tx [handler]
   (fn [req]
