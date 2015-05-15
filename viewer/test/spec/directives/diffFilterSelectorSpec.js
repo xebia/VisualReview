@@ -161,8 +161,8 @@ describe('Directive: diff-filter-selector', function () {
 			scope.myTotals = createTotalsObject(10, 5, 0);
 			scope.$digest();
 
-			var onlyPendingButton = menuElement.find(':contains("only pending (0)")');
-			var allButton = menuElement.find(':contains("all (15)")');
+			var onlyPendingButton = menuElement.find('i:contains("only pending (0)")');
+			var allButton = menuElement.find('i:contains("all (15)")');
 
 			expect(onlyPendingButton.hasClass('diff-filter-disabled')).toBe(true);
 			expect(allButton.hasClass('diff-filter-disabled')).toBe(false);
@@ -172,13 +172,14 @@ describe('Directive: diff-filter-selector', function () {
 			expect(menuElement.css('visibility')).toBe('visible');
 
 			allButton.click();
+			scope.$digest();
 			expect(menuElement.css('visibility')).toBe('hidden');
 		});
 
 		it('should close the menu when an option is clicked', function () {
 			expect(menuElement.css('visibility')).toBe('visible');
 
-			menuElement.find(':contains("only rejected")').click();
+			menuElement.find('i:contains("only rejected")').click();
 			expect(menuElement.css('visibility')).toBe('hidden');
 		});
 	});
