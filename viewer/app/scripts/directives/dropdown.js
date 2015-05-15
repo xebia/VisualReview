@@ -70,14 +70,21 @@ angular.module('visualDiffViewerApp')
       }
     }
   })
-  .directive('dropdownToggle', function () {
+  .directive('dropdownToggle', function ($parse) {
     return {
       controller: 'dropdownCtrl',
       link: function(scope, element, attrs, ctrl) {
         var selfDropdownName = attrs.dropdownToggle;
 
         var toggleDropdown = function (e) {
-          ctrl.toggleDropdown(e, selfDropdownName, scope);
+          var toggleCondition = attrs.dropdownToggleIf;
+          if (!toggleCondition || $parse(toggleCondition)(scope) ) {
+             ctrl.toggleDropdown(e, selfDropdownName, scope);
+          }
+
+          if (e) {
+            e.stopPropagation();
+          }
         };
 
         element.bind('click', toggleDropdown);

@@ -2,28 +2,35 @@
 
 angular.module('visualDiffViewerApp')
 
-  .controller('RunCtrl', function ($scope, $routeParams, RunResource, diffConstants) {
+  .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants) {
 		var runId = $routeParams.runId;
+		$scope.allDiffs = [];
 
     function updateTotals() {
-      $scope.totalUndecided = 0;
-      $scope.totalRejected = 0;
-      $scope.totalAccepted = 0;
+      var newTotals = {
+				pending: 0,
+				rejected: 0,
+				accepted: 0,
+				all: 0
+			};
 
-      angular.forEach($scope.diffs, function (result) {
+      angular.forEach($scope.allDiffs, function (result) {
+				newTotals.all++;
         switch (result.status) {
           case diffConstants.pending() :
-            $scope.totalUndecided++;
+						newTotals.pending++;
             break;
 
           case diffConstants.rejected() :
-            $scope.totalRejected++;
+						newTotals.rejected++;
             break;
 
           case diffConstants.accepted() :
-            $scope.totalAccepted++;
+						newTotals.accepted++;
         }
       });
+
+			$scope.totals = newTotals;
     }
 
     function persistCurrentDiffStatus() {
@@ -38,7 +45,7 @@ angular.module('visualDiffViewerApp')
     function toggleCurrentStatus(newValue) {
       var currResult = $scope.diffs[$scope.selectedDiffIndex];
       currResult.status = currResult.status == newValue ? diffConstants.pending() : newValue;;
-			persistCurrentDiffStatus();
+			$scope.statusUpdated();
     }
 
     function selectBaselineScreenshot() {
@@ -59,10 +66,6 @@ angular.module('visualDiffViewerApp')
 		$scope.selectedScreenshot = "after";
 		$scope.showDiff = true;
 
-		$scope.totalUndecided = 0;
-		$scope.totalRejected = 0;
-		$scope.totalAccepted = 0;
-
     $scope.selectNextDiff = function () {
       $scope.selectedDiffIndex < $scope.diffs.length - 1 && $scope.selectedDiffIndex++;
     };
@@ -77,8 +80,29 @@ angular.module('visualDiffViewerApp')
 
     $scope.statusUpdated = function() {
       persistCurrentDiffStatus();
+			updateTotals();
     };
 
+		$scope.currFilter = diffConstants.all();
+
+		$scope.reapplyFilter = function () {
+			applyFilter();
+		};
+
+		function applyFilter () {
+			$scope.diffs = filterFilter($scope.allDiffs, function (diff) {
+				return $scope.currFilter.indexOf(diff.status) != -1;
+			});
+			updateTotals();
+
+			if ($scope.selectedDiffIndex > $scope.diffs.length - 1) {
+				$scope.selectedDiffIndex = Math.max($scope.diffs.length - 1, 0);
+			}
+		}
+
+		$scope.$watch('currFilter', function () {
+			applyFilter();
+		});
 
     var keyPressMap = {
       'LEFT': selectBaselineScreenshot,
@@ -113,8 +137,8 @@ angular.module('visualDiffViewerApp')
       })
       .then(function (analysisData) {
         $scope.analysis = analysisData.analysis;
-        $scope.diffs = analysisData.diffs;
+        $scope.allDiffs = analysisData.diffs;
+				applyFilter();
         updateTotals();
       });
-
   });

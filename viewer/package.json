@@ -27,6 +27,7 @@
     "grunt-rev": "0.1.0",
     "grunt-svgmin": "2.0.0",
     "grunt-usemin": "3.0.0",
+    "jasmine-collection-matchers": "0.0.8",
     "karma-chrome-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.5",
     "karma-ng-html2js-preprocessor": "0.1.2",

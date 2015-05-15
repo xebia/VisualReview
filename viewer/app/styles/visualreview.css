@@ -604,4 +604,20 @@ a:link{
     flex-grow: 1;
 }
 
+.diff-filter-disabled {
+    color: lightgrey;
+}
+
+.gray-on-hover:hover .diff-filter-disabled {
+    color: white;
+}
+
+.gray-on-hover:hover .diff-filter-left {
+    background-color: white;
+}
+
+.diff-filter-refresh:hover {
+    color: #419BF9;
+}
+
 
