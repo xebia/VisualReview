@@ -162,6 +162,9 @@ a:link{
 .icon-vr-diamond:before {
     content: "s";
 }
+.icon-refresh:before {
+    content: "t";
+}
 
 .z-index-bottom {
     z-index: -1;
