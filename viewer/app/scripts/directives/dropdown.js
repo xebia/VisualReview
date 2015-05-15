@@ -42,41 +42,45 @@ angular.module('visualDiffViewerApp')
 
         return {
           post: function(scope, element, attrs, ctrl){
-            element.addClass("vr-dropdown-menu-contents");
-            element[0].style.height = getHeight(element);
-
             var selfDropdownName = attrs.dropdownContents,
-              isOpened = false,
-              toggleDropdown = function(e) {
-                ctrl.toggleDropdown(e, selfDropdownName, scope);
-              };
+              	isOpened = false;
 
-            element.bind('click', toggleDropdown);
+						function sendToggleMessage (event) {
+							ctrl.toggleDropdown(event, selfDropdownName, scope);
+						}
+
+						function openOrCloseMenu (open) {
+							if (open) {
+								element[0].style.height = getHeight(element);
+								element[0].style.maxHeight = $window.innerHeight - 20 + "px";
+								element[0].style.visibility = "visible";
+							} else {
+								element[0].style.height = "0px";
+								element[0].style.visibility = "hidden";
+							}
+						}
+
+						element.addClass("vr-dropdown-menu-contents");
+						element[0].style.height = getHeight(element);
+
+						element.bind('click', sendToggleMessage);
 
             scope.$on('$destroy', function() {
-              element.unbind('click', toggleDropdown);
+              element.unbind('click', sendToggleMessage);
             });
 
-            $rootScope.$on(VR_DROPDOWN_TOGGLE_MESSAGE, function(event, dropdownName) {
+            $rootScope.$on(VR_DROPDOWN_TOGGLE_MESSAGE, function (event, dropdownName) {
               if (dropdownName !== selfDropdownName) {
-                return;
+								openOrCloseMenu(isOpened = false);
+
+								return;
               }
 
-              if (!isOpened) {
-                element[0].style.height = getHeight(element);
-                element[0].style.maxHeight = $window.innerHeight - 20 + "px";
-                element[0].style.visibility = "visible";
-              } else {
-                element[0].style.height = "0px";
-                element[0].style.visibility = "hidden";
-              }
-
-              isOpened = !isOpened;
+							openOrCloseMenu(isOpened = !isOpened);
             });
           }
         };
       }
-
     }
   })
   .directive('dropdownToggle', function ($parse) {
@@ -85,21 +89,21 @@ angular.module('visualDiffViewerApp')
       link: function(scope, element, attrs, ctrl) {
         var selfDropdownName = attrs.dropdownToggle;
 
-        var toggleDropdown = function (e) {
+        function sendToggleMessage (event) {
           var toggleCondition = attrs.dropdownToggleIf;
           if (!toggleCondition || $parse(toggleCondition)(scope) ) {
-             ctrl.toggleDropdown(e, selfDropdownName, scope);
+             ctrl.toggleDropdown(event, selfDropdownName, scope);
           }
 
-          if (e) {
-            e.stopPropagation();
+          if (event) {
+            event.stopPropagation();
           }
-        };
+        }
 
-        element.bind('click', toggleDropdown);
+        element.bind('click', sendToggleMessage);
 
         scope.$on('$destroy', function() {
-          element.unbind('click', toggleDropdown);
+          element.unbind('click', sendToggleMessage);
         });
       }
     }
