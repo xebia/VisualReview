@@ -110,7 +110,7 @@
     </div>
   </div>
 
-  <div ng-if="diffs.length == 0" ng-switch="totals.pending == 0 && totals.rejected == 0 && totals.accepted > 0" class="color-light list-header text-center">
+  <div ng-if="allDiffs.length > 0 && diffs.length == 0" ng-switch="totals.pending == 0 && totals.rejected == 0 && totals.accepted > 0" class="color-light list-header text-center">
       <div ng-switch-when="true">
         <p>All screenshot diffs of this run have been accepted. Good job!</p>
         <a class="text-decoration-none font-size-small" href="#/{{run.projectId}}/{{run.suiteId}}/{{run.id}}"><span class="color-light">Click here</span> to view all diffs</a>
@@ -126,7 +126,7 @@
 
 <div ng-if="analysis && allDiffs.length == 0">
   <div class="color-light list-header overflow-auto text-center">
-    <p>No screenshots found in this run</p>
+    <p>No screenshots recorded in this run</p>
     <a class="text-decoration-none font-size-small" href="#/{{run.projectId}}/{{run.suiteId}}/"><span class="color-light">< back to suite</span></a>
   </div>
 </div>
