@@ -5,7 +5,7 @@ angular.module('visualDiffViewerApp')
   .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants) {
 		var runId = $routeParams.runId;
 		switch($routeParams.filter) {
-			case 'not-accepted':
+			case 'rp':
 				$scope.currFilter = [diffConstants.pending(), diffConstants.rejected()]
 				break;
 
