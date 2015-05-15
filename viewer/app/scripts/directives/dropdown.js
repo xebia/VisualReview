@@ -28,46 +28,55 @@ angular.module('visualDiffViewerApp')
         scope.$digest();
     };
   })
-  .directive('dropdownContents', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE) {
+  .directive('dropdownContents', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE, $window) {
     return {
       restrict: 'AE',
       controller: 'dropdownCtrl',
-      link: function (scope, element, attrs, ctrl) {
-        element.addClass("vr-dropdown-menu-contents");
-        var selfDropdownName = attrs.dropdownContents,
-            isOpened = false,
-            initialHeight = 0,
-            toggleDropdown = function(e) {
-              ctrl.toggleDropdown(e, selfDropdownName, scope);
-            };
+      compile: function(element){
+        var measureWrapperClass = 'vr-dropdown-menu-measure-wrapper';
+        element[0].innerHTML = '<div class="' + measureWrapperClass + '">' + element[0].innerHTML + '</div>';
 
-        element.bind('click', toggleDropdown);
+        function getHeight(contentsElement) {
+          return contentsElement[0].querySelector('.' + measureWrapperClass).clientHeight + "px";
+        }
 
-        scope.$on('$destroy', function() {
-          element.unbind('click', toggleDropdown);
-        });
+        return {
+          post: function(scope, element, attrs, ctrl){
+            element.addClass("vr-dropdown-menu-contents");
+            element[0].style.height = getHeight(element);
 
-        $rootScope.$on(VR_DROPDOWN_TOGGLE_MESSAGE, function(event, dropdownName) {
-          if (dropdownName !== selfDropdownName) {
-            return;
+            var selfDropdownName = attrs.dropdownContents,
+              isOpened = false,
+              toggleDropdown = function(e) {
+                ctrl.toggleDropdown(e, selfDropdownName, scope);
+              };
+
+            element.bind('click', toggleDropdown);
+
+            scope.$on('$destroy', function() {
+              element.unbind('click', toggleDropdown);
+            });
+
+            $rootScope.$on(VR_DROPDOWN_TOGGLE_MESSAGE, function(event, dropdownName) {
+              if (dropdownName !== selfDropdownName) {
+                return;
+              }
+
+              if (!isOpened) {
+                element[0].style.height = getHeight(element);
+                element[0].style.maxHeight = $window.innerHeight - 20 + "px";
+                element[0].style.visibility = "visible";
+              } else {
+                element[0].style.height = "0px";
+                element[0].style.visibility = "hidden";
+              }
+
+              isOpened = !isOpened;
+            });
           }
-
-          if (!isOpened) {
-            if (!initialHeight) {
-              initialHeight = element[0].offsetHeight;
-            }
-
-            element[0].style.height = initialHeight + "px";
-            element[0].style.visibility = "visible";
-          } else {
-            element[0].style.height = "0px";
-            element[0].style.visibility = "hidden";
-          }
-
-          isOpened = !isOpened;
-
-        });
+        };
       }
+
     }
   })
   .directive('dropdownToggle', function ($parse) {
