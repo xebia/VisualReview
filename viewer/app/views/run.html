@@ -112,7 +112,8 @@
 
   <div ng-if="diffs.length == 0" ng-switch="totals.pending == 0 && totals.rejected == 0 && totals.accepted > 0" class="color-light list-header text-center">
       <div ng-switch-when="true">
-        All screenshot diffs have been accepted. Good job!
+        <p>All screenshot diffs of this run have been accepted. Good job!</p>
+        <a class="text-decoration-none font-size-small" href="#/{{run.projectId}}/{{run.suiteId}}/{{run.id}}"><span class="color-light">Click here</span> to view all diffs</a>
       </div>
       <div ng-switch-default="">
         <p>There are no screenshots left that have the status '{{currFilter}}'.</p>

@@ -4,6 +4,16 @@ angular.module('visualDiffViewerApp')
 
   .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants) {
 		var runId = $routeParams.runId;
+		switch($routeParams.filter) {
+			case 'not-accepted':
+				$scope.currFilter = [diffConstants.pending(), diffConstants.rejected()]
+				break;
+
+			default:
+				$scope.currFilter = diffConstants.all();
+				break;
+		}
+
 		$scope.allDiffs = [];
 
     function updateTotals() {
@@ -82,8 +92,6 @@ angular.module('visualDiffViewerApp')
       persistCurrentDiffStatus();
 			updateTotals();
     };
-
-		$scope.currFilter = diffConstants.all();
 
 		$scope.reapplyFilter = function () {
 			applyFilter();
