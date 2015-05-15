@@ -26,14 +26,15 @@
                    run-id="run.id"
                    creation-time="run.startTime"></div>
             </div>
-            <div class="ellipsis-container size-max-width-1 padding-right-2" ng-show="diffs">
-              <i><b>show: </b> all</i>
+            <div style="position: relative;">
+              <div diff-filter-selector="currFilter" totals="totals"></div>
             </div>
           </div>
         </div>
 
         <!-- screenshot status-->
-        <div diff-status-selector="diffs[selectedDiffIndex]"
+        <div ng-show="diffs[selectedDiffIndex]"
+             diff-status-selector="diffs[selectedDiffIndex]"
 						 on-status-selected="statusUpdated()"
 						 diff-status-background="diffs[selectedDiffIndex].status"
 						 class="run-navbar-column-status clickable">
@@ -81,7 +82,7 @@
 
 
       <!-- baseline & diff selection -->
-      <div class="run-navbar-column-controls background-light">
+      <div class="run-navbar-column-controls background-light" ng-show="diffs[selectedDiffIndex]">
         <div class="run-navbar-inner-row-container font-size-small nowrap-container" ng-show="diffs">
             <div class="padding-right-2">
               <input type="radio" id="radio-baseline" name="imageVersionDisplay" value="before" ng-model="selectedScreenshot" ng-disabled="!diffs[selectedDiffIndex].before">
@@ -102,16 +103,28 @@
   </div>
 
   <!-- image -->
-  <div class="size-max-width-1 padding-top-2 padding-bottom-8 text-center" style="max-width:100%;">
+  <div class="size-max-width-1 padding-top-2 padding-bottom-8 text-center" style="max-width:100%;" ng-if="diffs.length > 0">
     <div>
       <img ng-show="showDiff" ng-src="/api/image/{{diffs[selectedDiffIndex].imageId}}" style="position:absolute;"/>
       <img ng-src="/api/image/{{diffs[selectedDiffIndex][selectedScreenshot].imageId}}"/>
     </div>
   </div>
 
+  <div ng-if="diffs.length == 0" ng-switch="totals.pending == 0 && totals.rejected == 0 && totals.accepted > 0" class="color-light list-header text-center">
+      <div ng-switch-when="true">
+        <p>All screenshot diffs of this run have been accepted. Good job!</p>
+        <a class="text-decoration-none font-size-small" href="#/{{run.projectId}}/{{run.suiteId}}/{{run.id}}"><span class="color-light">Click here</span> to view all diffs</a>
+      </div>
+      <div ng-switch-default="">
+        <p>There are no screenshots left that have the status '{{currFilter}}'.</p>
+        <p>Change the filter in the upper left to see more.</p>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<div ng-show="analysis && diffs.length == 0">
+<div ng-if="analysis && allDiffs.length == 0">
   <div class="color-light list-header overflow-auto text-center">
     <p>No screenshots found in this run</p>
     <a class="text-decoration-none font-size-small" href="#/{{run.projectId}}/{{run.suiteId}}/"><span class="color-light">< back to suite</span></a>

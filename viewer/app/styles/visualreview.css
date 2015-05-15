@@ -162,6 +162,9 @@ a:link{
 .icon-vr-diamond:before {
     content: "s";
 }
+.icon-refresh:before {
+    content: "t";
+}
 
 .z-index-bottom {
     z-index: -1;
@@ -599,6 +602,22 @@ a:link{
     align-items: center;
     width: 100%;
     flex-grow: 1;
+}
+
+.diff-filter-disabled {
+    color: lightgrey;
+}
+
+.gray-on-hover:hover .diff-filter-disabled {
+    color: white;
+}
+
+.gray-on-hover:hover .diff-filter-left {
+    background-color: white;
+}
+
+.diff-filter-refresh:hover {
+    color: #419BF9;
 }
 
 

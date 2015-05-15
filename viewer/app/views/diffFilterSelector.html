@@ -1,0 +1,15 @@
+<div dropdown-contents="diffFilter" class="z-index-top padding-right-2 padding-bottom-05">
+	<table>
+		<tr ng-repeat="filterOption in filterOptions"
+				dropdown-toggle="diffFilter" dropdown-toggle-if="(filterOption.count() > 0)"
+				ng-click="selectFilterOption(filterOption);"
+				class=" clickable gray-on-hover">
+			<td class="diff-filter-left"><i ng-if="$index == 0"><b>show:</b></i></td>
+			<td><i ng-class="{ 'diff-filter-disabled': (filterOption.count() == 0)}">{{filterOption.label}} ({{filterOption.count()}})</i></td>
+		</tr>
+	</table>
+</div>
+<div dropdown-toggle="diffFilter" data-test="filter-selector-button" class="ellipsis-container size-max-width-1 padding-right-2 nowrap-container">
+	<i><b>show: </b><span class="text-decoration-underline clickable">{{filterSelection.label}} ({{filterSelection.count()}})</span></i>
+	<span ng-click="reapplyFilter(); $event.stopPropagation();" data-test="filter-reload-button" title="Re-apply filter" class="icon-refresh padding-left-2 clickable diff-filter-refresh" style="vertical-align:middle;"></span>
+</div>
