@@ -24,7 +24,7 @@
 (defn- generate-empty-diff-file
   []
   (let [output-file (File/createTempFile "vr-empty-diff-" ".tmp")]
-    (with-open [empty-diff-reader (clojure.java.io/reader (io/resource "1x1.png"))]
+    (with-open [empty-diff-reader (clojure.java.io/input-stream (io/resource "1x1.png"))]
       (io/copy empty-diff-reader output-file))
     output-file))
 
