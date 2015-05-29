@@ -175,17 +175,18 @@
   (let [analysis (p/get-analysis conn run-id)
         diff-report (analysis/generate-diff-report before-file after-file)
         diff-file-id (image/insert-image! conn (:diff diff-report))
-        new-diff-id (p/save-diff! conn diff-file-id before-id after-id (:percentage diff-report) (:id analysis))
-        diff (p/get-diff conn run-id new-diff-id)]
-    {:report diff-report :diff diff}))
+        new-diff-id (p/save-diff! conn diff-file-id before-id after-id (:percentage diff-report) (:id analysis))]
+    (do
+      (.delete (:diff diff-report))
+      (p/get-diff conn run-id new-diff-id))))
 
 (defn- process-screenshot [conn suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
         baseline-screenshot (p/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
         before-file (when baseline-screenshot (io/get-file (image/get-image-path conn (:image-id baseline-screenshot))))
-        {:keys [report diff]} (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id)]
-    (when (and baseline-screenshot (zero? (:percentage report)))
+        diff (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id)]
+    (when (and baseline-screenshot (zero? (:percentage diff)))
       (update-diff-status! conn diff "accepted"))
     screenshot))
 
