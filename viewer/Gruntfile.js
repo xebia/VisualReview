@@ -3,7 +3,6 @@
 
 var LIVERELOAD_PORT = 35729;
 var lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
-var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 var mountFolder = function (connect, dir) {
   return connect.static(require('path').resolve(dir));
 };
@@ -107,7 +106,7 @@ module.exports = function (grunt) {
             var middlewares = [
               lrSnippet,
               mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.app),
+              mountFolder(connect, yeomanConfig.app)
             ];
             var directory = options.directory || options.base[options.base.length - 1];
             if (!Array.isArray(options.base)) {
@@ -312,7 +311,8 @@ module.exports = function (grunt) {
             'views/**/*.html',
             'images/{,*/}*.{gif,webp}',
             'styles/font/**/*',
-            'styles/assets/**/*'
+            'styles/assets/**/*',
+            'styles/favicon/**/*'
           ]
         }, {
           expand: true,
