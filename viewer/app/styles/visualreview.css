@@ -328,10 +328,14 @@ a:link{
     margin-top: 0;
     visibility: hidden;
 
-    overflow: scroll;
+    overflow: hidden;
 
     background-color: #FFFFFF;
     box-shadow: 0 2px 4px 0;
+}
+
+.vr-dropdown-menu-contents-opened {
+    overflow-y: auto;
 }
 
 .gray-on-hover:hover {
