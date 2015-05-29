@@ -28,7 +28,7 @@
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
-                       :subname        "file:./target/temp/vrtest.db;TRACE_LEVEL_FILE=4"
+                       :subname        "file:./target/temp/vrtest.db;TRACE_LEVEL_FILE=2"
                        :user           ""
                        :init-pool-size 1
                        :max-pool-size  1})
