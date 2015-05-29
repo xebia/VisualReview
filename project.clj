@@ -38,7 +38,8 @@
             "unit"          ["with-profile" "+unit" "test"]
             "npm-install"   ["shell" "npm" "install"]
             "bower-install" ["shell" "bower" "install"]
-            "grunt-build"   ["shell" "grunt" "build"]}
+            "grunt-build"   ["shell" "grunt" "build"]
+            "test-all"      ["do" ["test"] ["shell" "npm" "install"] ["shell" "bower" "install"] ["shell" "grunt" "test"]]}
 
   :profiles {:dev         {:dependencies   [[clj-http "1.0.1"]]
                            :resource-paths ["src/test/resources" "src/integration/resources"]}
