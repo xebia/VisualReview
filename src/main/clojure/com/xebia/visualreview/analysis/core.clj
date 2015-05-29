@@ -21,6 +21,13 @@
            [javax.imageio ImageIO]
            [java.io File]))
 
+(defn- generate-empty-diff-file
+  []
+  (let [output-file (File/createTempFile "vr-empty-diff-" ".tmp")]
+    (with-open [empty-diff-reader (clojure.java.io/reader (io/resource "1x1.png"))]
+      (io/copy empty-diff-reader output-file))
+    output-file))
+
 (defn generate-diff-report
   "Takes 2 inputfiles and returns a map with:
   :diff => A image file of the diff,
@@ -30,7 +37,7 @@
   percentage will be 0.0"
   [file1 file2]
   (if (or (nil? file1) (nil? file2))
-    {:diff (io/file (io/resource "1x1.png")) :percentage 0.0}
+    {:diff (generate-empty-diff-file) :percentage 0.0}
     (let [result ^DiffReport (PixelComparator/processImage file1 file2)
           diff-file (File/createTempFile "vr-diff-" ".tmp")
           write-success? (ImageIO/write (.getDiffImage result) "png" diff-file)]
