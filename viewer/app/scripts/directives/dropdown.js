@@ -29,6 +29,25 @@ angular.module('visualDiffViewerApp')
     };
   })
   .directive('dropdownContents', function ($rootScope, VR_DROPDOWN_TOGGLE_MESSAGE, $window) {
+    // Function from David Walsh: http://davidwalsh.name/css-animation-callback
+    function whichTransitionEvent(){
+      var el = document.createElement("fakeelement");
+
+      var transitions = {
+        "transition"      : "transitionend",
+        "OTransition"     : "oTransitionEnd",
+        "MozTransition"   : "transitionend",
+        "WebkitTransition": "webkitTransitionEnd"
+      };
+
+      for (var t in transitions){
+        if (el.style[t] !== undefined){
+          return transitions[t];
+        }
+      }
+    }
+
+
     return {
       restrict: 'AE',
       controller: 'dropdownCtrl',
@@ -57,6 +76,7 @@ angular.module('visualDiffViewerApp')
 							} else {
 								element[0].style.height = "0px";
 								element[0].style.visibility = "hidden";
+                element.removeClass('vr-dropdown-menu-contents-opened');
 							}
 						}
 
@@ -67,6 +87,15 @@ angular.module('visualDiffViewerApp')
 
             scope.$on('$destroy', function() {
               element.unbind('click', sendToggleMessage);
+              element.off(whichTransitionEvent());
+            });
+
+            element.on(whichTransitionEvent(), function() {
+              if (isOpened) {
+                element.addClass('vr-dropdown-menu-contents-opened');
+              } else {
+                element.removeClass('vr-dropdown-menu-contents-opened');
+              }
             });
 
             $rootScope.$on(VR_DROPDOWN_TOGGLE_MESSAGE, function (event, dropdownName) {
