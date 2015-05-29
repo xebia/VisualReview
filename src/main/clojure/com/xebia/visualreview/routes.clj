@@ -25,6 +25,8 @@
 
 (def ^:private resources-root "public")
 
+(def ^:private api-version 1)
+
 (def api-routes
   (m/wrap-tx
     (routes
@@ -47,6 +49,7 @@
 (defroutes main-router
   (GET "/" [] (resource-response "index.html" {:root resources-root}))
   (context "/api" req api-routes)
+  (GET "/api-version" [] (str api-version))
   (context "/screenshots" []
     (route/files "/" {:root io/screenshots-dir})
     (route/not-found nil))
