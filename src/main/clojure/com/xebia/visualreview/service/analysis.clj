@@ -14,10 +14,10 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.analysis
+(ns com.xebia.visualreview.service.analysis
   (:require [com.xebia.visualreview.util :refer :all]
-            [com.xebia.visualreview.persistence.util :as putil]
-            [com.xebia.visualreview.service-util :as sutil]))
+            [com.xebia.visualreview.service.persistence.util :as putil]
+            [com.xebia.visualreview.service.service-util :as sutil]))
 
 ;; Analysis
 (defn create-analysis!

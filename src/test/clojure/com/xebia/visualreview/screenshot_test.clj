@@ -18,11 +18,11 @@
   (:require [clojure.test :refer :all]
             [slingshot.test]
             [clojure.java.io :as io]
-            [com.xebia.visualreview.screenshot :as s]
-            [com.xebia.visualreview.screenshot.persistence :as sp]
-            [com.xebia.visualreview.image :as i]
+            [com.xebia.visualreview.service.screenshot :as s]
+            [com.xebia.visualreview.service.screenshot.persistence :as sp]
+            [com.xebia.visualreview.service.image :as i]
             [com.xebia.visualreview.test-util :refer :all]
-            [com.xebia.visualreview.run :as run])
+            [com.xebia.visualreview.service.run :as run])
   (:import [java.sql SQLException]))
 
 (deftest insert-screenshot

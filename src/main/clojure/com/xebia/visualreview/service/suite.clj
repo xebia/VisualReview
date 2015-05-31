@@ -14,11 +14,11 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.suite
-  (:require [com.xebia.visualreview.persistence.util :as putil]
-            [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.baseline :as baseline]
-            [com.xebia.visualreview.run :as run]))
+(ns com.xebia.visualreview.service.suite
+  (:require [com.xebia.visualreview.service.persistence.util :as putil]
+            [com.xebia.visualreview.service.project :as project]
+            [com.xebia.visualreview.service.baseline :as baseline]
+            [com.xebia.visualreview.service.run :as run]))
 
 (defn get-suite-by-name
   ([conn project-name suite-name]

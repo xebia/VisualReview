@@ -14,8 +14,8 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.image.persistence
-  (:require [com.xebia.visualreview.persistence.util :as putil]))
+(ns com.xebia.visualreview.service.image.persistence
+  (:require [com.xebia.visualreview.service.persistence.util :as putil]))
 
 
 (defn insert-image!

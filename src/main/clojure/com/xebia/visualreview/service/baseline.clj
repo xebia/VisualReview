@@ -14,8 +14,8 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.baseline
-  (:require [com.xebia.visualreview.persistence.util :as putil]
+(ns com.xebia.visualreview.service.baseline
+  (:require [com.xebia.visualreview.service.persistence.util :as putil]
             [slingshot.slingshot :as ex]
             [clojure.java.jdbc :as j]
             [cheshire.core :as json])

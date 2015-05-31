@@ -17,8 +17,8 @@
 (ns com.xebia.visualreview.itest.project-test
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.suite :as suite]))
+            [com.xebia.visualreview.service.project :as project]
+            [com.xebia.visualreview.service.suite :as suite]))
 
 (use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-db-fixture)
 

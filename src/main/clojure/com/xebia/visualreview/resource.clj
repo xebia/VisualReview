@@ -20,15 +20,15 @@
             [slingshot.slingshot :as ex]
             [com.xebia.visualreview.validation :as v]
             [com.xebia.visualreview.resource.util :refer :all]
-            [com.xebia.visualreview.analysis :as analysis]
-            [com.xebia.visualreview.analysis.core :as analysisc]
+            [com.xebia.visualreview.service.analysis :as analysis]
+            [com.xebia.visualreview.service.analysis.core :as analysisc]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.screenshot :as screenshot]
-            [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.suite :as suite]
-            [com.xebia.visualreview.run :as run]
-            [com.xebia.visualreview.baseline :as baseline]
+            [com.xebia.visualreview.service.image :as image]
+            [com.xebia.visualreview.service.screenshot :as screenshot]
+            [com.xebia.visualreview.service.project :as project]
+            [com.xebia.visualreview.service.suite :as suite]
+            [com.xebia.visualreview.service.run :as run]
+            [com.xebia.visualreview.service.baseline :as baseline]
             [com.xebia.visualreview.logging :as log])
   (:import [java.util Map]))
 

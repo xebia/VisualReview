@@ -14,11 +14,11 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.run
-  (:require [com.xebia.visualreview.persistence.util :as putil]
-            [com.xebia.visualreview.analysis :as analysis]
-            [com.xebia.visualreview.service-util :as sutil]
-            [com.xebia.visualreview.baseline :as baseline])
+(ns com.xebia.visualreview.service.run
+  (:require [com.xebia.visualreview.service.persistence.util :as putil]
+            [com.xebia.visualreview.service.analysis :as analysis]
+            [com.xebia.visualreview.service.service-util :as sutil]
+            [com.xebia.visualreview.service.baseline :as baseline])
   (:import (java.sql Timestamp)
            (java.util Date)))
 

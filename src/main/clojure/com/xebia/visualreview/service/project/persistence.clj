@@ -14,8 +14,8 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.project.persistence
-  (:require [com.xebia.visualreview.persistence.util :as putil]))
+(ns com.xebia.visualreview.service.project.persistence
+  (:require [com.xebia.visualreview.service.persistence.util :as putil]))
 
 (defn query-for-project
   [conn param-type param-value row-fn]

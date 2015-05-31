@@ -18,7 +18,7 @@
   (:require [clojure.test :refer :all]
             [slingshot.slingshot :as ex]
             [slingshot.test]
-            [com.xebia.visualreview.service-util :as util]
+            [com.xebia.visualreview.service.service-util :as util]
             [com.xebia.visualreview.test-util :refer :all]))
 
 (defn throw-java-exception-with-message [message]

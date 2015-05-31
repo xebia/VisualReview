@@ -20,7 +20,7 @@
             [com.xebia.visualreview.config :as config]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.logging :as log]
-            [com.xebia.visualreview.persistence.database :as db])
+            [com.xebia.visualreview.service.persistence.database :as db])
   (:gen-class))
 
 (defn- config-settings []

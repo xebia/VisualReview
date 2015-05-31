@@ -18,9 +18,9 @@
   (:require [liberator.core :refer [resource]]
             [com.xebia.visualreview.resource.util :refer :all]
             [com.xebia.visualreview.validation :as v]
-            [com.xebia.visualreview.analysis :as p]
+            [com.xebia.visualreview.service.analysis :as p]
             [slingshot.slingshot :as ex]
-            [com.xebia.visualreview.baseline :as baseline]))
+            [com.xebia.visualreview.service.baseline :as baseline]))
 
 (def ^:private create-branch-schema
   {:baselineNode  [Number []]

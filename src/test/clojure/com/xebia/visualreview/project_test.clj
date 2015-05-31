@@ -16,8 +16,8 @@
 
 (ns com.xebia.visualreview.project-test
   (:require [clojure.test :refer :all]
-            [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.persistence.util :as putil]
+            [com.xebia.visualreview.service.project :as project]
+            [com.xebia.visualreview.service.persistence.util :as putil]
             [com.xebia.visualreview.test-util :refer :all]))
 
 (deftest get-project-by-name

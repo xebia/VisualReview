@@ -14,12 +14,12 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.screenshot
-  (:require [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.screenshot.persistence :as sp]
-            [com.xebia.visualreview.service-util :as sutil]
+(ns com.xebia.visualreview.service.screenshot
+  (:require [com.xebia.visualreview.service.image :as image]
+            [com.xebia.visualreview.service.screenshot.persistence :as sp]
+            [com.xebia.visualreview.service.service-util :as sutil]
             [slingshot.slingshot :as ex]
-            [com.xebia.visualreview.run :as run])
+            [com.xebia.visualreview.service.run :as run])
   (:import [java.io File]))
 
 (defn get-screenshot-by-id

@@ -17,8 +17,8 @@
 (ns com.xebia.visualreview.image-test
   (:require [clojure.test :refer :all]
             [slingshot.test]
-            [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.image.persistence :as ip]
+            [com.xebia.visualreview.service.image :as image]
+            [com.xebia.visualreview.service.image.persistence :as ip]
             [com.xebia.visualreview.io :as vrio]
             [com.xebia.visualreview.test-util :refer :all]
             [clojure.java.io :as io])

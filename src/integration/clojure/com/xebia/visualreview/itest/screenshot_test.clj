@@ -18,10 +18,10 @@
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.screenshot :as s]
-            [com.xebia.visualreview.suite :as suite]
-            [com.xebia.visualreview.run :as run]))
+            [com.xebia.visualreview.service.project :as project]
+            [com.xebia.visualreview.service.screenshot :as s]
+            [com.xebia.visualreview.service.suite :as suite]
+            [com.xebia.visualreview.service.run :as run]))
 
 (use-fixtures :each mock/logging-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
 
