@@ -31,7 +31,7 @@
   (str api-root (apply str (interpose \/ parts))))
 
 (defn get-api-version []
-  (http/get (str server-root "api-version")))
+  (http/get (str server-root "api/version")))
 
 (defn get-projects []
   (http/get (endpoint "projects") default-opts))
