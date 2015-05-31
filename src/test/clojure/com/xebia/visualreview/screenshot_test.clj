@@ -20,9 +20,9 @@
             [clojure.java.io :as io]
             [com.xebia.visualreview.screenshot :as s]
             [com.xebia.visualreview.screenshot.persistence :as sp]
-            [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.image :as i]
-            [com.xebia.visualreview.test-util :refer :all])
+            [com.xebia.visualreview.test-util :refer :all]
+            [com.xebia.visualreview.run :as run])
   (:import [java.sql SQLException]))
 
 (deftest insert-screenshot
@@ -31,15 +31,15 @@
         image-file (io/as-file (io/resource "tapir_hat.png"))
         insert-screenshot-fn #(s/insert-screenshot! {} 999 "myScreenshot" {:browser "chrome" :os "windows"} {:version "4.0"} image-file)]
     (is (thrown+-with-msg? service-exception? #"Could not store screenshot, run id 999 does not exist."
-                           (with-mock [p/get-run nil]
+                           (with-mock [run/get-run nil]
                              (insert-screenshot-fn))) "Throws a service exception when given run-id does not exist")
     (is (thrown+-with-msg? service-exception? #"Could not store screenshot in database: Database error"
-                           (with-mock [p/get-run {:id run-id}
+                           (with-mock [run/get-run {:id run-id}
                                        i/insert-image! {:id image-id}
                                        sp/save-screenshot! (throw (SQLException. "Database error"))]
                              (insert-screenshot-fn))) "throws a service exception when screenshot could not be stored in the database")
     (is (thrown+-with-msg? service-exception? #"Could not store screenshot in database: screenshot with name and properties already exists"
-                           (with-mock [p/get-run {:id run-id}
+                           (with-mock [run/get-run {:id run-id}
                                        i/insert-image! {:id image-id}
                                        sp/save-screenshot! (throw (slingshot-exception {:type :sql-exception :subtype ::sp/unique-constraint-violation :message "Duplicate thingy"}))]
                              (insert-screenshot-fn))))))

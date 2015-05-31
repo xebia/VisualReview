@@ -18,9 +18,10 @@
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.persistence :as p]
             [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.screenshot :as s]))
+            [com.xebia.visualreview.screenshot :as s]
+            [com.xebia.visualreview.suite :as suite]
+            [com.xebia.visualreview.run :as run]))
 
 (use-fixtures :each mock/logging-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
 
@@ -28,8 +29,8 @@
 
   (testing "Storing and retrieving a screenshot based on a screenshot-id"
     (project/create-project! mock/*conn* "myProject")
-    (p/create-suite-for-project! mock/*conn* "myProject" "mySuite")
-    (let [run-id (p/create-run! mock/*conn* {:project-name "myProject" :suite-name "mySuite"})
+    (let [suite-id (suite/create-suite-for-project! mock/*conn* "myProject" "mySuite")
+          run-id (run/create-run! mock/*conn* suite-id)
           image-file (io/as-file (io/resource "tapir_hat.png"))
           screenshot-id (s/insert-screenshot! mock/*conn* run-id "myScreenshot" {:browser "chrome" :os "windows"} {:version "4.0"} image-file)
           screenshot (s/get-screenshot-by-id mock/*conn* screenshot-id)]

@@ -18,7 +18,7 @@
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.mock :as mock]
             [com.xebia.visualreview.project :as project]
-            [com.xebia.visualreview.persistence :as p]))
+            [com.xebia.visualreview.suite :as suite]))
 
 (use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-db-fixture)
 
@@ -49,14 +49,14 @@
     (let [project-id-1 (project/create-project! mock/*conn* "project name")
           project-id-2 (project/create-project! mock/*conn* "project name 2")
           created-project (project/get-project-by-id mock/*conn* project-id-1)
-          suite-id-1 (p/create-suite-for-project! mock/*conn* "project name" "suite name")
-          suite-id-2 (p/create-suite-for-project! mock/*conn* "project name 2" "suite name")
-          suite (p/get-suite-by-id mock/*conn* project-id-1 suite-id-1)
+          suite-id-1 (suite/create-suite-for-project! mock/*conn* "project name" "suite name")
+          suite-id-2 (suite/create-suite-for-project! mock/*conn* "project name 2" "suite name")
+          suite (suite/get-suite-by-id mock/*conn* suite-id-1)
           deleted-project (project/delete-project! mock/*conn* project-id-1)
           project-1-after-deletion (project/get-project-by-id mock/*conn* project-id-1)
           project-2-after-deletion (project/get-project-by-id mock/*conn* project-id-2)
-          suite-1-after-deletion (p/get-suite-by-id mock/*conn* project-id-1 suite-id-1)
-          suite-2-after-deletion (p/get-suite-by-id mock/*conn* project-id-2 suite-id-2)]
+          suite-1-after-deletion (suite/get-suite-by-id mock/*conn* suite-id-1)
+          suite-2-after-deletion (suite/get-suite-by-id mock/*conn* suite-id-2)]
       (is (= deleted-project true))
       (is (not (nil? created-project)))
       (is (not (nil? suite)))

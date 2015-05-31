@@ -16,7 +16,8 @@
 
 (ns com.xebia.visualreview.service-util
   (:require [slingshot.slingshot :as ex]
-            [com.xebia.visualreview.logging :as log]))
+            [com.xebia.visualreview.logging :as log]
+            [com.xebia.visualreview.util :as util]))
 
 (defn get-message-from-object-or-exception
   [object-or-exception]
@@ -51,3 +52,9 @@
   'Assume' is primarily intended for easy sanity checking of input values for forms in the service layer."
   [form err-msg err-code]
   `(when (not ~form) (throw-service-exception ~err-msg ~err-code)))
+
+(defn format-dates [run-row]
+  (-> run-row
+      (util/format-date :start-time)
+      (util/format-date :end-time)
+      (util/format-date :creation-time)))
