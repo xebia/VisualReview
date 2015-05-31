@@ -18,7 +18,8 @@
   (:require [com.xebia.visualreview.service.persistence.util :as putil]
             [com.xebia.visualreview.service.project :as project]
             [com.xebia.visualreview.service.baseline :as baseline]
-            [com.xebia.visualreview.service.run :as run]))
+            [com.xebia.visualreview.service.run :as run]
+            [com.xebia.visualreview.service.service-util :as sutil]))
 
 (defn get-suite-by-name
   ([conn project-name suite-name]
@@ -65,3 +66,15 @@
         new-suite-id (putil/insert-single! conn :suite {:project-id project-id :name suite-name})]
     (baseline/create-baseline-tree! conn new-suite-id)
     new-suite-id))
+
+(defn delete-suite!
+  "Deletes a suite and all attached runs, analyses and screenshot metadata.
+  Images metadata and binary files are left intact.
+  Returns true when deletion was succesful. "
+  [conn suite-id]
+  {:pre (number? suite-id)}
+  (sutil/attempt
+    (do (putil/delete! conn :suite ["id = ?" suite-id])
+        true)
+    "Could not delete suite: %s"
+    ::delete-by-id-failed))

@@ -94,13 +94,17 @@
 
 (defn suite-resource [project-id suite-id]
   (json-resource
-    :allowed-methods [:get]
+    :allowed-methods [:get :delete]
     :exists? (fn [ctx]
                (try
                  (let [[project-id suite-id] (parse-longs [project-id suite-id])]
                    (when-let [suite (suite/get-full-suite (tx-conn ctx) project-id suite-id)]
                      {::suite suite}))
                  (catch NumberFormatException _)))
+    :delete! (fn [ctx]
+               {::suite-deleted (suite/delete-suite! (tx-conn ctx) (:id (::suite ctx)))})
+    :delete-enacted? (fn [ctx]
+                       (::suite-deleted ctx))
     :handle-ok ::suite))
 
 ;;;;;;;;;;; Runs ;;;;;;;;;;;
