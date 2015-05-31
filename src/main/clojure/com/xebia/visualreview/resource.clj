@@ -114,13 +114,17 @@
 
 (defn run-resource [run-id]
   (json-resource
-    :allowed-methods [:get]
+    :allowed-methods [:get :delete]
     :exists? (fn [ctx]
                (try
                  (let [[run-id] (parse-longs [run-id])]
                    (when-let [run (run/get-run (tx-conn ctx) run-id)]
                      {::run run}))
                  (catch NumberFormatException _)))
+    :delete! (fn [ctx]
+               {::run-deleted (run/delete-run! (tx-conn ctx) (:id (::run ctx)))})
+    :delete-enacted? (fn [ctx]
+                       (::run-deleted ctx))
     :handle-ok ::run))
 
 (def runs-resource
