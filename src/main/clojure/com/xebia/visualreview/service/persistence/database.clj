@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.persistence.database
+(ns com.xebia.visualreview.service.persistence.database
   (:require [clojure.java.jdbc :as j]
             [clojure.java.io :as io])
   (:import [com.mchange.v2.c3p0 PooledDataSource ComboPooledDataSource]))

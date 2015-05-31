@@ -18,7 +18,7 @@
   (:require [clojure.java.jdbc :as j]
             [clojure.java.io :as jio]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.persistence.database :as db]
+            [com.xebia.visualreview.service.persistence.database :as db]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.itest-util :as util]
             [com.xebia.visualreview.logging :as log])

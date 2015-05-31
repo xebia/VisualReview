@@ -14,11 +14,11 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.image
+(ns com.xebia.visualreview.service.image
   (:require [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.logging :as log]
-            [com.xebia.visualreview.image.persistence :as ip]
-            [com.xebia.visualreview.service-util :as sutil])
+            [com.xebia.visualreview.service.image.persistence :as ip]
+            [com.xebia.visualreview.service.service-util :as sutil])
   (:import [java.util Calendar]
            [java.io File]))
 

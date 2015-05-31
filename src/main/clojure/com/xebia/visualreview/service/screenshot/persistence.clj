@@ -14,10 +14,10 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.screenshot.persistence
+(ns com.xebia.visualreview.service.screenshot.persistence
   (:require [slingshot.slingshot :as ex]
             [cheshire.core :as json]
-            [com.xebia.visualreview.persistence.util :as putil]
+            [com.xebia.visualreview.service.persistence.util :as putil]
             [com.xebia.visualreview.logging :as log])
   (:import [java.sql SQLException]))
 

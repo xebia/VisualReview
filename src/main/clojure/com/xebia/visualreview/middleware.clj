@@ -16,7 +16,7 @@
 
 (ns com.xebia.visualreview.middleware
   (:require [slingshot.slingshot :as s]
-            [com.xebia.visualreview.persistence.database :as db]
+            [com.xebia.visualreview.service.persistence.database :as db]
             [com.xebia.visualreview.logging :as log]
             [clojure.java.jdbc :as j])
   (:import [java.sql SQLException]))

@@ -14,10 +14,10 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.project
-  (:require [com.xebia.visualreview.service-util :as sutil]
-            [com.xebia.visualreview.persistence.util :as putil]
-            [com.xebia.visualreview.project.persistence :as ppersistence]))
+(ns com.xebia.visualreview.service.project
+  (:require [com.xebia.visualreview.service.service-util :as sutil]
+            [com.xebia.visualreview.service.persistence.util :as putil]
+            [com.xebia.visualreview.service.project.persistence :as ppersistence]))
 
 (defn get-project-by-name
   "Retrieves a project by project name. Returns nil when this project does not exist."

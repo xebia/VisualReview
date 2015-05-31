@@ -18,8 +18,9 @@
   (:require [liberator.core :refer [resource]]
             [com.xebia.visualreview.resource.util :refer :all]
             [com.xebia.visualreview.validation :as v]
-            [com.xebia.visualreview.persistence :as p]
-            [slingshot.slingshot :as ex]))
+            [com.xebia.visualreview.service.analysis :as p]
+            [slingshot.slingshot :as ex]
+            [com.xebia.visualreview.service.baseline :as baseline]))
 
 (def ^:private create-branch-schema
   {:baselineNode  [Number []]
@@ -39,12 +40,12 @@
                                               ::v/non-empty "Branch name may not be empty")}])))
     :handle-unprocessable-entity ::error-msg
     :exists? (fn [{node ::baseline-node :as ctx}]
-               (:id (p/get-baseline-node (tx-conn ctx) node)))
+               (:id (baseline/get-baseline-node (tx-conn ctx) node)))
     :can-post-to-missing? false
     :post! (fn [{baseline-node ::baseline-node new-branch-name ::new-branch-name suite-id ::suite-id :as ctx}]
              (ex/try+
-               (p/create-baseline-branch! (tx-conn ctx) baseline-node new-branch-name)
-               {::result (p/get-baseline-branch (tx-conn ctx) suite-id new-branch-name)
+               (baseline/create-baseline-branch! (tx-conn ctx) baseline-node new-branch-name)
+               {::result (baseline/get-baseline-branch (tx-conn ctx) suite-id new-branch-name)
                 ::new?   true}
                (catch [:subtype ::p/unique-constraint-violation] _
                  {::error "A branch with that name already exists"

@@ -14,12 +14,12 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.screenshot
-  (:require [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.screenshot.persistence :as sp]
-            [com.xebia.visualreview.persistence :as p]
-            [com.xebia.visualreview.service-util :as sutil]
-            [slingshot.slingshot :as ex])
+(ns com.xebia.visualreview.service.screenshot
+  (:require [com.xebia.visualreview.service.image :as image]
+            [com.xebia.visualreview.service.screenshot.persistence :as sp]
+            [com.xebia.visualreview.service.service-util :as sutil]
+            [slingshot.slingshot :as ex]
+            [com.xebia.visualreview.service.run :as run])
   (:import [java.io File]))
 
 (defn get-screenshot-by-id
@@ -37,7 +37,7 @@
   "Stores a screenshot in both database and file system. Returns the screenshot's ID.
   Throws a service-exception when the screenshot could not be stored."
   [conn run-id screenshot-name properties meta ^File file]
-  (sutil/assume (not= (p/get-run conn run-id) nil) (str "Could not store screenshot, run id " run-id " does not exist.") ::screenshot-cannot-store-in-db-runid-does-not-exist)
+  (sutil/assume (not= (run/get-run conn run-id) nil) (str "Could not store screenshot, run id " run-id " does not exist.") ::screenshot-cannot-store-in-db-runid-does-not-exist)
   (let [file-size (.length file)
         image-id (image/insert-image! conn file) ]
     (ex/try+

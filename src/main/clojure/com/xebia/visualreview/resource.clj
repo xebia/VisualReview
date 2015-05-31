@@ -20,12 +20,16 @@
             [slingshot.slingshot :as ex]
             [com.xebia.visualreview.validation :as v]
             [com.xebia.visualreview.resource.util :refer :all]
-            [com.xebia.visualreview.persistence :as p]
-            [com.xebia.visualreview.analysis.core :as analysis]
+            [com.xebia.visualreview.service.analysis :as analysis]
+            [com.xebia.visualreview.service.analysis.core :as analysisc]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.image :as image]
-            [com.xebia.visualreview.screenshot :as screenshot]
-            [com.xebia.visualreview.project :as project])
+            [com.xebia.visualreview.service.image :as image]
+            [com.xebia.visualreview.service.screenshot :as screenshot]
+            [com.xebia.visualreview.service.project :as project]
+            [com.xebia.visualreview.service.suite :as suite]
+            [com.xebia.visualreview.service.run :as run]
+            [com.xebia.visualreview.service.baseline :as baseline]
+            [com.xebia.visualreview.logging :as log])
   (:import [java.util Map]))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
@@ -51,7 +55,7 @@
     :handle-conflict (fn [ctx] (format "A project with name: '%s' already exists." (::project-name ctx)))
     :put! (fn [ctx]
             (let [new-project-id (project/create-project! (tx-conn ctx) (::project-name ctx))
-                  project (p/get-suites-by-project-id (tx-conn ctx) new-project-id)]
+                  project (suite/get-suites-by-project-id (tx-conn ctx) new-project-id)]
               {::project project}))
     :handle-created ::project
     :handle-ok (fn [ctx] (project/get-projects (tx-conn ctx)))))
@@ -66,7 +70,7 @@
                       (catch NumberFormatException _ false)))
     :exists? (fn [ctx]
                (try
-                 (when-let [project (p/get-suites-by-project-id (tx-conn ctx) (::project-id ctx))]
+                 (when-let [project (suite/get-suites-by-project-id (tx-conn ctx) (::project-id ctx))]
                    {::project project})
                  (catch NumberFormatException _)))
     :delete! (fn [ctx]
@@ -83,7 +87,7 @@
                (try
                  (let [[project-id] (parse-longs [project-id])]
                    (and (project/get-project-by-id (tx-conn ctx) project-id)
-                        (when-let [suites (p/get-suites (tx-conn ctx) project-id)]
+                        (when-let [suites (suite/get-suites (tx-conn ctx) project-id)]
                           {::suites suites})))
                  (catch NumberFormatException _)))
     :handle-ok ::suites))
@@ -94,7 +98,7 @@
     :exists? (fn [ctx]
                (try
                  (let [[project-id suite-id] (parse-longs [project-id suite-id])]
-                   (when-let [suite (p/get-full-suite (tx-conn ctx) project-id suite-id)]
+                   (when-let [suite (suite/get-full-suite (tx-conn ctx) project-id suite-id)]
                      {::suite suite}))
                  (catch NumberFormatException _)))
     :handle-ok ::suite))
@@ -110,7 +114,7 @@
     :exists? (fn [ctx]
                (try
                  (let [[run-id] (parse-longs [run-id])]
-                   (when-let [run (p/get-run (tx-conn ctx) run-id)]
+                   (when-let [run (run/get-run (tx-conn ctx) run-id)]
                      {::run run}))
                  (catch NumberFormatException _)))
     :handle-ok ::run))
@@ -128,27 +132,36 @@
                                               ::v/non-empty "Suite name can not be empty")}])))
     :handle-unprocessable-entity ::error-msg
     :exists? (fn [ctx]
-               (if (get-request? ctx)
-                 (when-let [suite (p/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))]
-                   (let [runs (:runs (p/get-full-suite (tx-conn ctx) (:project-id suite) (:id suite)))]
-                     {::runs runs ::suite suite}))
-                 (when-let [project-id (project/get-project-by-name (tx-conn ctx) (-> ctx ::data :project-name) :id)]
-                   {::project-id project-id})))
+                 (if (get-request? ctx)
+                   (when-let [suite (suite/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))]
+                     (let [runs (:runs (suite/get-full-suite (tx-conn ctx) (:project-id suite) (:id suite)))]
+                       {::runs runs ::suite suite}))
+                   (when-let [suite
+                              (or
+                                (suite/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))
+                                (suite/get-suite-by-id (tx-conn ctx)
+                                                       (suite/create-suite-for-project! (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))))]
+                     {::suite suite})))
     :can-post-to-missing? false
     :post! (fn [ctx]
-             (let [new-run-id (p/create-run! (tx-conn ctx) (::data ctx))
-                   run (p/get-run (tx-conn ctx) new-run-id)]
-               {::run run}))
+             (do
+               (log/error (:id (::suite ctx)) )
+             (let [new-run-id (run/create-run! (tx-conn ctx) (:id (::suite ctx)))
+                   run (run/get-run (tx-conn ctx) new-run-id)]
+               (do
+                 (log/error (str "new run id is " new-run-id))
+               {::run run})))
+               )
     :handle-created ::run
     :handle-ok ::runs))
 
 ;;;;;;;;;;; Screenshots ;;;;;;;;;;;;;;
 (defn- update-diff-status! [conn {:keys [id before after status]} new-status]
   (case [status new-status]
-    (["accepted" "pending"] ["accepted" "rejected"]) (p/set-baseline! conn id after before)
-    (["pending" "accepted"] ["rejected" "accepted"]) (p/set-baseline! conn id before after)
+    (["accepted" "pending"] ["accepted" "rejected"]) (baseline/set-baseline! conn id after before)
+    (["pending" "accepted"] ["rejected" "accepted"]) (baseline/set-baseline! conn id before after)
     :no-op)
-  (p/update-diff-status! conn id new-status))
+  (analysis/update-diff-status! conn id new-status))
 
 ;; The screenshot resource has been split up into separate handler for each http method.
 (def ^:private upload-screenshot-schema
@@ -165,25 +178,25 @@
     :allowed-methods [:get]
     :exists? (fn [ctx]
                (try (let [[run-id] (parse-longs [run-id])
-                          run (p/get-run (tx-conn ctx) run-id)]
+                          run (run/get-run (tx-conn ctx) run-id)]
                       (when run {::run run}))
                     (catch NumberFormatException _)))
     :handle-ok (fn [ctx] (let [screenshots (screenshot/get-screenshots-by-run-id (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
 (defn- proces-diff [conn run-id before-file after-file before-id after-id]
-  (let [analysis (p/get-analysis conn run-id)
-        diff-report (analysis/generate-diff-report before-file after-file)
+  (let [analysis (analysis/get-analysis conn run-id)
+        diff-report (analysisc/generate-diff-report before-file after-file)
         diff-file-id (image/insert-image! conn (:diff diff-report))
-        new-diff-id (p/save-diff! conn diff-file-id before-id after-id (:percentage diff-report) (:id analysis))]
+        new-diff-id (analysis/save-diff! conn diff-file-id before-id after-id (:percentage diff-report) (:id analysis))]
     (do
       (.delete (:diff diff-report))
-      (p/get-diff conn run-id new-diff-id))))
+      (analysis/get-diff conn run-id new-diff-id))))
 
 (defn- process-screenshot [conn suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
-        baseline-screenshot (p/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
+        baseline-screenshot (baseline/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
         before-file (when baseline-screenshot (io/get-file (image/get-image-path conn (:image-id baseline-screenshot))))
         diff (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id)]
     (when (and baseline-screenshot (zero? (:percentage diff)))
@@ -201,7 +214,7 @@
                                                                         (update-in [:properties] json/parse-string true)))]
                       (if (:valid? v)
                         (let [data (hyphenize-request (:data v))
-                              run (p/get-run (tx-conn ctx) (Long/parseLong run-id))]
+                              run (run/get-run (tx-conn ctx) (Long/parseLong run-id))]
                           (if (or (= (:status run) "running") (nil? run))
                             {::data data ::run run}
                             [false {::error-msg (format "Run status must be 'running' to upload screenshots. Status is: %s" (:status run))}]))
@@ -265,7 +278,7 @@
     :processable? (fn [ctx]
                     (try
                       (let [[run-id] (parse-longs [run-id])
-                            analysis (p/get-full-analysis (tx-conn ctx) run-id)]
+                            analysis (analysis/get-full-analysis (tx-conn ctx) run-id)]
                         {::analysis analysis})
                       (catch NumberFormatException _)))
     :exists? (fn [ctx] (not (empty? (-> ctx ::analysis :analysis))))
@@ -288,7 +301,7 @@
                       (catch NumberFormatException _)))
     :handle-unprocessable-entity ::error-msg
     :exists? (fn [ctx]
-               (when-let [diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))]
+               (when-let [diff (analysis/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))]
                  {::diff diff}))
     :can-post-to-missing? false
     :post! (fn [ctx]
@@ -296,19 +309,19 @@
              ;; Otherwise, if the new-status is "accepted", it sets the after-screenshot as the new baseline
              ;; if it was not set before. If the new-status is "pending" or "rejected" it removes the baseline
              ;; regardless of whether it existed before
-             (let [baseline-screenshot (p/get-baseline-screenshot-by-diff-id (tx-conn ctx) diff-id)
+             (let [baseline-screenshot (baseline/get-baseline-screenshot-by-diff-id (tx-conn ctx) diff-id)
                    after-id (-> ctx ::diff :after)]
                (when-not baseline-screenshot                ; new screenshot
-                 (let [run (p/get-run (tx-conn ctx) run-id)
-                       baseline-node (p/get-baseline-head (tx-conn ctx) (:suite-id run))]
+                 (let [run (run/get-run (tx-conn ctx) run-id)
+                       baseline-node (baseline/get-baseline-head (tx-conn ctx) (:suite-id run))]
                    (if (= (::new-status ctx) "accepted")    ; set as baseline-screenshot
-                     (let [bl (p/get-bl-node-screenshot (tx-conn ctx) baseline-node after-id)]
+                     (let [bl (baseline/get-bl-node-screenshot (tx-conn ctx) baseline-node after-id)]
                        (when (nil? bl)
-                         (p/create-bl-node-screenshot! (tx-conn ctx) baseline-node after-id)))
-                     (p/delete-bl-node-screenshot! (tx-conn ctx) baseline-node after-id)))))
+                         (baseline/create-bl-node-screenshot! (tx-conn ctx) baseline-node after-id)))
+                     (baseline/delete-bl-node-screenshot! (tx-conn ctx) baseline-node after-id)))))
 
              (update-diff-status! (tx-conn ctx) (::diff ctx) (::new-status ctx))
-             {::updated-diff (p/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
+             {::updated-diff (analysis/get-diff (tx-conn ctx) (::run-id ctx) (::diff-id ctx))})
     :handle-created ::updated-diff))
 
 (defn image [image-id]

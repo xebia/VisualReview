@@ -17,7 +17,7 @@
 (ns com.xebia.visualreview.itest.image-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
-            [com.xebia.visualreview.image :as image]
+            [com.xebia.visualreview.service.image :as image]
             [com.xebia.visualreview.mock :as mock]
             [com.xebia.visualreview.io :as vrio])
   (:import [java.util Calendar]))

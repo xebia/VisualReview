@@ -14,8 +14,8 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.analysis.core
-  (:require [com.xebia.visualreview.service-util :as sutil]
+(ns com.xebia.visualreview.service.analysis.core
+  (:require [com.xebia.visualreview.service.service-util :as sutil]
             [clojure.java.io :as io])
   (:import [com.xebia.visualreview PixelComparator DiffReport]
            [javax.imageio ImageIO]

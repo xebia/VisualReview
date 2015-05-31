@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.persistence.util
+(ns com.xebia.visualreview.service.persistence.util
   (:require [clojure.java.jdbc :as j]
             [cheshire.core :as json])
   (:import (java.sql SQLException)))

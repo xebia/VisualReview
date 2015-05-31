@@ -17,7 +17,7 @@
 (ns com.xebia.visualreview.middleware-test
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.middleware :as middleware]
-            [com.xebia.visualreview.service-util :as service-util]
+            [com.xebia.visualreview.service.service-util :as service-util]
             [com.xebia.visualreview.test-util :refer :all])
   (:import (java.sql SQLException)))
 
