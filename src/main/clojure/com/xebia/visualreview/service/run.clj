@@ -57,3 +57,15 @@
   (putil/query conn [get-suite-runs-sql suite-id project-id]
                :row-fn (comp #(assoc % :project-id project-id) sutil/format-dates)
                :result-set-fn vec))
+
+(defn delete-run!
+  "Deletes a run and all attached analyses and screenshot metadata.
+  Images metadata and binary files are left intact.
+  Returns true when deletion was succesful."
+  [conn run-id]
+  {:pre (number? run-id)}
+  (sutil/attempt
+    (do (putil/delete! conn :run ["id = ?" run-id])
+        true)
+    "Could not delete run: %s"
+    ::delete-by-id-failed))
