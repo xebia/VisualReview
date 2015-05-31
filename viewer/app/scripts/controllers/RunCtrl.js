@@ -3,6 +3,8 @@
 angular.module('visualDiffViewerApp')
 
   .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants) {
+    var toast = humane.create({baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success'});
+
 		var runId = $routeParams.runId;
 		switch($routeParams.filter) {
 			case 'rp':
@@ -91,6 +93,11 @@ angular.module('visualDiffViewerApp')
     $scope.statusUpdated = function() {
       persistCurrentDiffStatus();
 			updateTotals();
+
+			var totals = $scope.totals;
+      if (totals.pending === 0 && totals.rejected === 0 && totals.accepted === totals.all) {
+        toast.log('All screenshots in this run have been accepted');
+      }
     };
 
 		$scope.reapplyFilter = function () {
