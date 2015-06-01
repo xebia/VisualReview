@@ -11,16 +11,11 @@ Currently VisualReview provides a [Protractor plug-in](https://www.github.com/xe
 upload screenshots from your protractor tests. However, the VisualReview server has a simple API which allows
 compatibility with other testing frameworks. We are working on other plug-ins and hope to release them soon.
 
-**WARNING:** VisualReview is currently under heavy development. This means that it is *not yet ready for production use*. The current releases
-are meant as a preview for you to try out and to get some early feedback. Until then, expect bugs, instability and breaking changes which might remove
-stored data from earlier releases. We do however expect to release a 1.0.0 version in the future which will maintain data compatibility across versions.
-
 ## Getting started
 
 ### Configuring and starting the VisualReview server
-*Note:* The current master version of VisualReview server requires Java 7 JRE or higher. The preview release however requires Java 8.
 
-* Download and extract a preview release from [here](https://github.com/xebia/VisualReview/releases).
+* Download and extract the latest release from [here](https://github.com/xebia/VisualReview/releases).
 * Reconfigure any settings in config.edn (optional)
 * Make sure that the screenshots directory exists and is readable (default is ```screenshots```)
 * Run ./start.sh
@@ -34,8 +29,7 @@ the protractor-plugin's [README](https://github.com/xebia/VisualReview-protracto
 ### Reviewing the results
 * Go back to the VisualReview page on http://localhost:7000 (or the port you configured in start.sh).
 * Navigate to your project and suite name. Here you see all the times you ran a test script against this project and suite combination.
-* Click on the run to review all screenshots and differences. If this is the first time you created a run in this suite, there will be no
-differences yet.
+* Click on the run to review all screenshots and differences. If this is the first time you created a run in this suite, there will be no differences yet.
 * To approve or reject a screenshot, use the top-right menu or hit the 'a' or 'x' key on your keyboard.
   * When you accept a screenshot, it will be added to this suite's so-called 'baseline'. Every future screenshot with that name inside the suite will be compared to this baseline.
  All screenshots you accept in future runs will overwrite this baseline. The baseline will therefore contain all latest accepted screenshots of a suite to which all new screenshots will be compared against.
@@ -47,14 +41,11 @@ differences yet.
 VisualReview is currently in heavy development and is not yet ready for production use.
 Here's a (not finalized) list of features we'd like to get finished before moving towards a stable 1.0.0 release.
 
-* Move from environment-variable configuration to using configuration files
-* Support for multiple browsers, platforms and resolutions inside one suite
-* Support multiple baselines per suite. Provide baseline management GUI
-* Add GUI for deleting projects, suites, runs
+* Baseline management GUI
+* Add GUI for deleting suites and runs
 * Provide screenshot cleanup functionality to save disk space.
-* Refine the GUI. Including better dropdown menu, image zoom tools and others
-* Better error handling in GUI
-* Support for other databases (Postgres, cassandra..?)
+* Add image zoom tools in GUI
+* Add options for adding VisualReview as part of a pull-request workflow (slated for v0.2)
 
 ## VisualReview Enterprise
 
