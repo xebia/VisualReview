@@ -62,7 +62,8 @@ describe('Directive: breadcrumb', function () {
 	it('should only display a link to the project when project data is given', function () {
 		var element = compileHtml('<div breadcrumb project-id="myProjectId" project-name="myProjectName"></div>', scope, $compile);
 
-		testHyperLink(element, 0, '#/1/', 'myProject');
+		testHyperLink(element, 0, '#/', '/');
+		testHyperLink(element, 1, '#/1/', 'myProject');
 	});
 
 	it('should display a link to the project and suite when project- and suite data are given', function () {
@@ -71,9 +72,10 @@ describe('Directive: breadcrumb', function () {
 		'suite-id="mySuiteId" suite-name="mySuiteName"' +
 		'></div>', scope, $compile);
 
-		expect(element.find('a').length).toBe(2);
-		testHyperLink(element, 0, '#/1/', 'myProject');
-		testHyperLink(element, 1, '#/1/2', 'mySuite');
+		expect(element.find('a').length).toBe(3);
+		testHyperLink(element, 0, '#/', '/');
+		testHyperLink(element, 1, '#/1/', 'myProject');
+		testHyperLink(element, 2, '#/1/2', 'mySuite');
 	});
 
 	it('should display a link to the project, suite and run when project-, suite- and run data are given', function () {
@@ -83,11 +85,12 @@ describe('Directive: breadcrumb', function () {
 		'run-id="myRunId" creation-time="myCreationTime" ' +
 		'></div>', scope, $compile);
 
-		expect(element.find('a').length).toBe(3);
+		expect(element.find('a').length).toBe(4);
 
-		testHyperLink(element, 0, '#/1/', 'myProject');
-		testHyperLink(element, 1, '#/1/2', 'mySuite');
-		testHyperLink(element, 2, '#/1/2/3', '3 (Feb 1, 2010 at 12:13PM)');
+		testHyperLink(element, 0, '#/', '/');
+		testHyperLink(element, 1, '#/1/', 'myProject');
+		testHyperLink(element, 2, '#/1/2', 'mySuite');
+		testHyperLink(element, 3, '#/1/2/3', '3 (Feb 1, 2010 at 12:13PM)');
 	});
 
 	it('should update the link to project when the scope value is updated', function () {
@@ -105,10 +108,11 @@ describe('Directive: breadcrumb', function () {
 		scope.myCreationTime = new Date(2011, 1, 1, 12, 13, 14, 0);
 		scope.$digest();
 
-		expect(element.find('a').length).toBe(3);
+		expect(element.find('a').length).toBe(4);
 
-		testHyperLink(element, 0, '#/11/', 'myProject2');
-		testHyperLink(element, 1, '#/11/22', 'mySuite2');
-		testHyperLink(element, 2, '#/11/22/33', '33 (Feb 1, 2011 at 12:13PM)');
+		testHyperLink(element, 0, '#/', '/');
+		testHyperLink(element, 1, '#/11/', 'myProject2');
+		testHyperLink(element, 2, '#/11/22', 'mySuite2');
+		testHyperLink(element, 3, '#/11/22/33', '33 (Feb 1, 2011 at 12:13PM)');
 	});
 });
