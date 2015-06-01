@@ -28,8 +28,7 @@
             [com.xebia.visualreview.service.project :as project]
             [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]
-            [com.xebia.visualreview.service.baseline :as baseline]
-            [com.xebia.visualreview.logging :as log])
+            [com.xebia.visualreview.service.baseline :as baseline])
   (:import [java.util Map]))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
@@ -152,14 +151,9 @@
                      {::suite suite})))
     :can-post-to-missing? false
     :post! (fn [ctx]
-             (do
-               (log/error (:id (::suite ctx)) )
              (let [new-run-id (run/create-run! (tx-conn ctx) (:id (::suite ctx)))
                    run (run/get-run (tx-conn ctx) new-run-id)]
-               (do
-                 (log/error (str "new run id is " new-run-id))
-               {::run run})))
-               )
+               {::run run}))
     :handle-created ::run
     :handle-ok ::runs))
 
