@@ -2,7 +2,9 @@
 
 angular.module('visualDiffViewerApp')
 
-  .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants) {
+  .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants, TitleService) {
+    TitleService.setTitle('Run ' + $routeParams.runId);
+
     var toast = humane.create({baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success'});
 
 		var runId = $routeParams.runId;
