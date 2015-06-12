@@ -16,7 +16,7 @@
 
 'use strict';
 
-angular.module('visualDiffViewerApp', ['ngRoute', 'ngAnimate', 'ngResource'])
+angular.module('visualDiffViewerApp', ['ngRoute', 'ngAnimate', 'ngResource', 'panzoom'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {

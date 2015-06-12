@@ -624,4 +624,11 @@ a:link{
     color: #419BF9;
 }
 
+.run-view {
+    max-width:100%;
+    position:relative;
+}
 
+.run-view-item {
+    position:absolute;
+}
