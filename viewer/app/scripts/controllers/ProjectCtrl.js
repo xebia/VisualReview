@@ -1,7 +1,8 @@
 'use strict'
 
 angular.module('visualDiffViewerApp')
-  .controller('ProjectCtrl', function ($scope, $routeParams, ProjectResource, SuiteResource, ResourceActionWrapper) {
+  .controller('ProjectCtrl', function ($scope, $routeParams, ProjectResource, SuiteResource, ResourceActionWrapper, TitleService) {
+    TitleService.setTitle('Project suites');
     $scope.projectId = $routeParams.projectId;
 
     function getProject() {

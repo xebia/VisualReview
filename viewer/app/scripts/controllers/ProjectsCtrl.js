@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('visualDiffViewerApp')
-  .controller('ProjectsCtrl', function ($scope, ResourceActionWrapper, ProjectResource) {
+  .controller('ProjectsCtrl', function ($scope, ResourceActionWrapper, ProjectResource, TitleService) {
+    TitleService.setTitle('Projects list');
+
     var getProjects = function() {
       $scope.projects = ResourceActionWrapper(ProjectResource.list());
     };
