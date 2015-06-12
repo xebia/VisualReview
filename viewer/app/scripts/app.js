@@ -32,7 +32,7 @@ angular.module('visualDiffViewerApp', ['ngRoute', 'ngAnimate', 'ngResource'])
         controller: 'SuiteCtrl'
       })
       .when('/:profileId/:suiteId/:runId/:filter?', {
-        templateUrl: 'views/run.html',
+        templateUrl: 'scripts/run/run.html',
         controller: 'RunCtrl'
       })
       .otherwise({

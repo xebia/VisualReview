@@ -58,7 +58,7 @@ angular.module('visualDiffViewerApp')
 
     function toggleCurrentStatus(newValue) {
       var currResult = $scope.diffs[$scope.selectedDiffIndex];
-      currResult.status = currResult.status == newValue ? diffConstants.pending() : newValue;;
+      currResult.status = currResult.status == newValue ? diffConstants.pending() : newValue;
 			$scope.statusUpdated();
     }
 
