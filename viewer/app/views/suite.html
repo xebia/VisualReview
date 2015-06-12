@@ -15,12 +15,21 @@
         </div>
 
         <div ng-repeat="run in suite.runs" ng-hide="suite.$vrIsLoading">
-            <a class="text-decoration-none" href="#/{{suite.project.id}}/{{suite.id}}/{{run.id}}">
-                <span class="text-big font-bold color-light text-decoration-underline">
-                    {{run.id}} - {{run.startTime | date : 'medium'}}
-                </span>
-            </a>
+            <div class="hover-target">
+                <a class="text-decoration-none" href="#/{{suite.project.id}}/{{suite.id}}/{{run.id}}">
+                    <span class="text-big font-bold color-light text-decoration-underline">
+                        {{run.id}} - {{run.startTime | date : 'medium'}}
+                    </span>
+                </a>
+
+                <div class="float-right">
+                    <div ng-hide="run.$vrIsLoading"
+                         ng-click="deleteRun(run.id)"
+                         class="visible-on-hover color-light-gray clickable icon-trash"></div>
+                </div>
+            </div>
         </div>
+        <div ng-show="deletedRun.$vrIsLoading" class="text-small">deleting ..</div>
 
         <div ng-hide="suite.$vrIsLoading || suite.$vrHasError || suite.runs.length > 0">
             No runs found in this suite. New runs will display here after a test has been run.

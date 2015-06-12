@@ -6,7 +6,6 @@ angular.module('visualDiffViewerApp')
       $scope.projects = ResourceActionWrapper(ProjectResource.list());
     };
 
-
     $scope.createNewProject = function () {
       var newProjectName = $scope.newProjectName;
       if (!newProjectName) {
