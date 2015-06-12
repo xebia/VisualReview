@@ -15,6 +15,9 @@ angular.module('visualDiffViewerApp')
       'updateStatus': {
         method: 'POST',
         url: '/api/runs/:runId/analysis/diffs/:diffId'
+      },
+      remove: {
+        method: 'DELETE'
       }
     });
 

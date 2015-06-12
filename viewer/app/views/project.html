@@ -16,13 +16,22 @@
     </div>
 
     <div ng-repeat="suite in project.suites" ng-hide="project.$vrIsLoading">
-      <a class="text-decoration-none" href="#/{{project.id}}/{{suite.id}}/">
-        <span class="text-big font-bold color-light text-decoration-underline">
-            {{suite.name}}
-        </span>
+      <div class="hover-target">
+        <a class="text-decoration-none" href="#/{{project.id}}/{{suite.id}}/">
+          <span class="text-big font-bold color-light text-decoration-underline">
+              {{suite.name}}
+          </span>
+        </a>
 
-      </a>
+        <div class="float-right">
+          <div ng-hide="suite.$vrIsLoading"
+               ng-click="deleteSuite(suite.name, suite.id, project.id)"
+               class="visible-on-hover color-light-gray clickable icon-trash"></div>
+        </div>
+      </div>
     </div>
+    <div ng-show="deletedSuite.$vrIsLoading" class="text-small">deleting ..</div>
+
     <div ng-hide="project.$vrIsLoading  || project.$vrHasError || project.suites.length > 0">
       No suites found in this project. New suites are automatically created when running a test.
     </div>
