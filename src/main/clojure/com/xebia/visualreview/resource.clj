@@ -144,10 +144,14 @@
                      (let [runs (:runs (suite/get-full-suite (tx-conn ctx) (:project-id suite) (:id suite)))]
                        {::runs runs ::suite suite}))
                    (when-let [suite
-                              (or
-                                (suite/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))
-                                (suite/get-suite-by-id (tx-conn ctx)
-                                                       (suite/create-suite-for-project! (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))))]
+                              (and
+                                (or
+                                  (project/get-project-by-name (tx-conn ctx) (-> ctx ::data :project-name))
+                                  (project/create-project! (tx-conn ctx) (-> ctx ::data :project-name)))
+                                (or
+                                  (suite/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))
+                                  (suite/get-suite-by-id (tx-conn ctx)
+                                                         (suite/create-suite-for-project! (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name)))))]
                      {::suite suite})))
     :can-post-to-missing? false
     :post! (fn [ctx]
