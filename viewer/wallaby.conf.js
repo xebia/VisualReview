@@ -22,15 +22,11 @@ module.exports = function () {
       'app/scripts/**/*.html',
       'app/views/**/*.html',
 
-      // Ignore spec tests next to implementations
-      { pattern: 'app/scripts/**/*Spec.js', ignore: true },
-
       // Test utilities
       'test/spec/test_util/test_util.js'
     ],
 
     tests: [
-      'app/scripts/**/*Spec.js',
       'test/spec/**/*.js',
       { pattern: 'test/spec/test_util/test_util.js', ignore: true}
     ],
