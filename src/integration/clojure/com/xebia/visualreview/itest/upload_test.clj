@@ -32,8 +32,7 @@
                 :timeStamp "2015-02-19T16:34:12"})
 
 (defn setup-projects []
-  (api/put-project! {:name project-name-1})
-  (api/put-project! {:name project-name-2}))
+  (api/put-project! {:name project-name-1}))
 
 (use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
@@ -41,11 +40,18 @@
 
   (setup-projects)
 
+  (testing "There is one test project"
+    (let [projects (:body (api/get-projects))]
+      (is (= [{:id 1 :name project-name-1}] projects))))
+
+  (testing "Create run creates a project"
+    (is (= 201 (:status (-> (api/post-run! project-name-2 suite-name))))))
+
   (testing "There are two test projects"
     (let [projects (:body (api/get-projects))]
       (is (= [{:id 1 :name project-name-1} {:id 2 :name project-name-2}] projects))))
 
-  (testing "There are no runs or screenshots yet"
+  (testing "There are no runs or screenshots yet for project 1"
     (is (= 404 (:status (api/get-runs project-name-1 suite-name))) "Not found status"))
 
   (let [run-id (-> (api/post-run! project-name-1 suite-name) :body :id)]
