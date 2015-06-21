@@ -17,7 +17,7 @@ module.exports = function () {
 
       // VR core
       'app/scripts/**/*.js',
-      'app/views/**/*.html',
+      'app/scripts/**/*.html',
 
       // Test utilities
       'test/spec/test_util/test_util.js'
@@ -29,7 +29,7 @@ module.exports = function () {
     ],
 
     preprocessors: {
-      'app/views/**/*.html': function (file) {
+      'app/scripts/**/*.html': function (file) {
         return require('wallaby-ng-html2js-preprocessor').transform(file, {
           stripPrefix: 'app/',
           moduleName: 'visualDiffViewerApp'

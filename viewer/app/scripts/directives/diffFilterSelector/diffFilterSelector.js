@@ -22,7 +22,7 @@ angular.module('visualDiffViewerApp')
 				filter: '=diffFilterSelector',
 				totals: '='
 			},
-			templateUrl: 'views/diffFilterSelector.html',
+			templateUrl: 'scripts/directives/diffFilterSelector/diffFilterSelector.html',
 			link: function (scope) {
 				scope.filterOptions = [
 					{label: 'all', filter: [diffConstants.pending(), diffConstants.rejected(), diffConstants.accepted()], count: function () { return scope.totals.all; }},

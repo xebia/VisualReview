@@ -67,7 +67,7 @@ angular.module('visualDiffViewerApp')
         meta: '=',
         properties: '='
       },
-      templateUrl: 'views/screenshotMetadata.html',
+      templateUrl: 'scripts/directives/screenshotMetaData/screenshotMetadata.html',
       link: function(scope) {
 
         function takeFromPropertiesOrMeta(field, meta, properties) {
