@@ -22,10 +22,13 @@ angular.module('visualDiffViewerApp')
       transclude: true,
       templateUrl: 'scripts/camera/cameraDirective.html',
       link: function (scope, elem) {
-        var frameElement = elem,
-          panElement = elem.find('.pan-frame'),
-          zoomElement = elem.find('.zoom-frame'),
-          isDragging = false,
+        scope.camera = {
+          left: 0,
+          top: 0,
+          zoom: 1.0
+        };
+
+        var isDragging = false,
           prevMousePt;
 
         function startDrag(vPoint) {
@@ -47,8 +50,8 @@ angular.module('visualDiffViewerApp')
          */
         function viewToFrame(vPoint) {
           return {
-            x: vPoint.x - frameElement.offset().left,
-            y: vPoint.y - frameElement.offset().top
+            x: vPoint.x - elem.offset().left,
+            y: vPoint.y - elem.offset().top
           };
         }
 
@@ -63,7 +66,9 @@ angular.module('visualDiffViewerApp')
               y: event.pageY - prevMousePt.y
             };
 
-            CameraService.pan(panElement, zoomElement, delta);
+            scope.$apply(function () {
+              CameraService.pan(scope.camera, delta);
+            });
 
             prevMousePt = {
               x: event.pageX,
@@ -84,7 +89,10 @@ angular.module('visualDiffViewerApp')
           var zoomDelta = deltaY,
             mousePoint = viewToFrame({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
 
-          CameraService.zoom(panElement, zoomElement, mousePoint, zoomDelta);
+
+          scope.$apply(function () {
+            CameraService.zoom(scope.camera, mousePoint, zoomDelta);
+          });
 
           event.preventDefault();
         };

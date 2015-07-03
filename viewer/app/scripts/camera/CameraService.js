@@ -27,18 +27,13 @@ angular.module('visualDiffViewerApp')
       return scale.get([0, 0]);
     }
 
-    function applyPanZoom(panElement, zoomElement) {
-      zoomElement.css('zoom', getZoom());
-      panElement.css('left', offset.get([0, 2]));
-      panElement.css('top',  offset.get([1, 2]));
+    function applyPanZoom(camera) {
+      camera.zoom = getZoom();
+      camera.left = offset.get([0, 2]);
+      camera.top = offset.get([1, 2]);
     }
 
-    function setPosition(panElement, zoomElement, viewPoint) {
-      offset = GeometricTransformation.translation(viewPoint);
-      applyPanZoom(panElement, zoomElement);
-    }
-
-    function pan(panElement, zoomElement, delta) {
+    function pan(camera, delta) {
       var zoom = getZoom();
       delta = {
         x: delta.x / zoom,
@@ -46,10 +41,10 @@ angular.module('visualDiffViewerApp')
       };
       offset = offset.multiply(GeometricTransformation.translation(delta));
 
-      applyPanZoom(panElement, zoomElement);
+      applyPanZoom(camera);
     }
 
-    function zoom(panElement, zoomElement, centerVPoint, delta) {
+    function zoom(camera, centerVPoint, delta) {
       var factor;
       if (delta > 0.0) {
         factor = zoomStep;
@@ -69,11 +64,11 @@ angular.module('visualDiffViewerApp')
 
       // Zoom with respect to center point in pan frame
       var Ap = mathjs.inv(offset).multiply(GeometricTransformation.translation(centerVPoint));
-      var Apv = { x: Ap.get([0, 2]), y: Ap.get([1, 2])}
+      var Apv = { x: Ap.get([0, 2]), y: Ap.get([1, 2])};
       Zoom = GeometricTransformation.scaleAbout(factor, Apv);
       offset = offset.multiply(Zoom);
 
-      applyPanZoom(panElement, zoomElement);
+      applyPanZoom(camera);
     }
 
     return {

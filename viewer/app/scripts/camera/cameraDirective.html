@@ -1,6 +1,6 @@
 <div class="camera-frame">
-  <div class="pan-frame">
-    <div class="zoom-frame" ng-transclude>
+  <div class="pan-frame" style="left: {{camera.left}}px; top: {{camera.top}}px">
+    <div class="zoom-frame" style="zoom: {{camera.zoom}};" ng-transclude>
     </div>
   </div>
 </div>
