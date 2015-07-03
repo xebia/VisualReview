@@ -52,8 +52,15 @@ angular.module('visualDiffViewerApp')
       offset.set(yIndex, MathService.clamp(offset.get(yIndex), height2 - imgHeight * zoom, height2));
     }
 
+    function centerHorizontal(camera) {
+      var imgWidth = $('.run-view-item').width();
+      var zoom = getZoom();
+      var width2 = $(window).width() / 2.0;
+      camera.left = width2 - imgWidth / 2.0 * zoom;
+    }
+
     function reset(camera) {
-      camera.left = 0;
+      centerHorizontal(camera);
       camera.top = 0;
       camera.zoom = 0;
       offset.set(xIndex, camera.left);

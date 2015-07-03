@@ -28,8 +28,7 @@ angular.module('visualDiffViewerApp')
           zoom: 1.0
         };
 
-        var panElement = elem.find('.pan-frame'),
-          isDragging = false,
+        var isDragging = false,
           prevMousePt;
 
         function startDrag(vPoint) {
