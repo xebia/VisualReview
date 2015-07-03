@@ -28,7 +28,8 @@ angular.module('visualDiffViewerApp')
           zoom: 1.0
         };
 
-        var isDragging = false,
+        var panElement = elem.find('.pan-frame'),
+          isDragging = false,
           prevMousePt;
 
         function startDrag(vPoint) {
@@ -59,6 +60,13 @@ angular.module('visualDiffViewerApp')
           startDrag({x: event.pageX, y: event.pageY});
         }
 
+        function onMouseDoubleClick() {
+          scope.$apply(function () {
+            CameraService.reset(scope.camera);
+          });
+          stopDrag();
+        }
+
         function onMouseMove(event) {
           if (isDragging) {
             var delta = {
@@ -81,8 +89,14 @@ angular.module('visualDiffViewerApp')
           stopDrag();
         }
 
-        function onMouseLeave() {
-          stopDrag();
+        /**
+         * Stop dragging if entering frame and no mouse buttons are held
+         * @param event
+         */
+        function onMouseEnter(event) {
+          if (event.buttons === 0 && isDragging) {
+            stopDrag();
+          }
         }
 
         scope.onMouseWheel = function (event, delta, deltaX, deltaY) {
@@ -103,9 +117,10 @@ angular.module('visualDiffViewerApp')
 
         hamsterjs(elem[0]).wheel(scope.onMouseWheel);
         elem.bind('mousedown', onMouseDown);
+        elem.bind('dblclick', onMouseDoubleClick);
         elem.bind('mouseup', onMouseUp);
         elem.bind('mousemove', onMouseMove);
-        elem.bind('mouseleave', onMouseLeave);
+        elem.bind('mouseenter', onMouseEnter);
       }
     };
   });

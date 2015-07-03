@@ -16,12 +16,15 @@
 'use strict';
 
 angular.module('visualDiffViewerApp')
-  .factory('CameraService', function (GeometricTransformation) {
+  .factory('CameraService', function (GeometricTransformation, MathService) {
     var offset = GeometricTransformation.translation({ x: 0.0, y: 0.0 }), //translation matrix
       scale  = GeometricTransformation.scale(1.0), //uniform scaling matrix
       zoomStep = 1.5,
       minZoom = 0.5,
       maxZoom = 4.0;
+
+    const xIndex = [0, 2],
+      yIndex = [1, 2];
 
     function getZoom() {
       return scale.get([0, 0]);
@@ -29,8 +32,33 @@ angular.module('visualDiffViewerApp')
 
     function applyPanZoom(camera) {
       camera.zoom = getZoom();
-      camera.left = offset.get([0, 2]);
-      camera.top = offset.get([1, 2]);
+      camera.left = offset.get(xIndex);
+      camera.top = offset.get(yIndex);
+    }
+
+    /**
+     * Constraint panning so image is always visible for a quarter or more.
+     * @param offset
+     */
+    function constraintPan(offset) {
+      var imgHeight = $('.run-view-item').height(),
+        imgWidth = $('.run-view-item').width();
+
+      var zoom = getZoom();
+
+      var height2 = $(window).height() / 2.0,
+        width2 = $(window).width() / 2.0;
+      offset.set(xIndex, MathService.clamp(offset.get(xIndex), width2 - imgWidth * zoom, width2));
+      offset.set(yIndex, MathService.clamp(offset.get(yIndex), height2 - imgHeight * zoom, height2));
+    }
+
+    function reset(camera) {
+      camera.left = 0;
+      camera.top = 0;
+      camera.zoom = 0;
+      offset.set(xIndex, camera.left);
+      offset.set(yIndex, camera.top);
+      scale = GeometricTransformation.scale(1.0);
     }
 
     function pan(camera, delta) {
@@ -40,6 +68,8 @@ angular.module('visualDiffViewerApp')
         y: delta.y / zoom
       };
       offset = offset.multiply(GeometricTransformation.translation(delta));
+
+      constraintPan(offset);
 
       applyPanZoom(camera);
     }
@@ -64,7 +94,7 @@ angular.module('visualDiffViewerApp')
 
       // Zoom with respect to center point in pan frame
       var Ap = mathjs.inv(offset).multiply(GeometricTransformation.translation(centerVPoint));
-      var Apv = { x: Ap.get([0, 2]), y: Ap.get([1, 2])};
+      var Apv = { x: Ap.get(xIndex), y: Ap.get(yIndex)};
       Zoom = GeometricTransformation.scaleAbout(factor, Apv);
       offset = offset.multiply(Zoom);
 
@@ -73,6 +103,7 @@ angular.module('visualDiffViewerApp')
 
     return {
       pan: pan,
+      reset: reset,
       zoom: zoom
     };
   });
