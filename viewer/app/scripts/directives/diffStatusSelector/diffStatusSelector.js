@@ -15,20 +15,23 @@
  */
 
 angular.module('visualDiffViewerApp')
-		.directive('breadcrumb', function () {
-			var scopeVars = {
-						'projectId': '=',
-						'projectName': '=',
-						'suiteId': '=',
-						'suiteName': '=',
-						'runId': '=',
-						'creationTime': '='
-					};
-			return {
-				restrict: 'AE',
-				scope: scopeVars,
-				templateUrl: 'views/breadcrumb.html',
-				link: function (scope, element, attrs, ctrl) {
-				}
-			};
-		});
+	.directive('diffStatusSelector', function (diffConstants) {
+		return {
+			restrict: 'AE',
+			scope: {
+				selectedDiff: '=diffStatusSelector',
+				onStatusSelected: '&'
+			},
+			templateUrl: 'scripts/directives/diffStatusSelector/diffStatusSelector.html',
+			link: function (scope) {
+				scope.allStatusses = diffConstants.all();
+
+				scope.setStatus = function (newStatus) {
+					scope.selectedDiff.status = newStatus;
+					if (scope.onStatusSelected) {
+						scope.onStatusSelected();
+					}
+				};
+			}
+		};
+	});

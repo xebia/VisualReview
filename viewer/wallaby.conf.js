@@ -20,7 +20,6 @@ module.exports = function () {
       'app/scripts/app.js',
       'app/scripts/**/*.js',
       'app/scripts/**/*.html',
-      'app/views/**/*.html',
 
       // Test utilities
       'test/spec/test_util/test_util.js'
@@ -32,7 +31,7 @@ module.exports = function () {
     ],
 
     preprocessors: {
-      'app/views/**/*.html': function (file) {
+      'app/scripts/**/*.html': function (file) {
         return require('wallaby-ng-html2js-preprocessor').transform(file, {
           stripPrefix: 'app/',
           moduleName: 'visualDiffViewerApp'
