@@ -11,6 +11,8 @@ Currently VisualReview provides a [Protractor plug-in](https://www.github.com/xe
 upload screenshots from your protractor tests. However, the VisualReview server has a simple API which allows
 compatibility with other testing frameworks. We are working on other plug-ins and hope to release them soon.
 
+![VisualReview visual regression tool impression](https://cloud.githubusercontent.com/assets/205326/8498888/c1cd591e-218c-11e5-8d50-5ecf5f7e9fbf.png)
+
 ## Getting started
 
 ### Configuring and starting the VisualReview server
