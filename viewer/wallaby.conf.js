@@ -4,6 +4,7 @@ module.exports = function () {
   return {
     files: [
       // Libraries
+      n('app/bower_components/humane-js/humane.js'),
       n('app/bower_components/jquery/jquery.js'),
       n('app/bower_components/underscore/underscore.js'),
       n('app/bower_components/angular/angular.js'),
@@ -16,6 +17,7 @@ module.exports = function () {
       n('node_modules/jasmine-collection-matchers/lib/pack.js'),
 
       // VR core
+      'app/scripts/app.js',
       'app/scripts/**/*.js',
       'app/scripts/**/*.html',
 
