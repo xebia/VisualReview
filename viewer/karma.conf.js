@@ -11,6 +11,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'app/bower_components/humane-js/humane.js',
       'app/bower_components/jquery/jquery.js',
       'app/bower_components/underscore/underscore.js',
       'app/bower_components/angular/angular.js',
@@ -23,7 +24,7 @@ module.exports = function(config) {
       'node_modules/jasmine-collection-matchers/lib/pack.js',
       'app/scripts/app.js',
       'app/scripts/**/*.js',
-      'app/views/**/*.html',
+      'app/scripts/**/*.html',
       'test/spec/**/*.js'
     ],
 
@@ -31,7 +32,7 @@ module.exports = function(config) {
     exclude: [],
 
     preprocessors: {
-      "app/views/**/*.html": ["ng-html2js"]
+      "app/scripts/**/*.html": ["ng-html2js"]
     },
 
     ngHtml2JsPreprocessor: {

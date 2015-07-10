@@ -1,4 +1,4 @@
-# VisualReview [![Build Status](https://travis-ci.org/xebia/VisualReview.svg?branch=master)](https://travis-ci.org/xebia/VisualReview)
+# VisualReview [![Build Status](https://travis-ci.org/xebia/VisualReview.svg?branch=master)](https://travis-ci.org/xebia/VisualReview) [![Join the chat at https://gitter.im/xebia/VisualReview](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/xebia/VisualReview?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 VisualReview's goal is to provide a productive and human-friendly workflow for testing and reviewing your web application's layout
 across several browsers, resolutions and platforms.
@@ -10,6 +10,10 @@ between the two and allows you to either accept or reject these changes.
 Currently VisualReview provides a [Protractor plug-in](https://www.github.com/xebia/VisualReview-protractor) to easily
 upload screenshots from your protractor tests. However, the VisualReview server has a simple API which allows
 compatibility with other testing frameworks. We are working on other plug-ins and hope to release them soon.
+
+## Impression
+Below you see an image of the VisualReview application. The screenshot being evaluated is different from the accepted baseline and the difference is marked in red.
+![VisualReview visual regression tool impression](https://cloud.githubusercontent.com/assets/205326/8498888/c1cd591e-218c-11e5-8d50-5ecf5f7e9fbf.png)
 
 ## Getting started
 

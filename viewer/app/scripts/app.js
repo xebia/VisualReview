@@ -20,19 +20,19 @@ angular.module('visualDiffViewerApp', ['ngRoute', 'ngAnimate', 'ngResource', 'pa
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/projects.html',
+        templateUrl: 'scripts/list/projects.html',
         controller: 'ProjectsCtrl'
       })
       .when('/:projectId', {
-        templateUrl: 'views/project.html',
+        templateUrl: 'scripts/list/project.html',
         controller: 'ProjectCtrl'
       })
       .when('/:projectId/:suiteId', {
-        templateUrl: 'views/suite.html',
+        templateUrl: 'scripts/list/suite.html',
         controller: 'SuiteCtrl'
       })
       .when('/:profileId/:suiteId/:runId/:filter?', {
-        templateUrl: 'views/run.html',
+        templateUrl: 'scripts/run/run.html',
         controller: 'RunCtrl'
       })
       .otherwise({

@@ -4,6 +4,7 @@ module.exports = function () {
   return {
     files: [
       // Libraries
+      n('app/bower_components/humane-js/humane.js'),
       n('app/bower_components/jquery/jquery.js'),
       n('app/bower_components/underscore/underscore.js'),
       n('app/bower_components/angular/angular.js'),
@@ -16,8 +17,9 @@ module.exports = function () {
       n('node_modules/jasmine-collection-matchers/lib/pack.js'),
 
       // VR core
+      'app/scripts/app.js',
       'app/scripts/**/*.js',
-      'app/views/**/*.html',
+      'app/scripts/**/*.html',
 
       // Test utilities
       'test/spec/test_util/test_util.js'
@@ -29,7 +31,7 @@ module.exports = function () {
     ],
 
     preprocessors: {
-      'app/views/**/*.html': function (file) {
+      'app/scripts/**/*.html': function (file) {
         return require('wallaby-ng-html2js-preprocessor').transform(file, {
           stripPrefix: 'app/',
           moduleName: 'visualDiffViewerApp'

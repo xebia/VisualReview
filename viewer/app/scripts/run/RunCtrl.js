@@ -2,7 +2,7 @@
 
 angular.module('visualDiffViewerApp')
 
-  .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants, TitleService) {
+  .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants, TitleService, humanejs) {
     TitleService.setTitle('Run ' + $routeParams.runId);
 
     $scope.config = {
@@ -13,46 +13,47 @@ angular.module('visualDiffViewerApp')
 
     $scope.model = {}; // always pass empty object
 
-    var toast = humane.create({baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success'});
+    var toast = humanejs.create({baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success'});
 
-		var runId = $routeParams.runId;
-		switch($routeParams.filter) {
-			case 'rp':
-				$scope.currFilter = [diffConstants.pending(), diffConstants.rejected()]
-				break;
+    var runId = $routeParams.runId;
 
-			default:
-				$scope.currFilter = diffConstants.all();
-				break;
-		}
+    switch ($routeParams.filter) {
+      case 'rp':
+        $scope.currFilter = [diffConstants.pending(), diffConstants.rejected()]
+        break;
 
-		$scope.allDiffs = [];
+      default:
+        $scope.currFilter = diffConstants.all();
+        break;
+    }
+
+    $scope.allDiffs = [];
 
     function updateTotals() {
       var newTotals = {
-				pending: 0,
-				rejected: 0,
-				accepted: 0,
-				all: 0
-			};
+        pending: 0,
+        rejected: 0,
+        accepted: 0,
+        all: 0
+      };
 
       angular.forEach($scope.allDiffs, function (result) {
-				newTotals.all++;
+        newTotals.all++;
         switch (result.status) {
           case diffConstants.pending() :
-						newTotals.pending++;
+            newTotals.pending++;
             break;
 
           case diffConstants.rejected() :
-						newTotals.rejected++;
+            newTotals.rejected++;
             break;
 
           case diffConstants.accepted() :
-						newTotals.accepted++;
+            newTotals.accepted++;
         }
       });
 
-			$scope.totals = newTotals;
+      $scope.totals = newTotals;
     }
 
     function persistCurrentDiffStatus() {
@@ -60,14 +61,14 @@ angular.module('visualDiffViewerApp')
       var runId = $scope.analysis.runId;
       var status = $scope.diffs[$scope.selectedDiffIndex].status.toLowerCase();
 
-			$scope.diffs[$scope.selectedDiffIndex].isPersisted = false;
+      $scope.diffs[$scope.selectedDiffIndex].isPersisted = false;
       RunResource.updateStatus({runId: runId, diffId: diffId}, {status: status});
     }
 
     function toggleCurrentStatus(newValue) {
       var currResult = $scope.diffs[$scope.selectedDiffIndex];
-      currResult.status = currResult.status == newValue ? diffConstants.pending() : newValue;;
-			$scope.statusUpdated();
+      currResult.status = currResult.status == newValue ? diffConstants.pending() : newValue;
+      $scope.statusUpdated();
     }
 
     function selectBaselineScreenshot() {
@@ -84,9 +85,9 @@ angular.module('visualDiffViewerApp')
       $scope.showDiff = !$scope.showDiff;
     }
 
-		$scope.selectedDiffIndex = 0;
-		$scope.selectedScreenshot = "after";
-		$scope.showDiff = true;
+    $scope.selectedDiffIndex = 0;
+    $scope.selectedScreenshot = "after";
+    $scope.showDiff = true;
 
     $scope.selectNextDiff = function () {
       $scope.selectedDiffIndex < $scope.diffs.length - 1 && $scope.selectedDiffIndex++;
@@ -100,42 +101,46 @@ angular.module('visualDiffViewerApp')
       $scope.selectedDiffIndex = newIndex;
     };
 
-    $scope.statusUpdated = function() {
+    $scope.statusUpdated = function () {
       persistCurrentDiffStatus();
-			updateTotals();
+      updateTotals();
 
-			var totals = $scope.totals;
+      var totals = $scope.totals;
       if (totals.pending === 0 && totals.rejected === 0 && totals.accepted === totals.all) {
         toast.log('All screenshots in this run have been accepted');
       }
     };
 
-		$scope.reapplyFilter = function () {
-			applyFilter();
-		};
+    $scope.reapplyFilter = function () {
+      applyFilter();
+    };
 
-		function applyFilter () {
-			$scope.diffs = filterFilter($scope.allDiffs, function (diff) {
-				return $scope.currFilter.indexOf(diff.status) != -1;
-			});
-			updateTotals();
+    function applyFilter() {
+      $scope.diffs = filterFilter($scope.allDiffs, function (diff) {
+        return $scope.currFilter.indexOf(diff.status) != -1;
+      });
+      updateTotals();
 
-			if ($scope.selectedDiffIndex > $scope.diffs.length - 1) {
-				$scope.selectedDiffIndex = Math.max($scope.diffs.length - 1, 0);
-			}
-		}
+      if ($scope.selectedDiffIndex > $scope.diffs.length - 1) {
+        $scope.selectedDiffIndex = Math.max($scope.diffs.length - 1, 0);
+      }
+    }
 
-		$scope.$watch('currFilter', function () {
-			applyFilter();
-		});
+    $scope.$watch('currFilter', function () {
+      applyFilter();
+    });
 
     var keyPressMap = {
       'LEFT': selectBaselineScreenshot,
       'RIGHT': selectActualScreenshot,
       'UP': $scope.selectPreviousDiff,
       'DOWN': $scope.selectNextDiff,
-      'A': function () {toggleCurrentStatus( diffConstants.accepted())},
-      'X': function () {toggleCurrentStatus( diffConstants.rejected())},
+      'A': function () {
+        toggleCurrentStatus(diffConstants.accepted())
+      },
+      'X': function () {
+        toggleCurrentStatus(diffConstants.rejected())
+      },
       'D': toggleDiff
     };
 
@@ -163,7 +168,7 @@ angular.module('visualDiffViewerApp')
       .then(function (analysisData) {
         $scope.analysis = analysisData.analysis;
         $scope.allDiffs = analysisData.diffs;
-				applyFilter();
+        applyFilter();
         updateTotals();
       });
   });
