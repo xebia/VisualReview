@@ -5,12 +5,6 @@ angular.module('visualDiffViewerApp')
   .controller('RunCtrl', function ($scope, $routeParams, filterFilter, RunResource, diffConstants, TitleService, humanejs) {
     TitleService.setTitle('Run ' + $routeParams.runId);
 
-    $scope.config = {
-      zoomLevels: 4,
-      //scalePerZoomLevel: 3,
-      //neutralZoomLevel: 2
-    }; // use defaults
-
     $scope.model = {}; // always pass empty object
 
     var toast = humanejs.create({baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success'});

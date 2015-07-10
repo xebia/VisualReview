@@ -16,96 +16,56 @@
 'use strict';
 
 angular.module('visualDiffViewerApp')
-  .factory('CameraService', function (GeometricTransformation, MathService) {
-    var offset = GeometricTransformation.translation({ x: 0.0, y: 0.0 }), //translation matrix
-      scale  = GeometricTransformation.scale(1.0), //uniform scaling matrix
-      zoomStep = 1.5,
+  .factory('CameraService', function (MathService) {
+    var zoomStep = 1.5,
       minZoom = 0.5,
       maxZoom = 4.0;
-
-    const xIndex = [0, 2],
-      yIndex = [1, 2];
-
-    function getZoom() {
-      return scale.get([0, 0]);
-    }
-
-    function applyPanZoom(camera) {
-      camera.zoom = getZoom();
-      camera.left = offset.get(xIndex);
-      camera.top = offset.get(yIndex);
-    }
 
     /**
      * Constraint panning so image is always visible for a quarter or more.
      * @param offset
      */
-    function constraintPan(offset) {
+    function constraintPan(camera) {
       var imgHeight = $('.run-view-item').height(),
         imgWidth = $('.run-view-item').width();
 
-      var zoom = getZoom();
-
       var height2 = $(window).height() / 2.0,
         width2 = $(window).width() / 2.0;
-      offset.set(xIndex, MathService.clamp(offset.get(xIndex), width2 - imgWidth * zoom, width2));
-      offset.set(yIndex, MathService.clamp(offset.get(yIndex), height2 - imgHeight * zoom, height2));
+      camera.x = MathService.clamp(camera.x, width2 - imgWidth * camera.scale, width2);
+      camera.y = MathService.clamp(camera.y, height2 - imgHeight * camera.scale, height2);
     }
 
     function centerHorizontal(camera) {
-      var imgWidth = $('.run-view-item').width();
-      var zoom = getZoom();
-      var width2 = $(window).width() / 2.0;
-      camera.left = width2 - imgWidth / 2.0 * zoom;
+      var imgWidth = $('.run-view-item').width(),
+        width2 = $(window).width() / 2.0;
+      camera.x = width2 - imgWidth / 2.0 * camera.scale;
     }
 
     function reset(camera) {
+      camera.scale = 1;
+      camera.y = 0;
       centerHorizontal(camera);
-      camera.top = 0;
-      camera.zoom = 0;
-      offset.set(xIndex, camera.left);
-      offset.set(yIndex, camera.top);
-      scale = GeometricTransformation.scale(1.0);
     }
 
     function pan(camera, delta) {
-      var zoom = getZoom();
-      delta = {
-        x: delta.x / zoom,
-        y: delta.y / zoom
-      };
-      offset = offset.multiply(GeometricTransformation.translation(delta));
+      camera.x += delta.x;
+      camera.y += delta.y;
 
-      constraintPan(offset);
-
-      applyPanZoom(camera);
+      constraintPan(camera);
     }
 
-    function zoom(camera, centerVPoint, delta) {
-      var factor;
-      if (delta > 0.0) {
-        factor = zoomStep;
-      } else {
-        factor = 1.0 / zoomStep;
-      }
-      var currentZoom = getZoom(),
-        newZoom = currentZoom * factor;
-      if (newZoom < minZoom || newZoom > maxZoom) {
+    function zoom(camera, zoomPoint, delta) {
+      var factor = delta > 0.0 ? zoomStep: 1.0 / zoomStep,
+        newScale = camera.scale * factor;
+      if (newScale < minZoom || newScale > maxZoom) {
         return;
       }
+      camera.scale = newScale;
 
-      // Compute transformation that scales about point
-      // Zoom = T * S * Tinv
-      var Zoom = GeometricTransformation.scaleAbout(factor, centerVPoint);
-      scale = scale.multiply(Zoom);
-
-      // Zoom with respect to center point in pan frame
-      var Ap = mathjs.inv(offset).multiply(GeometricTransformation.translation(centerVPoint));
-      var Apv = { x: Ap.get(xIndex), y: Ap.get(yIndex)};
-      Zoom = GeometricTransformation.scaleAbout(factor, Apv);
-      offset = offset.multiply(Zoom);
-
-      applyPanZoom(camera);
+      // Zoom with respect to center point in pan frame.
+      // Move images, scale and move them back.
+      camera.x = (camera.x - zoomPoint.x) * factor + zoomPoint.x;
+      camera.y = (camera.y - zoomPoint.y) * factor + zoomPoint.y;
     }
 
     return {

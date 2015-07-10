@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+'use strict';
 
 angular.module('visualDiffViewerApp')
   .directive('camera', function (CameraService, hamsterjs) {
@@ -22,10 +23,11 @@ angular.module('visualDiffViewerApp')
       transclude: true,
       templateUrl: 'scripts/camera/cameraDirective.html',
       link: function (scope, elem) {
+
         scope.camera = {
-          left: 0,
-          top: 0,
-          zoom: 1.0
+          x: 0,
+          y: 0,
+          scale: 1.0
         };
 
         var isDragging = false,
@@ -98,10 +100,9 @@ angular.module('visualDiffViewerApp')
           }
         }
 
-        scope.onMouseWheel = function (event, delta, deltaX, deltaY) {
+        function onMouseWheel (event, delta, deltaX, deltaY) {
           var zoomDelta = deltaY,
             mousePoint = viewToFrame({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
-
 
           scope.$apply(function () {
             CameraService.zoom(scope.camera, mousePoint, zoomDelta);
@@ -114,7 +115,7 @@ angular.module('visualDiffViewerApp')
           return false; //disable default drag behavior
         });
 
-        hamsterjs(elem[0]).wheel(scope.onMouseWheel);
+        hamsterjs(elem[0]).wheel(onMouseWheel);
         elem.bind('mousedown', onMouseDown);
         elem.bind('dblclick', onMouseDoubleClick);
         elem.bind('mouseup', onMouseUp);
