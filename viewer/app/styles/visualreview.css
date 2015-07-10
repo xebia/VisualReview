@@ -626,10 +626,23 @@ a:link{
 }
 
 .run-view {
+    display:inline-block;
     max-width:100%;
     position:relative;
 }
 
 .run-view-item {
     position:absolute;
+    left: 0;
+    top: 0;
+}
+
+.camera-frame {
+    text-align: center;
+}
+
+.camera-pan-frame {
+    position: relative;
+    left: 0;
+    top: 0;
 }

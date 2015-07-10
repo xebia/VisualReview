@@ -17,7 +17,7 @@
 
 angular.module('visualDiffViewerApp')
   .factory('CameraService', function (MathService) {
-    var zoomStep = 1.5,
+    var zoomStep = 1.05,
       minZoom = 0.5,
       maxZoom = 4.0;
 
@@ -26,25 +26,19 @@ angular.module('visualDiffViewerApp')
      * @param offset
      */
     function constraintPan(camera) {
-      var imgHeight = $('.run-view-item').height(),
-        imgWidth = $('.run-view-item').width();
-
       var height2 = $(window).height() / 2.0,
-        width2 = $(window).width() / 2.0;
-      camera.x = MathService.clamp(camera.x, width2 - imgWidth * camera.scale, width2);
-      camera.y = MathService.clamp(camera.y, height2 - imgHeight * camera.scale, height2);
-    }
+        imgHeight = $('.zoom-frame').height(),
+        imgWidth = $('.zoom-frame').width(),
+        xBorder = imgWidth / 2.0 * camera.scale;
 
-    function centerHorizontal(camera) {
-      var imgWidth = $('.run-view-item').width(),
-        width2 = $(window).width() / 2.0;
-      camera.x = width2 - imgWidth / 2.0 * camera.scale;
+      camera.x = MathService.clamp(camera.x, -xBorder, xBorder);
+      camera.y = MathService.clamp(camera.y, height2 - imgHeight * camera.scale, height2);
     }
 
     function reset(camera) {
       camera.scale = 1;
+      camera.x = 0;
       camera.y = 0;
-      centerHorizontal(camera);
     }
 
     function pan(camera, delta) {
@@ -64,8 +58,11 @@ angular.module('visualDiffViewerApp')
 
       // Zoom with respect to center point in pan frame.
       // Move images, scale and move them back.
-      camera.x = (camera.x - zoomPoint.x) * factor + zoomPoint.x;
-      camera.y = (camera.y - zoomPoint.y) * factor + zoomPoint.y;
+      if (camera.scale > 1.0) {
+        camera.x = (camera.x - zoomPoint.x) * factor + zoomPoint.x;
+        camera.y = (camera.y - zoomPoint.y) * factor + zoomPoint.y;
+      }
+
     }
 
     return {

@@ -106,7 +106,7 @@
     <camera>
       <!-- image -->
       <div class="run-view" ng-if="diffs.length > 0">
-        <img class="run-view-item" ng-src="/api/image/{{diffs[selectedDiffIndex][selectedScreenshot].imageId}}"/>
+        <img ng-src="/api/image/{{diffs[selectedDiffIndex][selectedScreenshot].imageId}}"/>
         <img class="run-view-item" ng-show="showDiff" ng-src="/api/image/{{diffs[selectedDiffIndex].imageId}}"/>
       </div>
 
