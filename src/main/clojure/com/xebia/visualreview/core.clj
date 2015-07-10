@@ -41,3 +41,9 @@
         (starter/stop-server)
         (db/close-connection)
         (System/exit 1)))))
+
+(defn- restart []
+  (do
+    (starter/stop-server)
+    (-main)))
+
