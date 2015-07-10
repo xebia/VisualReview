@@ -60,7 +60,7 @@
         no-schema-version))
     no-schema-version)))
 
-(defn- update-db-schema! [conn]
+(defn update-db-schema! [conn]
   (loop [version (inc (get-current-schema-version conn))]
     (let [db-script (read-db-script version)]
       (when db-script

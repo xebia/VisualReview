@@ -61,7 +61,7 @@
   (log/info "Setting up test database")
   (j/with-db-connection [conn *conn*]
     (j/execute! conn ["DROP ALL OBJECTS"])
-    (db/run-init-script conn)))
+    (db/update-db-schema! conn)))
 
 (defn test-server-fixture [f]
   (util/start-server)
