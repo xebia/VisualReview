@@ -29,12 +29,13 @@
   Creating a run also creates an analysis for the run, this may change in the future.
   Returns the created run id."
   [conn suite-id]
-  (let [baseline (baseline/get-baseline-head conn suite-id "master")
-        new-run-id (putil/insert-single! conn :run {:suite-id    suite-id
-                                                    :start-time  (Timestamp. (.getTime (Date.)))
-                                                    :branch-name "master"
-                                                    :status      "running"})
-        _ (analysis/create-analysis! conn baseline new-run-id)]
+  (let [branch (baseline/get-baseline-branch conn suite-id "master")
+        new-run-id (putil/insert-single! conn :run {:suite-id         suite-id
+                                                    :start-time       (Timestamp. (.getTime (Date.)))
+                                                    :branch-name      (:name branch)
+                                                    :baseline-tree-id (:baseline-tree branch)
+                                                    :status "running"})
+        _ (analysis/create-analysis! conn (:head branch) new-run-id)]
     new-run-id))
 
 (defn get-run
