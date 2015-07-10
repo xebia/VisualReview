@@ -343,6 +343,7 @@ a:link{
 }
 
 .counter-container {
+    z-index: 10;
     position:fixed;
     bottom:0;
     right:0;
