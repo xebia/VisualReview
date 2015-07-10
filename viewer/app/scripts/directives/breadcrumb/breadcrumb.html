@@ -1,8 +1,13 @@
-<div ng-if="projectId && projectName" class="ellipsis-container nowrap-container">
-	<i><a href="#/">/</a> <a href="#/{{projectId}}/">{{projectName}}</a>
-	<span ng-if="suiteId && suiteName"> / <a href="#/{{projectId}}/{{suiteId}}">{{suiteName}}</a>
-		<span ng-if="runId && creationTime"> / <a href="#/{{projectId}}/{{suiteId}}/{{runId}}">{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})</a>
+<div class="ellipsis-container nowrap-container">
+	<i><a href="#/">/</a>
+		<span ng-if="projectId && projectName">
+			<conditional-Link href="#/{{projectId}}/" show-link="suiteId && suiteName" text="projectName"></conditional-Link>
+			<span ng-if="suiteId && suiteName">
+				/ <conditional-Link href="#/{{projectId}}/{{suiteId}}" show-link="runId && creationTime" text="suiteName"></conditional-Link>
+				<span ng-if="runId && creationTime">
+					/ <span>{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})
+				</span>
+			</span>
 		</span>
-	</span>
 	</i>
 </div>
