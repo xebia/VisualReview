@@ -645,4 +645,7 @@ a:link{
     position: relative;
     left: 0;
     top: 0;
+    display: inline-block;
+    cursor: pointer;
+    cursor: hand;
 }

@@ -27,8 +27,8 @@ angular.module('visualDiffViewerApp')
      */
     function constraintPan(camera) {
       var height2 = $(window).height() / 2.0,
-        imgHeight = $('.zoom-frame').height(),
-        imgWidth = $('.zoom-frame').width(),
+        imgHeight = $('.camera-content-frame').height(),
+        imgWidth = $('.camera-content-frame').width(),
         xBorder = imgWidth / 2.0 * camera.scale;
 
       camera.x = MathService.clamp(camera.x, -xBorder, xBorder);
