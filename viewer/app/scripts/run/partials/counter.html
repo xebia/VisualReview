@@ -1,0 +1,11 @@
+<div class="text-center text-shadow-radial">
+  <i ng-click="selectPreviousDiff()"
+     ng-class="{'hidden': selectedDiffIndex === 0}"
+     class="icon-chevron-up counter-arrow"></i>
+
+  <div>{{selectedDiffIndex + 1}} / {{diffs.length}}</div>
+
+  <i ng-click="selectNextDiff()"
+     ng-class="{'hidden': selectedDiffIndex + 1 === diffs.length}"
+     class="icon-chevron-down counter-arrow"></i>
+</div>
