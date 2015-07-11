@@ -5,7 +5,7 @@
 			<span ng-if="suiteId && suiteName">
 				/ <conditional-Link href="#/{{projectId}}/{{suiteId}}" show-link="runId && creationTime" text="suiteName"></conditional-Link>
 				<span ng-if="runId && creationTime">
-					/ <span>{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})
+					/ <span>{{runId }} ({{creationTime | date : 'MMM d, y \'at\' h:mma' }})</span>
 				</span>
 			</span>
 		</span>
