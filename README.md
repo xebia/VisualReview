@@ -12,7 +12,7 @@ upload screenshots from your protractor tests. However, the VisualReview server 
 compatibility with other testing frameworks. We are working on other plug-ins and hope to release them soon.
 
 ## See it in action
-![VisualReview visual regression tool in action](https://cloud.githubusercontent.com/assets/205326/8633256/9df223a6-27bf-11e5-8674-0ee5ffccf16e.gif)
+![VisualReview visual regression tool in action](https://cloud.githubusercontent.com/assets/205326/8633297/1d86b464-27c1-11e5-85db-66cefbff4def.gif)
 
 Above you can see how the application helps you to identify and evaluate visual changes in your application.
 
