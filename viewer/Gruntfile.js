@@ -151,7 +151,7 @@ module.exports = function (grunt) {
     ngtemplates: {
       app: {
         cwd: 'dist/',
-        src: ['views/**/*.html'],
+        src: ['scripts/**/*.html'],
         dest: 'dist/scripts/templates.js',
         options: {
           module: 'visualDiffViewerApp',
@@ -308,7 +308,7 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '.htaccess',
-            'views/**/*.html',
+            'scripts/**/*.html',
             'images/{,*/}*.{gif,webp}',
             'styles/font/**/*',
             'styles/assets/**/*',
