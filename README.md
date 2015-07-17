@@ -16,8 +16,9 @@ compatibility with other testing frameworks. We are working on other plug-ins an
 Above you can see how the application helps you to identify and evaluate visual changes in your application.
 
 ## Getting started
+For a **quick demo** try the [protractor example](https://github.com/xebia/VisualReview-protractor/blob/master/example-project/README.md).
 
-To use VisualReview we first need to start the VisualReview app itself and we need to run tests that send screenshots to the application. For a **quick demo** try the [protractor example](https://github.com/xebia/VisualReview-protractor/blob/master/example-project/README.md).
+To use VisualReview we'll start the VisualReview app itself. After that, we'll run tests that send screenshots to the server. 
 
 ### Configuring and starting the VisualReview server
 
