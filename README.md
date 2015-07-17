@@ -17,11 +17,13 @@ Above you can see how the application helps you to identify and evaluate visual 
 
 ## Getting started
 
+To use VisualReview we first need to start the VisualReview app itself and we need to run tests that send screenshots to the application. For a **quick demo** try the [protractor example](https://github.com/xebia/VisualReview-protractor/blob/master/example-project/README.md).
+
 ### Configuring and starting the VisualReview server
 
-* Download and extract the latest release from [here](https://github.com/xebia/VisualReview/releases).
+* Download and extract the [latest release](https://github.com/xebia/VisualReview/releases).
 * Reconfigure any settings in config.edn (optional)
-* Run ./start.sh
+* Run `./start.sh`
 * Open your browser at [http://localhost:7000](http://localhost:7000) (or the port you configured in config.edn) to see if everything is working. It should list an empty project list.
 
 ### Running your first test
