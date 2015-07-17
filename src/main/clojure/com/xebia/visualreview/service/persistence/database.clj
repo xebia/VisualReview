@@ -16,8 +16,11 @@
 
 (ns com.xebia.visualreview.service.persistence.database
   (:require [clojure.java.jdbc :as j]
-            [clojure.java.io :as io])
-  (:import [com.mchange.v2.c3p0 PooledDataSource ComboPooledDataSource]))
+            [clojure.java.io :as io]
+            [com.xebia.visualreview.service.persistence.util :as putil]
+            [com.xebia.visualreview.logging :as log])
+  (:import [com.mchange.v2.c3p0 PooledDataSource ComboPooledDataSource]
+           (org.h2.jdbc JdbcSQLException)))
 
 (defn pooled-datasource
   [spec]
@@ -38,8 +41,35 @@
 
 (defonce conn {})
 
-(defn run-init-script [conn]
-  (j/execute! conn [(slurp (io/resource "dbscripts/h2/1.sql"))]))
+(defn- read-db-script [name]
+  (let [res (io/resource (str "dbscripts/h2/" name ".sql"))]
+    (if (nil? res)
+      false
+      (slurp res))))
+
+(defn- run-db-script! [conn script]
+  (j/execute! conn [script]))
+
+(defn get-current-schema-version [conn]
+  (let [no-schema-version 0]
+  (or
+    (try
+      (putil/query-single conn ["select svalue from SYSTEM where skey = 'schema_version'"]
+                        :row-fn (fn [row] (Long/parseLong (:svalue row))))
+      (catch JdbcSQLException e
+        no-schema-version))
+    no-schema-version)))
+
+(defn update-db-schema! [conn]
+  (loop [version (inc (get-current-schema-version conn))]
+    (let [db-script (read-db-script version)]
+      (when db-script
+        (do
+          (log/info (str "Running database schema update to version " version " .."))
+          (run-db-script! conn db-script)
+          (putil/update! conn :system {:svalue version} ["skey = 'schema_version'"])
+          (log/info (str "..done schema update to version " version))
+          (recur (inc version)))))))
 
 (defn init! [db-uri user pass]
   {:pre [db-uri user]}
@@ -53,7 +83,9 @@
                  :max-pool-size  1}
         conn (alter-var-root #'conn (constantly (pooled-datasource db-spec)))]
     (do
-      (run-init-script conn)
+      (log/info "Initializing database..")
+      (update-db-schema! conn)
+      (log/info "..done initializing database")
       conn)))
 
 (defn close-connection []
