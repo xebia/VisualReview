@@ -60,6 +60,7 @@ We'd like to acknowledge the original authors of this project, from before versi
 * [Joshua Appelman](https://github.com/jbnicolai)
 * [Daniel Marjenburgh](https://github.com/dmarjenburgh)
 * [Sannie Kwakman](https://github.com/skwakman)
+* [Ruurd Moelker](https://github.com/rrmoelker)
 
 ## License
 
