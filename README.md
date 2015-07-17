@@ -23,8 +23,7 @@ Above you can see how the application helps you to identify and evaluate visual 
 * Reconfigure any settings in config.edn (optional)
 * Make sure that the screenshots directory exists and is readable (default is ```screenshots```)
 * Run ./start.sh
-* Open your browser at [http://localhost:7000](http://localhost:7000) (or the port you configured in config.edn)
-* Create a new project
+* Open your browser at [http://localhost:7000](http://localhost:7000) (or the port you configured in config.edn) to see if everything is working. It should list an empty project list.
 
 ### Running your first test
 * Send screenshots during a test to VisualReview. We currently provide a [Protractor plug-in](https://www.github.com/xebia/VisualReview-protractor) to do this. See
