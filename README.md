@@ -42,16 +42,8 @@ the protractor-plugin's [README](https://github.com/xebia/VisualReview-protracto
   * After you either accepted or rejected a screenshot, you can always revert this decision by selecting the 'pending' option in the top right menu.
 
 
-## Features in development (aka known issues, limitations)
-VisualReview is currently in heavy development and is not yet ready for production use.
-Here's a (not finalized) list of features we'd like to get finished before moving towards a stable 1.0.0 release.
-
-* Baseline management GUI
-* Add GUI for deleting suites and runs
-* Provide screenshot cleanup functionality to save disk space.
-* Add image zoom tools in GUI
-* Add options for adding VisualReview as part of a pull-request workflow (slated for v0.2)
-
+## Features in development 
+For our current- and future development focus, see the [wiki](https://github.com/xebia/VisualReview/wiki/Milestones). 
 ## VisualReview Enterprise
 
 In addition we are also working on an Enterprise edition of VisualReview.

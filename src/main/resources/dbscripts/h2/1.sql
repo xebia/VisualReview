@@ -93,3 +93,12 @@ CREATE TABLE IF NOT EXISTS diff
   analysis_id INTEGER        NOT NULL REFERENCES analysis ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS system
+(
+  skey        VARCHAR(100) NOT NULL,
+  svalue      VARCHAR(200) NOT NULL,
+  UNIQUE (skey)
+);
+
+-- set initial system key for schema version. Further .sql scripts don't have to do this
+insert into SYSTEM (skey, svalue) VALUES ('schema_version', 1);
