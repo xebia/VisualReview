@@ -466,6 +466,10 @@ a:link{
     visibility:hidden;
 }
 
+.hover-target:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
 .hover-target:hover .visible-on-hover {
     visibility:visible;
 }
