@@ -11,9 +11,10 @@ Currently VisualReview provides a [Protractor plug-in](https://www.github.com/xe
 upload screenshots from your protractor tests. However, the VisualReview server has a simple API which allows
 compatibility with other testing frameworks. We are working on other plug-ins and hope to release them soon.
 
-## Impression
-Below you see an image of the VisualReview application. The screenshot being evaluated is different from the accepted baseline and the difference is marked in red.
-![VisualReview visual regression tool impression](https://cloud.githubusercontent.com/assets/205326/8498888/c1cd591e-218c-11e5-8d50-5ecf5f7e9fbf.png)
+## See it in action
+![VisualReview visual regression tool in action](https://cloud.githubusercontent.com/assets/205326/8633297/1d86b464-27c1-11e5-85db-66cefbff4def.gif)
+
+Above you can see how the application helps you to identify and evaluate visual changes in your application.
 
 ## Getting started
 
