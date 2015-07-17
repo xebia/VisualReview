@@ -1,7 +1,6 @@
 # VisualReview [![Build Status](https://travis-ci.org/xebia/VisualReview.svg?branch=master)](https://travis-ci.org/xebia/VisualReview) [![Join the chat at https://gitter.im/xebia/VisualReview](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/xebia/VisualReview?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-VisualReview's goal is to provide a productive and human-friendly workflow for testing and reviewing your web application's layout
-across several browsers, resolutions and platforms.
+VisualReview's goal is to provide a productive and human-friendly workflow for testing and reviewing your web application's layout for any regressions.
 
 VisualReview functions as a server which accepts screenshots of your web application, sent for example, from your selenium or protractor scripts.
 These shots are then compared to screenshots you uploaded and reviewed earlier. VisualReview will display and highlight any differences
