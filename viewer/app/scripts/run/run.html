@@ -1,20 +1,18 @@
 <div ng-show="analysis" keyboard>
-  <div class="counter-container" ng-show="diffs.length > 0">
-    <div class="text-center text-shadow-radial">
-      <div ng-click="selectPreviousDiff()" transparent="selectedDiffIndex == 0" class="counter-arrow">∧</div>
-      <div>{{selectedDiffIndex + 1}} / {{diffs.length}}</div>
-      <div ng-click="selectNextDiff()" transparent="(selectedDiffIndex + 1) == diffs.length"
-           class="counter-arrow">∨
-      </div>
-    </div>
-  </div>
+
+  <div ng-include="'/app/scripts/run/partials/counter.html'"
+       ng-show="diffs.length > 0"
+       class="counter-container"></div>
 
   <div class="run-navbar">
     <div class="run-navbar-inner">
       <!-- breadcrumb, filter, screenshot status -->
       <div class="run-navbar-column-context">
         <div class="run-navbar-inner-row-container background-light">
-          <div class="icon-vr-diamond color-purple font-size-medium padding-left-4 padding-right-4"></div>
+          <a href="/#/" class="logo">
+            <i class="icon-vr-diamond color-purple padding-left-4 padding-right-4"></i>
+            <span class="sr-only">VisualReview</span>
+          </a>
           <div class="font-size-small">
             <div class="ellipsis-container size-max-width-1 padding-bottom-05 padding-right-1"
                  ng-show="run.projectId">

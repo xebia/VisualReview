@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@charset "UTF-8";
+
 @font-face{
     font-family: 'OpenSans';
     src: url('font/OpenSans-Regular-webfont.eot');
@@ -69,6 +71,17 @@ a:link{
 }
 :-ms-input-placeholder { /* Internet Explorer 10+ */
     color: #aaaaaa;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
 }
 
 [data-icon]:before {
@@ -345,10 +358,8 @@ a:link{
 .counter-container {
     z-index: 10;
     position:fixed;
-    bottom:0;
-    right:0;
-    text-align: right;
-    vertical-align: bottom;
+    bottom: 16px;
+    right: 16px;
 
     font-family: 'OpenSans', Arial, sans-serif;
     font-size: 16pt;
@@ -361,14 +372,16 @@ a:link{
 }
 
 .counter-arrow {
-    vertical-align: bottom;
-    font-family: 'OpenSans', Arial, sans-serif;
     cursor: pointer;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
     user-select: none;
+}
+
+.hidden {
+    visibility:hidden;
 }
 
 .text-center {
@@ -517,6 +530,10 @@ a:link{
 
 .transparent {
     opacity: 0;
+}
+
+a.logo {
+ text-decoration: none;
 }
 
 .run-navbar {
