@@ -30,19 +30,20 @@ angular.module('visualDiffViewerApp')
           scale: 1.0
         };
 
-        var isDragging = false,
-          prevMousePt;
+        scope.isDragging = false;
+
+        var prevMousePt;
 
         function startDrag(vPoint) {
           prevMousePt = {
             x: vPoint.x,
             y: vPoint.y
           };
-          isDragging = true;
+          scope.isDragging = true;
         }
 
         function stopDrag() {
-          isDragging = false;
+          scope.isDragging = false;
         }
 
         /**
@@ -58,7 +59,9 @@ angular.module('visualDiffViewerApp')
         }
 
         function onMouseDown(event) {
-          startDrag({x: event.pageX, y: event.pageY});
+          scope.$apply(function () {
+            startDrag({x: event.pageX, y: event.pageY});
+          });
         }
 
         function onMouseDoubleClick() {
@@ -69,7 +72,7 @@ angular.module('visualDiffViewerApp')
         }
 
         function onMouseMove(event) {
-          if (isDragging) {
+          if (scope.isDragging) {
             var delta = {
               x: event.pageX - prevMousePt.x,
               y: event.pageY - prevMousePt.y
@@ -87,7 +90,9 @@ angular.module('visualDiffViewerApp')
         }
 
         function onMouseUp() {
-          stopDrag();
+          scope.$apply(function () {
+            stopDrag();
+          });
         }
 
         /**
@@ -95,8 +100,10 @@ angular.module('visualDiffViewerApp')
          * @param event
          */
         function onMouseEnter(event) {
-          if (event.buttons === 0 && isDragging) {
-            stopDrag();
+          if (event.buttons === 0 && scope.isDragging) {
+            scope.$apply(function () {
+              stopDrag();
+            });
           }
         }
 

@@ -1,5 +1,7 @@
 <div class="camera-frame">
-  <div class="camera-pan-frame" style="left: {{camera.x}}px; top: {{camera.y}}px">
+  <div class="camera-pan-frame"
+       ng-class="{'cursor-grab': !isDragging, 'cursor-grabbing': isDragging}"
+       style="left: {{camera.x}}px; top: {{camera.y}}px">
     <div class="camera-content-frame" style="zoom: {{camera.scale}};" ng-transclude>
     </div>
   </div>

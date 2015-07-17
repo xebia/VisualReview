@@ -663,6 +663,16 @@ a.logo {
     left: 0;
     top: 0;
     display: inline-block;
-    cursor: pointer;
-    cursor: hand;
+}
+
+.cursor-grab {
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+
+.cursor-grabbing {
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+    cursor: grabbing;
 }
