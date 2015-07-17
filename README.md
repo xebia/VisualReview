@@ -32,7 +32,7 @@ To use VisualReview we'll start the VisualReview app itself. After that, we'll r
 the protractor-plugin's [README](https://github.com/xebia/VisualReview-protractor/blob/master/README.md) for details on how to configure Protractor to send screenshots to VisualReview.
 
 ### Reviewing the results
-* Go back to the VisualReview page on http://localhost:7000 (or the port you configured in start.sh).
+* Go back to the VisualReview page on http://localhost:7000 (or the port you configured in config.edn).
 * Navigate to your project and suite name. Here you see all the times you ran a test script against this project and suite combination.
 * Click on the run to review all screenshots and differences. If this is the first time you created a run in this suite, there will be no differences yet.
 * To approve or reject a screenshot, use the top-right menu or hit the 'a' or 'x' key on your keyboard.
