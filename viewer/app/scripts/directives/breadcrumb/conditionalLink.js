@@ -25,7 +25,6 @@ angular.module('visualDiffViewerApp')
     return {
       restrict: 'E',
       scope: scopeVars,
-      //template: '<p>test</p>'
       template: '<a href={{href}} ng-if="showLink">{{text}}</a>' +
                 '<span ng-if="!showLink">{{text}}</span>'
     };
