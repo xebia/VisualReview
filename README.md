@@ -21,7 +21,6 @@ Above you can see how the application helps you to identify and evaluate visual 
 
 * Download and extract the latest release from [here](https://github.com/xebia/VisualReview/releases).
 * Reconfigure any settings in config.edn (optional)
-* Make sure that the screenshots directory exists and is readable (default is ```screenshots```)
 * Run ./start.sh
 * Open your browser at [http://localhost:7000](http://localhost:7000) (or the port you configured in config.edn) to see if everything is working. It should list an empty project list.
 
