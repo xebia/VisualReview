@@ -532,8 +532,8 @@ a.vr-logo {
 }
 .vr-logo img {
     margin-top: 10%;
-    height: 80%;
-    width: auto;
+    height: 20px;
+    width: 20px;
 }
 
 .run-navbar {
