@@ -216,18 +216,6 @@ a:link{
     background: radial-gradient(at center 120%, rgb(89, 89, 89), rgb(37, 37, 37) 50%);
 }
 
-.icon{
-    width: 100px;
-    height: 100px;
-    background-image: url(icon.png);
-}
-
-.background-logo-center {
-    width: 186px;
-    height: 39px;
-    background: url("assets/background-logo.png") no-repeat center center;
-}
-
 .position-fixed-bottom {
     position: fixed;
     bottom: 0;
@@ -535,8 +523,17 @@ a:link{
     opacity: 0;
 }
 
-a.logo {
+.vr-logo {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+a.vr-logo {
  text-decoration: none;
+}
+.vr-logo img {
+    margin-top: 10%;
+    height: 20px;
+    width: 20px;
 }
 
 .run-navbar {
