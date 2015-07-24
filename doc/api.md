@@ -63,14 +63,23 @@ The image should be attached to the request using base64 encoding.
 You should at least supply:
 
 ```javascript
+meta: JSON.stringify(metaData),
+properties: JSON.stringify(properties),
 screenshotName: name,
-  file: {
-    value: new Buffer(png, 'base64'),
-    options: {
-      filename: 'file.png',
-      contentType: 'image/png'
-    }
+file: {
+  value: new Buffer(png, 'base64'),
+  options: {
+    filename: 'file.png',
+    contentType: 'image/png'
   }
+}
+```
+
+The `meta` object can be used link custom data to a screenshot. The `properties` object uniquely identifies a configuration. It may contain any property but we suggest including the resolution:
+```javascript
+properties = {
+  resolution: size.width + 'x' + size.height;
+}
 ```
 
 Path: `runs/{{run_id}}/analysis`
