@@ -63,16 +63,28 @@ The image should be attached to the request using base64 encoding.
 You should at least supply:
 
 ```javascript
+meta: JSON.stringify(metaData),
+properties: JSON.stringify(properties),
 screenshotName: name,
-  file: {
-    value: new Buffer(png, 'base64'),
-    options: {
-      filename: 'file.png',
-      contentType: 'image/png'
-    }
+file: {
+  value: new Buffer(png, 'base64'),
+  options: {
+    filename: 'file.png',
+    contentType: 'image/png'
   }
+}
+```
+When a screenshot is uploaded it's compared to a previously uploaded screenshot having the same `screenshotName` and `properties`. The `properties` object has no predefined set of keys, however we suggest including at least a screen resolution and browser as these fields will be displayed by VisualReview's GUI. For example:
+```javascript
+properties = {
+  resolution: size.width + 'x' + size.height,
+  browser: 'firefox'
+}
 ```
 
+The field `metadata` can contain some additional data of the screenshot. Currently it's not being used by VisualReview's GUI, but might be handy for other tools using VisualReview's API.
+
+### Analysis
 Path: `runs/{{run_id}}/analysis`
 Methods: GET
 
