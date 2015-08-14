@@ -105,3 +105,4 @@ The following parts/project already make use of these API calls:
 
 * VisualReview/viewer web app, mostly reads projects, suites, runs and screenshots for reviewing purpose. See the Angular `...Resource.js` files
 * [VisualReview-protractor](https://github.com/xebia/VisualReview-protractor), create new runs and screenshots.
+* [VisualReview-node-client](https://github.com/Klaasvaak/VisualReview-node-client), Node.js client for VisualReview
