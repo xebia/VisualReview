@@ -59,21 +59,13 @@ Path: `runs/{{run_id}}/screenshots`
 Methods: POST
 
 Upload a screenshot to the supplied run.
-The image should be attached to the request using base64 encoding.
-You should at least supply:
+The request should be just like a multi-part form post, like you're uploading a screenshot from a form.
+Multipart elements should be:
+ * **file** (binary, with the screenshot png data)
+ * **screenshotName** (plain text, containing the screenshot name)
+ * **properties**  (application/json, JSON object with image properties, see below)
+ * **meta** (application/json, JSON object with additional data about the screenshot. Can be empty).
 
-```javascript
-meta: JSON.stringify(metaData),
-properties: JSON.stringify(properties),
-screenshotName: name,
-file: {
-  value: new Buffer(png, 'base64'),
-  options: {
-    filename: 'file.png',
-    contentType: 'image/png'
-  }
-}
-```
 When a screenshot is uploaded it's compared to a previously uploaded screenshot having the same `screenshotName` and `properties`. The `properties` object has no predefined set of keys, however we suggest including at least a screen resolution and browser as these fields will be displayed by VisualReview's GUI. For example:
 ```javascript
 properties = {
