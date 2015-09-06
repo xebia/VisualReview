@@ -26,12 +26,16 @@
   [conn run-id screenshot-name size properties meta image-id]
   (try
     (log/debug (str "saving screenshot with image-id " image-id))
-    (putil/insert-single! conn :screenshot {:run-id          run-id
+    (let [
+          screenshot-id (putil/insert-single! conn :screenshot {
                                             :screenshot-name screenshot-name
                                             :image-id        image-id
                                             :size            size
                                             :meta            (json/generate-string meta)
-                                            :properties      (json/generate-string properties)})
+                                            :properties      (json/generate-string properties)})]
+      (do (putil/insert-single! conn :run_screenshots { :screenshot-id   screenshot-id
+                                                       :run-id          run-id})
+          screenshot-id))
     (catch SQLException e
       (if (putil/unique-constraint-violation? e)
         (ex/throw+ {:type    :sql-exception
@@ -45,6 +49,6 @@
                       :result-set-fn vec))
 
 (defn get-screenshots [conn run-id]
-  (putil/query conn ["SELECT screenshot.* FROM screenshot WHERE screenshot.run_id = ?" run-id]
+  (putil/query conn ["SELECT screenshot.* FROM screenshot, run_screenshots WHERE run_screenshots.run_id = ? AND screenshot.id = run_screenshots.screenshot_id" run-id]
                :row-fn (putil/parse-json-fields :meta :properties)
                :result-set-fn vec))

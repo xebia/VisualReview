@@ -24,6 +24,13 @@
 (def project-name-2 "Another Project")
 (def suite-name "Test suite")
 
+(def screenshot-properties {:os         "LINUX"
+                            :browser    "firefox"
+                            :resolution "1024x786"
+                            :version    "40.0"})
+
+
+
 (use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest projects
@@ -65,6 +72,48 @@
             project-before-deletion (:body (api/get-project (:id created-project)))
             response-status (:status (api/delete-project! (:id project-before-deletion)))
             project-after-deletion-status (:status (api/get-project (:id project-before-deletion)))]
-        (is (not(nil? project-before-deletion)))
+        (is (not (nil? project-before-deletion)))
         (is (= response-status 204))
-        (is (= project-after-deletion-status 404))))))
+        (is (= project-after-deletion-status 404)))))
+
+  (testing "Deleting runs"
+    (testing "Run can be deleted but leaves other runs and the baseline intact"
+      ; test for regression of issue #49:
+      ;   deletion of a run which contains images that were added to the baseline causes links to these baseline images
+      ;   in other runs to be removed as well
+      (let [run-1 (:body (api/post-run! project-name-1 suite-name))
+            run-1-screenshot (:body (mock/upload-tapir (:id run-1) {} screenshot-properties))
+            status-update (api/update-diff-status-of-screenshot (:id run-1) (:id run-1-screenshot) "accepted")
+            run-2 (:body (api/post-run! project-name-1 suite-name))
+            run-2-screenshot (:body (mock/upload-tapir (:id run-2) {} screenshot-properties))
+            run-1-analysis-before-deletion (api/get-analysis (:id run-1))
+            run-2-analysis-before-deletion (api/get-analysis (:id run-2))
+            run-1-deletion (api/delete-run! (:id run-1))
+            run-1-after-deletion (api/get-run (:id run-1))
+            run-2-after-deletion (api/get-run (:id run-2))
+            run-1-analysis-after-deletion (api/get-analysis (:id run-1))
+            run-2-analysis-after-deletion (api/get-analysis (:id run-2))
+            run-1-screenshot-after-deletion (api/get-image (:id run-1-screenshot))
+            run-2-screenshot-after-deletion (api/get-image (:id run-2-screenshot))]
+        ; sanity checks
+        (is (= (not (nil? (:id run-1)))))
+        (is (= (not (nil? (:id run-2)))))
+        (is (= (not (nil? (:id run-1-analysis-before-deletion)))))
+        (is (= (not (nil? (:id run-2-analysis-before-deletion)))))
+        (is (= (:status status-update) 201))
+        (is (= (not (nil? (:id run-1-screenshot)))))
+        (is (= (not (nil? (:id run-2-screenshot)))))
+        ; is run-1 properly deleted?
+        (is (= (:status run-1-deletion) 204))
+        (is (= (:status run-1-after-deletion) 404))
+        (is (= (:status run-1-analysis-after-deletion) 404))
+        ; is run-2 still available and is all the data for it still there?
+        (is (:status run-2-after-deletion) 200)
+        (is (= (:body run-2-after-deletion) run-2))
+        (is (= (:body run-2-analysis-before-deletion) (:body run-2-analysis-after-deletion)))
+        ; the screenshot itself is not deleted, only references to it. Later cleanup scripts should actually delete them.
+        (is (= (:status run-1-screenshot-after-deletion) 200))
+        (is (= (:status run-2-screenshot-after-deletion) 200))
+        (is (= (not (nil? (:body run-1-screenshot-after-deletion)))))
+        (is (= (not (nil? (:body run-2-screenshot-after-deletion)))))))))
+
