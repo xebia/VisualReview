@@ -12,10 +12,10 @@
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
-                       :subname        "tcp://localhost/./target/temp/vr-db-migration-test.db;TRACE_LEVEL_FILE=2"
+                       :subname        "file:./target/temp/vr-db-migration-test.db;TRACE_LEVEL_FILE=2"
                        :user           ""
-                       :init-pool-size 2
-                       :max-pool-size  2})
+                       :init-pool-size 1
+                       :max-pool-size  1})
 
 (defn- run-db-script! [conn script]
   (j/execute! conn [script]))
@@ -34,6 +34,12 @@
                         (log/info "Creating initial v1 data")
                         (run-db-script! conn (read-db-script "dbmigration/dump-1.sql"))
                         (db/update-db-schema! conn)))
+
+(defn- setup-db-fixture [f]
+  (let [_ (setup-db)]
+    (f)))
+
+(use-fixtures :each setup-db-fixture)
 
 (deftest database-migration
 
