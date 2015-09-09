@@ -1,4 +1,4 @@
-(ns com.xebia.visualreview.service.persistence.database-migration-test
+(ns com.xebia.visualreview.itest.database-migration-test
   (:require [clojure.test :refer :all]
             [clojure.java.jdbc :as j]
             [clojure.java.io :as io]
