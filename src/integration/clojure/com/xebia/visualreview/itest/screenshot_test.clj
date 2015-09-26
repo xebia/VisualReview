@@ -40,5 +40,4 @@
               :meta            {:version "4.0"}
               :properties      {:browser "chrome" :os "windows"}
               :screenshot-name "myScreenshot"
-              :run-id          run-id
               :size            (.length image-file)} screenshot)))))

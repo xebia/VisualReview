@@ -13,7 +13,8 @@
                  [slingshot "0.12.1"]                       ;improved exception handling
                  [org.clojure/java.jdbc "0.3.6"]
                  [com.mchange/c3p0 "0.9.5"]                 ;database connection pooling
-                 [com.h2database/h2 "1.4.185"]]
+                 [com.h2database/h2 "1.4.185"]
+                 [joda-time/joda-time "2.8.2"]]
 
   :min-lein-version "2.4.0"
 

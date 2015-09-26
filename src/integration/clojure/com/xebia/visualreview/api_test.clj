@@ -55,6 +55,9 @@
 (defn get-run [run-id]
   (http/get (endpoint "runs" run-id) default-opts))
 
+(defn delete-run! [run-id]
+  (http/delete (endpoint "runs" run-id) nil))
+
 (defn get-suites [project-id]
   (dissoc (http/get (endpoint "projects" project-id "suites") default-opts) :headers))
 
@@ -77,7 +80,16 @@
 (defn get-analysis [run-id]
   (dissoc (http/get (endpoint "runs" run-id "analysis") default-opts) :headers))
 
+(defn- find-diff-with-after-image-id [diffs image-id]
+  (first (filter (fn [diff] (= (:imageId (:after diff)) image-id)) diffs)))
+
 (defn update-diff-status! [run-id diff-id status]
   (dissoc (http/post (endpoint "runs" run-id "analysis" "diffs" diff-id)
                      (merge default-opts {:body (json/generate-string {:status status})}))
           :headers))
+
+(defn update-diff-status-of-screenshot [run-id screenshot-image-id new-status]
+  (let [analysis (:body (get-analysis run-id))
+        diff (find-diff-with-after-image-id (:diffs analysis) screenshot-image-id)]
+    (update-diff-status! run-id (:id diff) new-status)))
+

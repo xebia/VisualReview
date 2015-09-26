@@ -61,18 +61,15 @@
         (are [k v] (= (-> response :body k) v)
           :id 1
           :imageId 1
-          :runId run-id
           :screenshotName "Tapir"
           :size 38116
           :meta meta-info
           :properties properties)))
 
-    (testing "Uploading duplicate screenshots"
+    (testing "Uploading duplicate screenshots does not throw an error"
       (is (= 201 (:status (mock/upload-chess-image-1 run-id meta-info properties))) "Created status")
       (let [second-request (mock/upload-chess-image-2 run-id meta-info properties)]
-        (is (= 200 (:status second-request)) "Not created, but OK status")
-        (is (re-find #"already uploaded" (-> second-request :body :error)) "Error message in response")
-        (is (map? (-> second-request :body :conflictingEntity)))))
+        (is (= 201 (:status second-request)) "Screenshot is simply created")))
 
     (testing "Uploading screenshots with same name and meta, but different properties"
       (is (= 201 (:status (mock/upload-chess-image-2 run-id meta-info (assoc properties :resolution "800x600")))) "Created status")))
