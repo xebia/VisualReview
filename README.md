@@ -1,4 +1,5 @@
-# <img src="https://cloud.githubusercontent.com/assets/205326/8749163/038588f4-2ca0-11e5-94f7-25074b6b1ee8.png" alt="VisualReview logo" height="40x"> [![Build Status](https://travis-ci.org/xebia/VisualReview.svg?branch=master)](https://travis-ci.org/xebia/VisualReview) [![Join the chat at https://gitter.im/xebia/VisualReview](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/xebia/VisualReview?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# <img src="https://cloud.githubusercontent.com/assets/205326/8749163/038588f4-2ca0-11e5-94f7-25074b6b1ee8.png" alt="VisualReview logo" height="40x"> 
+[![Build Status](https://travis-ci.org/xebia/VisualReview.svg?branch=master)](https://travis-ci.org/xebia/VisualReview) [![Join the chat at https://gitter.im/xebia/VisualReview](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/xebia/VisualReview?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 VisualReview's goal is to provide a productive and human-friendly workflow for testing and reviewing your web application's layout for any regressions.
 
