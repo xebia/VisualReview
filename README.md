@@ -45,13 +45,6 @@ the protractor-plugin's [README](https://github.com/xebia/VisualReview-protracto
 
 ## Features in development 
 For our current- and future development focus, see the [wiki](https://github.com/xebia/VisualReview/wiki/Milestones). 
-## VisualReview Enterprise
-
-In addition we are also working on an Enterprise edition of VisualReview.
-This edition will contain all the features of the open source edition and adds enterprise features such as user authentication,
-access from the cloud, enterprise support and more. We will release more details in the future. In the meantime, you can contact us
-at [visualreview@xebia.com](mailto:visualreview@xebia.com) to receive updates.
-
 ## How to contribute
 To run or build the project from source, see [this wiki page](https://github.com/xebia/VisualReview/wiki/Building-and-running-from-source).
 
