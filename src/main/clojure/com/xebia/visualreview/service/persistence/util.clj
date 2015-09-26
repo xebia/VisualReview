@@ -16,7 +16,8 @@
 
 (ns com.xebia.visualreview.service.persistence.util
   (:require [clojure.java.jdbc :as j]
-            [cheshire.core :as json])
+            [cheshire.core :as json]
+            [clojure.string :as string])
   (:import (java.sql SQLException)))
 
 (defn- ent-fn [^String s] (.replace s \- \_))
@@ -48,3 +49,6 @@
 (defn parse-json-fields [& ks]
   (fn [row]
     (reduce #(update-in %1 [%2] json/parse-string true) row ks)))
+
+(defn sql-param-list [amount]
+  (string/join ", " (take amount (repeat "?"))))

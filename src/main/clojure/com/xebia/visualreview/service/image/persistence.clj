@@ -33,3 +33,14 @@
         directory (:directory image)
         id (:id image)]
     (str directory "/" id ".png")))
+
+(defn get-unused-image-ids [conn]
+  "Returns a vector of image id's that are not referenced in any diff or screenshot"
+  (putil/query conn ["SELECT id FROM image WHERE id NOT IN (SELECT image_id FROM screenshot) AND id NOT IN (SELECT image_id FROM diff)"]
+               :row-fn :id
+               :result-set-fn vec))
+
+(defn delete-image!
+  "Removes the image with the given image-id from the database"
+  [conn image-id]
+  (putil/delete! conn :image ["id = ? " image-id]))

@@ -47,3 +47,13 @@
       (catch Object o
         (sutil/rethrow-as-service-exception o "Could not store screenshot in database: %s" ::screenshot-cannot-store-in-db)))))
 
+(defn get-unused-screenshot-ids [conn]
+  "Returns a vector of screenshot IDs that are not referenced by any run"
+  (sutil/attempt (sp/get-unused-screenshot-ids conn) "Could not determine unused screenshots: %s", ::screenshot-cannot-retrieve-unused-from-db))
+
+(defn delete-screenshots! [conn screenshot-ids]
+  "Deletes screenshots with the given IDs."
+  (sutil/attempt (sp/delete-screenshots! conn screenshot-ids) "Could not delete screenshots: %s", ::screenshot-cannot-delete-from-db))
+
+(defn delete-unused-screenshots! [conn]
+  (delete-screenshots! conn (get-unused-screenshot-ids conn)))
