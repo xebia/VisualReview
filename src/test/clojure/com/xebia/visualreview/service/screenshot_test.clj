@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.screenshot-test
+(ns com.xebia.visualreview.service.screenshot-test
   (:require [clojure.test :refer :all]
             [slingshot.test]
             [clojure.java.io :as io]
