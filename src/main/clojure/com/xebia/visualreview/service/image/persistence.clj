@@ -15,7 +15,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.service.image.persistence
-  (:require [com.xebia.visualreview.service.persistence.util :as putil]))
+  (:require [com.xebia.visualreview.service.persistence.util :as putil]
+            [slingshot.slingshot :as ex]))
 
 
 (defn insert-image!
@@ -32,7 +33,10 @@
                                   ["SELECT id, directory FROM image WHERE id = ?" image-id])
         directory (:directory image)
         id (:id image)]
-    (str directory "/" id ".png")))
+    (if (nil? image)
+      nil
+      (str directory "/" id ".png"))
+    ))
 
 (defn get-unused-image-ids [conn]
   "Returns a vector of image id's that are not referenced in any diff or screenshot"

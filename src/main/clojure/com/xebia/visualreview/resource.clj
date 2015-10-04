@@ -74,7 +74,10 @@
                    {::project project})
                  (catch NumberFormatException _)))
     :delete! (fn [ctx]
-               {::project-deleted (project/delete-project! (tx-conn ctx) (::project-id ctx))})
+               (let [result (project/delete-project! (tx-conn ctx) (::project-id ctx))]
+                 (do
+                   (cleanup/cleanup-orphans! (tx-conn ctx))
+                   {::project-deleted result})))
     :delete-enacted? (fn [ctx]
                        (::project-deleted ctx))
     :handle-ok ::project))
@@ -102,7 +105,10 @@
                      {::suite suite}))
                  (catch NumberFormatException _)))
     :delete! (fn [ctx]
-               {::suite-deleted (suite/delete-suite! (tx-conn ctx) (:id (::suite ctx)))})
+               (let [result (suite/delete-suite! (tx-conn ctx) (:id (::suite ctx)))]
+                 (do
+                   (cleanup/cleanup-orphans! (tx-conn ctx))
+                   {::suite-deleted result})))
     :delete-enacted? (fn [ctx]
                        (::suite-deleted ctx))
     :handle-ok ::suite))
@@ -122,7 +128,10 @@
                      {::run run}))
                  (catch NumberFormatException _)))
     :delete! (fn [ctx]
-               {::run-deleted (run/delete-run! (tx-conn ctx) (:id (::run ctx)))})
+               (let [result (run/delete-run! (tx-conn ctx) (:id (::run ctx)))]
+               (do
+                 (cleanup/cleanup-orphans! (tx-conn ctx))
+                 {::run-deleted result })))
     :delete-enacted? (fn [ctx]
                        (::run-deleted ctx))
     :handle-ok ::run))
@@ -336,7 +345,10 @@
     :available-media-types ["image/png"]
     :allowed-methods [:get]
     :exists? (fn [ctx]
-               {:image-path (image/get-image-path (tx-conn ctx) image-id)})
+               (let [image-path (image/get-image-path (tx-conn ctx) image-id)]
+                 (if (nil? image-path)
+                   false
+                   {:image-path image-path})))
     :handle-ok (fn [ctx]
                  (io/get-file (:image-path ctx)))))
 

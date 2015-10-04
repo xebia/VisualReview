@@ -75,7 +75,7 @@
   (http/get (str server-root path) {:throw-exceptions false}))
 
 (defn get-image [image-id]
-  (http/get (endpoint "image" image-id) nil))
+  (http/get (endpoint "image" image-id) {:throw-exceptions false}))
 
 (defn get-analysis [run-id]
   (dissoc (http/get (endpoint "runs" run-id "analysis") default-opts) :headers))

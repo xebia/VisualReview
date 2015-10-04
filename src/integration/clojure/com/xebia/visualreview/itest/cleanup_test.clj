@@ -18,9 +18,7 @@
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.service.project :as project]
             [com.xebia.visualreview.service.screenshot :as s]
-            [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]
             [com.xebia.visualreview.api-test :as api]
             [com.xebia.visualreview.service.image.persistence :as ip]
@@ -49,7 +47,7 @@
           unused-image-ids-before-run-deletion (ip/get-unused-image-ids mock/*conn*)
           unused-screenshot-ids-before-run-deletion (s/get-unused-screenshot-ids mock/*conn*)
 
-          delete-run-result (api/delete-run! run1-id)
+          _ (run/delete-run! mock/*conn* run1-id) ; cannot call delete-run from api here at this moment as that calls the cleanup-orphans too
 
           unused-image-ids-after-run-deletion (ip/get-unused-image-ids mock/*conn*)
           unused-screenshot-ids-after-run-deletion (s/get-unused-screenshot-ids mock/*conn*)
@@ -68,7 +66,6 @@
       (is (number? unconnected-image-id))
       (is (not (nil? (:id run1-screenshot1))))
       (is (not (nil? (:id run1-screenshot2))))
-      (is (= 204 (:status delete-run-result)))
       (is (= 201 (:status diff-update-result)))
 
       (is (= 0 (count unused-screenshot-ids-before-run-deletion)))

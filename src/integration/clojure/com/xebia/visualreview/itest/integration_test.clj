@@ -93,8 +93,8 @@
             run-2-after-deletion (api/get-run (:id run-2))
             run-1-analysis-after-deletion (api/get-analysis (:id run-1))
             run-2-analysis-after-deletion (api/get-analysis (:id run-2))
-            run-1-screenshot-after-deletion (api/get-image (:id run-1-screenshot))
-            run-2-screenshot-after-deletion (api/get-image (:id run-2-screenshot))]
+            run-1-screenshot-after-deletion (api/get-image (:imageId run-1-screenshot))
+            run-2-screenshot-after-deletion (api/get-image (:imageId run-2-screenshot))]
         ; sanity checks
         (is (= (not (nil? (:id run-1)))))
         (is (= (not (nil? (:id run-2)))))
@@ -111,9 +111,9 @@
         (is (:status run-2-after-deletion) 200)
         (is (= (:body run-2-after-deletion) run-2))
         (is (= (:body run-2-analysis-before-deletion) (:body run-2-analysis-after-deletion)))
-        ; the screenshot itself is not deleted, only references to it. Later cleanup scripts should actually delete them.
-        (is (= (:status run-1-screenshot-after-deletion) 200))
-        (is (= (:status run-2-screenshot-after-deletion) 200))
+
+        (is (= (:status run-1-screenshot-after-deletion) 200)) ; still there because of baseline
+        (is (= (:status run-2-screenshot-after-deletion) 200)) ; still there because its run stil exists
         (is (= (not (nil? (:body run-1-screenshot-after-deletion)))))
         (is (= (not (nil? (:body run-2-screenshot-after-deletion)))))))))
 

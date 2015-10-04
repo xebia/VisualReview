@@ -58,7 +58,7 @@
   (putil/delete! conn :screenshot (into [(str "id IN (" (putil/sql-param-list (count screenshot-ids)) " )")] screenshot-ids)))
 
 (defn get-unused-screenshot-ids [conn]
-  "Returns a vector of screenshot- and image-IDs that are not referenced by any run"
-  (putil/query conn ["SELECT id FROM screenshot where id NOT IN (select screenshot_id from run_screenshots) AND id NOT IN (SELECT screenshot_id FROM bl_node_screenshot)"]
+  "Returns a vector of screenshot-IDs that are not referenced by any run"
+  (putil/query conn ["SELECT id FROM screenshot where id NOT IN (select screenshot_id from run_screenshots) AND id NOT IN (SELECT screenshot_id FROM bl_node_screenshot) AND id NOT IN (SELECT before FROM diff) AND id NOT IN (SELECT after FROM diff)"]
                :row-fn :id
                :result-set-fn vec))
