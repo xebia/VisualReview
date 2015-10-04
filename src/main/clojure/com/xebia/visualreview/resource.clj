@@ -28,6 +28,7 @@
             [com.xebia.visualreview.service.project :as project]
             [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]
+            [com.xebia.visualreview.service.cleanup :as cleanup]
             [com.xebia.visualreview.service.baseline :as baseline])
   (:import [java.util Map]))
 
@@ -338,3 +339,11 @@
                {:image-path (image/get-image-path (tx-conn ctx) image-id)})
     :handle-ok (fn [ctx]
                  (io/get-file (:image-path ctx)))))
+
+;; Cleanup
+(defn cleanup []
+  (resource
+    :allowed-methods [:post]
+    :post! (fn [ctx] (cleanup/cleanup-orphans! (tx-conn ctx)))
+    :handle-created (fn [_] (liberator.representation/ring-response
+                           {:status 200}))))

@@ -19,13 +19,17 @@
             [clojure.java.io :as io]
             [com.xebia.visualreview.service.image :as image]
             [com.xebia.visualreview.mock :as mock]
-            [com.xebia.visualreview.io :as vrio])
+            [com.xebia.visualreview.io :as vrio]
+            [com.xebia.visualreview.api-test :as api]
+            [com.xebia.visualreview.service.screenshot :as s]
+            [com.xebia.visualreview.service.image.persistence :as ip])
   (:import [java.util Calendar]))
 
 (defn- YYYYMMDDH [^Calendar calendar]
   (apply str (interpose "/" (mapv #(.get calendar %) [Calendar/YEAR Calendar/MONTH Calendar/DAY_OF_MONTH Calendar/HOUR_OF_DAY]))))
 
-(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
+;(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
 
 (deftest image-service
 

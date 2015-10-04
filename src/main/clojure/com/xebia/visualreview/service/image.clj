@@ -19,8 +19,8 @@
             [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.service.image.persistence :as ip]
             [com.xebia.visualreview.service.service-util :as sutil]
-            [com.xebia.visualreview.config :as config]
-            [clojure.java.io :as cio])
+            [clojure.java.io :as cio]
+            [slingshot.slingshot :as ex])
   (:import [java.util Calendar]
            [java.io File]))
 
@@ -46,15 +46,18 @@
   This function will throw an error if the image ID is still being used in a screenshot or diff."
   (let [image-path (get-image-path conn image-id)]
     (do
-      (sutil/attempt (ip/delete-image! conn image-id) (str "Could not delete image with id " image-id ": %s") ::image-cannot-delete-from-db)
+      (sutil/attempt (ip/delete-image! conn image-id) (str "Could not remove image with id " image-id " from database: %s") ::image-cannot-delete-from-db)
       (sutil/attempt (cio/delete-file (io/get-file image-path)) (str "Could not delete image file " image-path ": %s") ::image-cannot-delete-from-fs)
       )))
 
 (defn delete-unused-images! [conn]
-  (let [unused-image-ids (ip/get-unused-image-ids conn)]
-    (do
-      (log/info (str "deleting image " unused-image-ids))
-      (doseq [image-id unused-image-ids]
-        (delete-image! conn image-id))
-      )
-    ))
+  (sutil/attempt
+    (let [unused-image-ids (ip/get-unused-image-ids conn)]
+      (do
+        (doseq [image-id unused-image-ids]
+          (ex/try+
+            (delete-image! conn image-id)
+            (catch Object o#
+              (let [exception-msg# (sutil/get-message-from-object-or-exception o#)]
+                (log/error (str "An error occured while removing an image: " exception-msg# ". You may have to delete the image manually."))))))))
+    "An error occured while deleting unused images: %s" ::image-cannot-delete-unused))

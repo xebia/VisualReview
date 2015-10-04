@@ -80,6 +80,9 @@
 (defn get-analysis [run-id]
   (dissoc (http/get (endpoint "runs" run-id "analysis") default-opts) :headers))
 
+(defn perform-cleanup []
+  (dissoc (http/post (endpoint "cleanup") default-opts) :headers))
+
 (defn- find-diff-with-after-image-id [diffs image-id]
   (first (filter (fn [diff] (= (:imageId (:after diff)) image-id)) diffs)))
 
