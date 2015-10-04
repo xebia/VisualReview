@@ -59,6 +59,6 @@
 
 (defn get-unused-screenshot-ids [conn]
   "Returns a vector of screenshot- and image-IDs that are not referenced by any run"
-  (putil/query conn ["SELECT id FROM screenshot where id NOT IN (select screenshot_id from run_screenshots)"]
+  (putil/query conn ["SELECT id FROM screenshot where id NOT IN (select screenshot_id from run_screenshots) AND id NOT IN (SELECT screenshot_id FROM bl_node_screenshot)"]
                :row-fn :id
                :result-set-fn vec))
