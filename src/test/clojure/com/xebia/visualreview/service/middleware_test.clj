@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.middleware-test
+(ns com.xebia.visualreview.service.middleware-test
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.middleware :as middleware]
             [com.xebia.visualreview.service.service-util :as service-util]

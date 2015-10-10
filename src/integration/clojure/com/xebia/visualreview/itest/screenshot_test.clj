@@ -23,7 +23,8 @@
             [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]))
 
-(use-fixtures :each mock/logging-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture)
+(use-fixtures :each mock/logging-fixture mock/rebind-db-spec-fixture mock/setup-screenshot-dir-fixture mock/setup-db-fixture mock/test-server-fixture)
+
 
 (deftest screenshot-service
 

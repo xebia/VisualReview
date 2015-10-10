@@ -14,7 +14,7 @@
 ; limitations under the License.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ns com.xebia.visualreview.project-test
+(ns com.xebia.visualreview.service.project-test
   (:require [clojure.test :refer :all]
             [com.xebia.visualreview.service.project :as project]
             [com.xebia.visualreview.service.persistence.util :as putil]

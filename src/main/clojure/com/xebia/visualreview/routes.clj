@@ -31,6 +31,7 @@
   (m/wrap-tx
     (routes
       (GET "/version" [] (str api-version))
+      (POST "/cleanup" [] (resource/cleanup))
       (ANY "/projects" [] (resource/project-resource))
       (context "/projects/:project-id" [project-id]
         (ANY "/" [] (resource/project-by-id project-id))
