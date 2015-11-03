@@ -42,11 +42,16 @@ the protractor-plugin's [README](https://github.com/xebia/VisualReview-protracto
   * When you reject a screenshot, the baseline will not be updated.
   * After you either accepted or rejected a screenshot, you can always revert this decision by selecting the 'pending' option in the top right menu.
 
+## Integration with other tools
+An updated list of currently available integrations with other tools can be found [here](https://github.com/xebia/VisualReview/blob/master/doc/api.md#usages)
+
+## How to contribute
+VisualReview provides a REST API for easy integration with your own toolset. See the [API documentation](https://github.com/xebia/VisualReview/blob/master/doc/api.md) for more details.
+
+To run or build the VisualReview project itself from source, see [this wiki page](https://github.com/xebia/VisualReview/wiki/Building-and-running-from-source).
 
 ## Features in development 
 For our current- and future development focus, see the [wiki](https://github.com/xebia/VisualReview/wiki/Milestones). 
-## How to contribute
-To run or build the project from source, see [this wiki page](https://github.com/xebia/VisualReview/wiki/Building-and-running-from-source).
 
 ## Original authors and maintainers
 We'd like to acknowledge the original authors of this project, from before version 0.1 and beyond:
