@@ -15,23 +15,40 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns com.xebia.visualreview.io
-  (:import [java.io FileNotFoundException File]
+  (:import [java.io FileNotFoundException File IOException]
            [java.nio.file NotDirectoryException Files AccessDeniedException])
   (:require [clojure.java.io :as io]))
 
 (def screenshots-dir "screenshots")
 
-(defn init-screenshots-dir! [dir]
-  (let [dir (or dir "screenshots")
-        file (io/file dir)
-        path (.toPath ^File file)
-        ex-msg (fn [s] (str "The screenshot directory \"" dir "\" " s))]
+(defn- ex-msg [file s] (str "The screenshot directory \"" file "\" " s))
+(defn- assert-accessible-dir! [^File file]
+  (let [file-exists? (or (.exists file) (.mkdirs file))
+        path (.toPath file)]
     (cond
-      (not (.exists file)) (throw (IllegalArgumentException. ^String (ex-msg "does not exist.")))
-      (not (.isDirectory file)) (throw (NotDirectoryException. dir))
-      (not (Files/isReadable path)) (throw (AccessDeniedException. dir nil (ex-msg "is not readable.")))
-      (not (Files/isWritable path)) (throw (AccessDeniedException. dir nil (ex-msg "is not writable.")))
-      :else (alter-var-root #'screenshots-dir (fn [_] dir)))))
+      (not (Files/isReadable path))
+      (throw (AccessDeniedException. (str path) nil (ex-msg path "is not readable.")))
+
+      (not (Files/isWritable path))
+      (throw (AccessDeniedException. (str path) nil (ex-msg path "is not writable.")))
+
+      (not (Files/isExecutable path))
+      (throw (AccessDeniedException. (str path) nil (ex-msg path "is not accessible.")))
+
+      (not (.isDirectory file)) (throw (NotDirectoryException. (str file)))
+
+      :else file-exists?)))
+
+(defn init-screenshots-dir!
+  "Will initialize the directory for local screenshots storage and try
+   to create it if it doesn't exist. Will throw when dir can not be
+   accessed for reading and writing"
+  [dir]
+  (let [dir (or dir "screenshots")
+        file (io/file dir)]
+    (if (assert-accessible-dir! file)
+      (alter-var-root #'screenshots-dir (fn [_] dir))
+      (throw (IOException. ^String (ex-msg file "could not be created."))))))
 
 (defn get-file [file-path]
   {:pre [file-path]}
