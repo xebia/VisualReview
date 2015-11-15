@@ -18,8 +18,11 @@
   (:require [slingshot.slingshot :as s]
             [com.xebia.visualreview.service.persistence.database :as db]
             [com.xebia.visualreview.logging :as log]
-            [clojure.java.jdbc :as j])
-  (:import [java.sql SQLException]))
+            [clojure.java.jdbc :as j]
+            [clojure.string :as string]
+            [com.xebia.visualreview.config :as config])
+  (:import [java.sql SQLException]
+           (java.io ByteArrayInputStream)))
 
 (defn wrap-exception [f]
   (fn [request]
@@ -56,3 +59,33 @@
           (log/error "Exception occured whilst inside transaction. Transaction was rolled back.")
           (j/db-set-rollback-only! conn)
           (throw e))))))
+
+(defn- http-headers-to-string [headers]
+  (string/join "\n" (map (fn [[k v]] (str (name k) ": " v)) headers)))
+
+(defn http-logger [handler]
+  (if (:enable-http-logging config/env)
+    (do
+      (log/info "HTTP logging enabled")
+      (fn [request]
+        (let [request-body (slurp (:body request))
+              request-headers (http-headers-to-string (:headers request))
+              request-log (str "Request: \n"
+                               "# uri: " (:uri request) "\n"
+                               "# method: " (:request-method request) "\n"
+                               "# content-type: " (:content-type request) "\n"
+                               "# headers: \n" request-headers "\n"
+                               "# body: \n" request-body)
+              response (handler (assoc request :body (ByteArrayInputStream. (.getBytes request-body "UTF-8"))))
+              response-headers (http-headers-to-string (:headers response))
+              response-log (str "Response: \n"
+                                "# headers: \n" response-headers "\n"
+                                "# body: \n" (:body response) "\n")]
+          (do
+
+            (log/info request-log)
+            (log/info response-log)
+            response))))
+  (fn [request]
+    (handler request))))
+

@@ -25,11 +25,13 @@
             [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.middleware :as middleware]))
 
-(def app (-> routes/main-router
+(defn create-app-handler []
+  (-> routes/main-router
              wrap-keyword-params
              wrap-multipart-params
              params/wrap-params
-             middleware/wrap-exception))
+             middleware/wrap-exception
+             (middleware/http-logger)))
 
 (defonce server (atom nil))
 
@@ -43,6 +45,10 @@
 
 (defn start-server [port]
   (try
-    (reset! server (run-jetty #'app {:join? false :port port}))
+    (reset! server (run-jetty (create-app-handler) {
+                                     :join? false
+                                     :port  port
+                                     ;:configurator config
+                                     }))
     (log/info (str "VisualReview server started on port " port))
     (catch Exception e (log/error (str "Could not start server on port " port ": " (.getMessage e))))))

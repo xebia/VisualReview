@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [ring/ring-core "1.3.2"]                   ;webserver middleware
                  [ring/ring-jetty-adapter "1.3.2"]          ;webserver container
+                 [ring.middleware.logger "0.5.0"]
                  [compojure "1.3.1"]                        ;routes
                  [liberator "0.12.2"]                       ;resources
                  [cheshire "5.4.0"]
