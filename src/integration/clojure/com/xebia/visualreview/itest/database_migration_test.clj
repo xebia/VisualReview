@@ -1,16 +1,16 @@
 (ns com.xebia.visualreview.itest.database-migration-test
-  (:require [clojure.test :refer :all]
-            [clojure.java.jdbc :as j]
-            [clojure.java.io :as io]
-            [com.xebia.visualreview.logging :as log]
-            [com.xebia.visualreview.service.persistence.database :as db]
+  (:require [com.xebia.visualreview.service.persistence.database :as db]
             [com.xebia.visualreview.service.project :as project]
             [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]
             [com.xebia.visualreview.service.analysis :as analysis]
-            [com.xebia.visualreview.service.baseline :as baseline])
+            [com.xebia.visualreview.service.baseline :as baseline]
+            [clojure.test :refer :all]
+            [clojure.java.jdbc :as j]
+            [clojure.java.io :as io]
+            [clojure.tools.logging :as log])
   (:import (org.joda.time DateTime)
-           (org.joda.time.format DateTimeFormatter DateTimeFormat)))
+           (org.joda.time.format DateTimeFormat)))
 
 (def ^:dynamic *conn* {:classname      "org.h2.Driver"
                        :subprotocol    "h2"
