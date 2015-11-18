@@ -17,8 +17,8 @@
 (ns com.xebia.visualreview.service.persistence.database
   (:require [clojure.java.jdbc :as j]
             [clojure.java.io :as io]
-            [com.xebia.visualreview.service.persistence.util :as putil]
-            [com.xebia.visualreview.logging :as log])
+            [clojure.tools.logging :as log]
+            [com.xebia.visualreview.service.persistence.util :as putil])
   (:import [com.mchange.v2.c3p0 PooledDataSource ComboPooledDataSource]
            (org.h2.jdbc JdbcSQLException)))
 

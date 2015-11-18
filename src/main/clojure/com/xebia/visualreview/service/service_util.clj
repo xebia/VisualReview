@@ -16,7 +16,7 @@
 
 (ns com.xebia.visualreview.service.service-util
   (:require [slingshot.slingshot :as ex]
-            [com.xebia.visualreview.logging :as log]
+            [clojure.tools.logging :as log]
             [com.xebia.visualreview.util :as util]))
 
 (defn get-message-from-object-or-exception

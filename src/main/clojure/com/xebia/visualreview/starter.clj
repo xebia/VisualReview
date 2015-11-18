@@ -21,8 +21,8 @@
              [keyword-params :refer [wrap-keyword-params]]
              [multipart-params :refer [wrap-multipart-params]]]
             [ring.adapter.jetty :refer [run-jetty]]
+            [clojure.tools.logging :as log]
             [com.xebia.visualreview.routes :as routes]
-            [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.middleware :as middleware]))
 
 (defn create-app-handler []

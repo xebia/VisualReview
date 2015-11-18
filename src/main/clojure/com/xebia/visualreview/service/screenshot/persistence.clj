@@ -17,8 +17,8 @@
 (ns com.xebia.visualreview.service.screenshot.persistence
   (:require [slingshot.slingshot :as ex]
             [cheshire.core :as json]
-            [com.xebia.visualreview.service.persistence.util :as putil]
-            [com.xebia.visualreview.logging :as log])
+            [clojure.tools.logging :as log]
+            [com.xebia.visualreview.service.persistence.util :as putil])
   (:import [java.sql SQLException]))
 
 (defn save-screenshot!

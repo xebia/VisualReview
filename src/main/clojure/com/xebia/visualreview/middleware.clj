@@ -16,8 +16,8 @@
 
 (ns com.xebia.visualreview.middleware
   (:require [slingshot.slingshot :as s]
+            [clojure.tools.logging :as log]
             [com.xebia.visualreview.service.persistence.database :as db]
-            [com.xebia.visualreview.logging :as log]
             [clojure.java.jdbc :as j]
             [clojure.string :as string]
             [com.xebia.visualreview.config :as config])
@@ -64,6 +64,7 @@
   (string/join "\n" (map (fn [[k v]] (str (name k) ": " v)) headers)))
 
 (defn http-logger [handler]
+  (do
   (if (:enable-http-logging config/env)
     (do
       (log/info "HTTP logging enabled")
@@ -87,5 +88,5 @@
             (log/info response-log)
             response))))
   (fn [request]
-    (handler request))))
+    (handler request)))))
 
