@@ -92,7 +92,7 @@ Methods: GET
 Get the screenshot or difference png image.
 
 ## HTTP logging
-VisualReview can log incoming API request- and outgoing response-data. This greatly eases development of new tools and libraries
+(since 0.1.2) VisualReview can log incoming API request- and outgoing response-data. This greatly eases development of new tools and libraries
 integrating with VisualReview.
 
 To enable HTTP logging, add the following to config.edn:
