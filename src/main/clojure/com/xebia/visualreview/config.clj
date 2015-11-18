@@ -22,14 +22,16 @@
 
 (def ^{:private true
        :doc     "Expected keys and related validators for configuration data"}config-schema
-  {:server-port     [Number []]
-   :db-uri          [String []]
-   :db-user         [String []]
-   :db-password     [String [::v/optional]]
-   :screenshots-dir [String [::v/optional]]})
+  {:server-port         [Number []]
+   :db-uri              [String []]
+   :db-user             [String []]
+   :db-password         [String [::v/optional]]
+   :screenshots-dir     [String [::v/optional]]
+   :enable-http-logging [Boolean [::v/optional]]})
 
-(def default-config {:server-port     "7000"
-                     :screenshots-dir "screenshots"})
+(def default-config {:server-port         "7000"
+                     :screenshots-dir     "screenshots"
+                     :enable-http-logging false})
 
 (defonce env {})
 

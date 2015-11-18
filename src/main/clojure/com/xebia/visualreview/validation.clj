@@ -17,7 +17,7 @@
 (ns com.xebia.visualreview.validation
   (:import [java.util Map])
   (:require [slingshot.slingshot :as ex]
-            [com.xebia.visualreview.logging :as log]))
+            [clojure.tools.logging :as log]))
 
 (defn- make-error [err-type err-subtype err-msg]
   {:type err-type
@@ -53,7 +53,7 @@
 (defmethod conforms? ::non-empty [v _]
   (not (empty? v)))
 
-(defmethod conforms? ::optional [v _]
+(defmethod conforms? ::optional [_ _]
   true)
 
 (defmethod conforms? ::screenshot-meta [v _]

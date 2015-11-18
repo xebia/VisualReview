@@ -16,10 +16,10 @@
 
 (ns com.xebia.visualreview.core
   (:require [slingshot.slingshot :refer [try+]]
+            [clojure.tools.logging :as log]
             [com.xebia.visualreview.starter :as starter]
             [com.xebia.visualreview.config :as config]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.service.persistence.database :as db])
   (:gen-class))
 

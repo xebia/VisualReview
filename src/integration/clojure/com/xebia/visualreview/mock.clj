@@ -17,11 +17,11 @@
 (ns com.xebia.visualreview.mock
   (:require [clojure.java.jdbc :as j]
             [clojure.java.io :as jio]
+            [clojure.tools.logging :as log]
             [com.xebia.visualreview.io :as io]
             [com.xebia.visualreview.service.persistence.database :as db]
             [com.xebia.visualreview.api-test :as api]
-            [com.xebia.visualreview.itest-util :as util]
-            [com.xebia.visualreview.logging :as log])
+            [com.xebia.visualreview.itest-util :as util])
   (:import [java.io File]
            [java.nio.file Files Paths SimpleFileVisitor FileVisitResult Path LinkOption]
            [java.nio.file.attribute BasicFileAttributes]))
@@ -86,8 +86,8 @@
   (f))
 
 (defn logging-fixture [f]
-  (log/set-log-level! :warn)
-  (f))
+  (binding [log/*tx-agent-levels* #{:warn}]
+  (f)))
 
 (defn upload-tapir [run-id meta props]
   (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))

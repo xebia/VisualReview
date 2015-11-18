@@ -16,9 +16,9 @@
 
 (ns com.xebia.visualreview.service.image
   (:require [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.logging :as log]
             [com.xebia.visualreview.service.image.persistence :as ip]
             [com.xebia.visualreview.service.service-util :as sutil]
+            [clojure.tools.logging :as log]
             [clojure.java.io :as cio]
             [slingshot.slingshot :as ex])
   (:import [java.util Calendar]
