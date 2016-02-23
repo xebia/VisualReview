@@ -27,7 +27,7 @@
   (try+
     (config/init!)
     (catch Exception e
-      (log/error (str "Server configuration error: " (.getMessage e))))))
+      (log/error (str "Server c(onfiguration error: " (.getMessage e))))))
 
 (defn -main [& _]
   (when-let [{:keys [server-port db-uri db-user db-password screenshots-dir]} (config-settings)]
