@@ -38,7 +38,8 @@
         (ANY "/suites" [] (resource/suites-resource project-id))
         (context "/suites/:suite-id" [suite-id]
           (ANY "/" [suite-id] (resource/suite-resource project-id suite-id))
-          (ANY "/create-branch" [] baseline/create-branch)))
+          (ANY "/create-branch" [] baseline/create-branch)
+          (ANY "/status" [] (resource/suite-status-resource project-id suite-id))))
       (ANY "/runs" req resource/runs-resource)
       (context "/runs/:run-id" [run-id]
         (ANY "/" [] (resource/run-resource run-id))

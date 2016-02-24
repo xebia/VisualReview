@@ -20,7 +20,8 @@
             [com.xebia.visualreview.service.baseline :as baseline]
             [com.xebia.visualreview.service.run :as run]
             [com.xebia.visualreview.service.service-util :as sutil]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [com.xebia.visualreview.service.analysis :as analysis]))
 
 (defn get-suite-by-name
   ([conn project-name suite-name]
@@ -89,4 +90,14 @@
                :row-fn (defn thing [row]
                          {:suite-id (row :suite-id)
                           :run-ids  (map biginteger (string/split (get row :runids) #","))})))
+
+(defn get-suite-status
+  "Returns 'accepted' when all screenshots of the the latest run have the status 'accepted'.
+   Returns 'rejected' when one of the screenshots of the latest run has the status 'rejected'
+   Returns 'pending' when none of the screenshots of the latest run has the status 'rejected' and at least one
+   has 'pending'"
+  [conn project-id suite-id]
+  (let [runs (run/get-runs conn project-id suite-id)
+        latest-run-id (:id (first runs))]
+    (analysis/get-analysis-compound-status conn latest-run-id)))
 

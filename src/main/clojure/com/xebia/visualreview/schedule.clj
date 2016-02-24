@@ -36,7 +36,6 @@
   (if (is-a-task-running?)
     (log/warn "VisualReview's internal scheduler was asked to reinitialize itself while there were still some tasks running. Reinitialization has been cancelled.")
     (do
-      (log/warn (str "initializing scheduler with " (:cleanup-schedule com.xebia.visualreview.config/env)))
       (alter-var-root #'scheduler (fn [_] (c/cronj :entries [(generate-cleanup-task)])))
       (c/start! scheduler))))
 
