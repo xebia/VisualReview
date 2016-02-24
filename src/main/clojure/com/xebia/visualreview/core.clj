@@ -20,7 +20,8 @@
             [com.xebia.visualreview.starter :as starter]
             [com.xebia.visualreview.config :as config]
             [com.xebia.visualreview.io :as io]
-            [com.xebia.visualreview.service.persistence.database :as db])
+            [com.xebia.visualreview.service.persistence.database :as db]
+            [com.xebia.visualreview.schedule :as schedule])
   (:gen-class))
 
 (defn- config-settings []
@@ -34,11 +35,13 @@
     (try
       (io/init-screenshots-dir! screenshots-dir)
       (db/init! db-uri db-user db-password)
+      (schedule/init!)
       (starter/start-server server-port)
       :ok
       (catch Exception e
         (log/error (str "Error initializing: " (.getMessage e)))
         (starter/stop-server)
+        (schedule/shutdown!)
         (db/close-connection)
         (System/exit 1)))))
 

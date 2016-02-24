@@ -113,6 +113,19 @@
                        (::suite-deleted ctx))
     :handle-ok ::suite))
 
+(defn suite-status-resource [project-id suite-id]
+  (resource
+    :available-media-types ["text/plain"]
+    :allowed-methods [:get]
+    :exists? (fn [ctx]
+               (let [[project-id suite-id] (parse-longs [project-id suite-id])
+                     suite-status (suite/get-suite-status (tx-conn ctx) project-id suite-id)]
+                 (if (= "empty" suite-status)
+                   false
+                   {:suite-status suite-status})))
+    :handle-ok (fn [ctx]
+                 (:suite-status ctx))))
+
 ;;;;;;;;;;; Runs ;;;;;;;;;;;
 (def ^:private run-create-schema
   {:projectName [String []]

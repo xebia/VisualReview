@@ -1,0 +1,14 @@
+{
+ ;; Server
+ :server-port "7000"
+
+ ;; File system
+ :screenshots-dir "screenshots"
+
+ ;; log all requests and responses to VisualReview's REST API
+ :enable-http-logging false
+
+ ;; when set to a value > 0, VisualReview periodically removes runs from a suite until the latest #<max-runs-per-suite> runs remain inside the suite
+ ;; When set to -1, no runs are deleted.
+ :max-runs-per-suite -1
+}

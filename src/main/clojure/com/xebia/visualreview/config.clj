@@ -27,11 +27,15 @@
    :db-user             [String []]
    :db-password         [String [::v/optional]]
    :screenshots-dir     [String [::v/optional]]
-   :enable-http-logging [Boolean [::v/optional]]})
+   :enable-http-logging [Boolean [::v/optional]]
+   :cleanup-schedule    [String [::v/optional]]
+   :max-runs-per-suite  [Number []::v/optional]})
 
 (def default-config {:server-port         "7000"
                      :screenshots-dir     "screenshots"
-                     :enable-http-logging false})
+                     :enable-http-logging false
+                     :cleanup-schedule  "1 1 4 * * * *"
+                     :max-runs-per-suite -1})
 
 (defonce env {})
 

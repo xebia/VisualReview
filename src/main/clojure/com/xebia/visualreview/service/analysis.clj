@@ -78,3 +78,22 @@
 
 (defn update-diff-status! [conn diff-id status]
   (putil/update! conn :diff {:status status} ["id = ?" diff-id]))
+
+
+(defn get-analysis-compound-status
+  "Returns 'accepted' when all screenshots in the analysis have the status 'accepted'.
+   Returns 'rejected' when one of the screenshots in the analysis has the status 'rejected'
+   Returns 'pending' when none of the screenshots in the analysis has the status 'rejected' and at least one
+   has 'pending'"
+  [conn run-id]
+  (let [diffs (:diffs (get-full-analysis conn run-id))
+        nr-of-rejected (count (filter (fn [diff] (= (:status diff) "rejected")) diffs))
+        nr-of-pending (count (filter (fn [diff] (= (:status diff) "pending")) diffs))]
+    (if (< (count diffs) 1)
+      "empty"
+      (if (> nr-of-rejected 0)
+        "rejected"
+        (if (> nr-of-pending 0)
+          "pending"
+          "accepted"
+          )))))

@@ -9,13 +9,14 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [compojure "1.3.1"]                        ;routes
                  [liberator "0.12.2"]                       ;resources
-                 [cheshire "5.4.0"]
+                 [cheshire "5.4.0"]                         ;JSON encoding/decoding
                  [ch.qos.logback/logback-classic "1.1.3"]   ;logging
-                 [slingshot "0.12.1"]                       ;improved exception handling
+                 [slingshot "0.12.1"]                       ;improved exception handling (to be removed)
                  [org.clojure/java.jdbc "0.3.6"]
                  [com.mchange/c3p0 "0.9.5"]                 ;database connection pooling
                  [com.h2database/h2 "1.4.185"]
-                 [joda-time/joda-time "2.8.2"]]
+                 [joda-time/joda-time "2.8.2"]
+                 [im.chit/cronj "1.4.1"]]                   ;task scheduling
 
   :min-lein-version "2.4.0"
 

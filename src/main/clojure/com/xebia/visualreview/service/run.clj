@@ -34,7 +34,7 @@
                                                     :start-time       (Timestamp. (.getTime (Date.)))
                                                     :branch-name      (:name branch)
                                                     :baseline-tree-id (:baseline-tree branch)
-                                                    :status "running"})
+                                                    :status           "running"})
         _ (analysis/create-analysis! conn (:head branch) new-run-id)]
     new-run-id))
 
@@ -53,7 +53,7 @@
   WHERE suite.id = ? AND project.id = ?
   ORDER BY run.start_time DESC")
 (defn get-runs
-  "Returns the list of runs for the given suite"
+  "Returns the list of runs for the given suite."
   [conn project-id suite-id]
   (putil/query conn [get-suite-runs-sql suite-id project-id]
                :row-fn (comp #(assoc % :project-id project-id) sutil/format-dates)
@@ -66,7 +66,8 @@
   [conn run-id]
   {:pre (number? run-id)}
   (sutil/attempt
-    (do (putil/delete! conn :run ["id = ?" run-id])
+    (do
+      (putil/delete! conn :run ["id = ?" (str run-id)])
         true)
     "Could not delete run: %s"
     ::delete-by-id-failed))
