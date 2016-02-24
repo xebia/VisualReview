@@ -4,7 +4,8 @@
             [com.xebia.visualreview.service.service-util :as sutil]
             [com.xebia.visualreview.service.run :as run]
             [com.xebia.visualreview.config :as config]
-            [com.xebia.visualreview.service.suite :as suite]))
+            [com.xebia.visualreview.service.suite :as suite]
+            [clojure.tools.logging :as log]))
 
 (defonce cleanup-orphans-in-progress (atom false))
 
@@ -28,9 +29,9 @@
   (let
     [run-ids-per-suite (suite/get-run-ids-per-suite conn)
      run-ids-to-delete (flatten (map (fn [suite]
-                              (drop max-runs-per-suite (:run-ids suite))) run-ids-per-suite))
-     ]
-    (map (fn [run-id] (run/delete-run! conn run-id)) run-ids-to-delete)
+                              (drop max-runs-per-suite (:run-ids suite))) run-ids-per-suite))]
+    (doseq [run-id run-ids-to-delete]
+      (run/delete-run! conn run-id))
   ))
 
 (defonce cleanup-old-runs-in-progress (atom false))

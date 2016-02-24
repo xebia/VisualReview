@@ -34,7 +34,7 @@
 (def default-config {:server-port         "7000"
                      :screenshots-dir     "screenshots"
                      :enable-http-logging false
-                     :cleanup-schedule  "* * 4 * * * *"
+                     :cleanup-schedule  "1 1 4 * * * *"
                      :max-runs-per-suite -1})
 
 (defonce env {})

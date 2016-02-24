@@ -1,4 +1,4 @@
-(ns com.xebia.visualreview.service.schedule
+(ns com.xebia.visualreview.schedule
   (:require [cronj.core :as c]
             [slingshot.slingshot :as ex]
             [clojure.tools.logging :as log]
@@ -11,7 +11,8 @@
     (catch Object o#
       (log/debug "Caught exception while running task"))))
 
-(def cleanup-task
+(defn generate-cleanup-task
+  []
   {:id       :cleanup-orphans-task
    :handler  (fn [t opts]
                (do
@@ -27,13 +28,17 @@
 (defn is-a-task-running?
   "Returns true when a task is currently being executed."
   []
-  (and (not (nil? scheduler)) (pos? (count (c/get-threads scheduler)))))
+  (and (not (nil? scheduler)) (pos? (count (c/get-threads scheduler :cleanup-orphans-task)))))
 
 (defn init!
   "Initializes the scheduler and its tasks"
+  []
   (if (is-a-task-running?)
     (log/warn "VisualReview's internal scheduler was asked to reinitialize itself while there were still some tasks running. Reinitialization has been cancelled.")
-    (alter-var-root #'scheduler (c/cronj :entries [cleanup-task]))))
+    (do
+      (log/warn (str "initializing scheduler with " (:cleanup-schedule com.xebia.visualreview.config/env)))
+      (alter-var-root #'scheduler (fn [_] (c/cronj :entries [(generate-cleanup-task)])))
+      (c/start! scheduler))))
 
 (defn shutdown!
   "Stops the scheduler and aborts all running tasks."

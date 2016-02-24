@@ -66,7 +66,8 @@
   [conn run-id]
   {:pre (number? run-id)}
   (sutil/attempt
-    (do (putil/delete! conn :run ["id = ?" (str run-id)])
+    (do
+      (putil/delete! conn :run ["id = ?" (str run-id)])
         true)
     "Could not delete run: %s"
     ::delete-by-id-failed))
