@@ -5,8 +5,7 @@
 ### Features and improvements
 * Added option to enable logging of all incoming and outgoing HTTP traffic from/to VisualReview server. This eases development
  of other tools integrating with VisualReview.
-* Added option to set a maximum amount of runs inside a suite. When a new run is added to a suite that has exceeded the amount of runs
-  ,the oldest run inside that suite is marked for deletion.
+* Added option to set a maximum amount of runs inside a suite. When a new run is added to a suite that has exceeded the amount of runs, the oldest run inside that suite is marked for deletion.
 * Added cleanup scheduler for deleting unused images from deleted runs and deleting runs that exceed the maximum-amount-per-suite (if configured).
 * Replaced favicon with new logo
 
