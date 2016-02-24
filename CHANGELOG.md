@@ -10,7 +10,7 @@
 * Replaced favicon with new logo
 
 ### Bugfixes
-* Fixed an issue where baseline images from deleted runs were no longer displayed in the GUI (#52).
+* Fixed an issue where baseline images from deleted runs were no longer displayed in the GUI ([#52](https://github.com/xebia/VisualReview/issues/52)).
 
 ## 0.1.1
 
