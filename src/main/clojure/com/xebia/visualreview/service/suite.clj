@@ -82,7 +82,7 @@
     ::delete-by-id-failed))
 
 (def ^:private get-run-ids-per-suite-sql
-  "SELECT run.suite_id, GROUP_CONCAT(id ORDER BY START_TIME DESC SEPARATOR ',') as runids from RUN")
+  "SELECT run.suite_id, GROUP_CONCAT(id ORDER BY START_TIME DESC SEPARATOR ',') as runids from RUN GROUP BY SUITE_ID")
 (defn get-run-ids-per-suite
   "Returns {:suite-id <suite-id> :run-ids (lazy seq of run ids ordered by start-date desc)}"
   [conn]
