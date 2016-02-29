@@ -3,23 +3,32 @@
             [slingshot.slingshot :as ex]
             [clojure.tools.logging :as log]
             [com.xebia.visualreview.service.cleanup :as cleanup]
-            [com.xebia.visualreview.service.persistence.database :as db]))
+            [com.xebia.visualreview.service.persistence.database :as db]
+            [com.xebia.visualreview.service.service-util :as sutil]))
 
 (defn- try-catch-all [form]
   (ex/try+
     ~form
     (catch Object o#
-      (log/debug "Caught exception while running task"))))
+      (log/warn "Caught exception while running task" ~o#))
+    (catch Exception e
+      (log/warn "Caught exception while running task" e))))
 
 (defn generate-cleanup-task
   []
   {:id       :cleanup-orphans-task
    :handler  (fn [t opts]
-               (do
-                 (log/debug "Running cleanup task..")
-                 (try-catch-all (cleanup/cleanup-old-runs! db/conn))
-                 (try-catch-all (cleanup/cleanup-orphans! db/conn))
-                 (log/debug "..cleanup task ended")))
+               (ex/try+
+                 (sutil/attempt
+                   (do
+                     (log/info "Running cleanup task..")
+                     (cleanup/cleanup-old-runs! db/conn)
+                     (cleanup/cleanup-orphans! db/conn)
+                     (log/info "..cleanup task ended"))
+                   "Something went wrong during scheduled cleanup: %s"
+                   :cleanup-error)
+                 (catch Object o
+                   (log/error (:message o)))))
    :schedule (:cleanup-schedule com.xebia.visualreview.config/env)
    :opts     {}})
 
