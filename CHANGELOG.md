@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3
+
+### Features and improvements
+* Scheduled cleanup now logs a message at start and finish. This enables users to validate their schedule configuration.
+
+### Bugfixes
+* Errors during cleanup schedule no longer fail without logging an error.
+* Fixes bug where runs are no longer cleaned up when there are multiple projects defined in VisualReview
+
 ## 0.1.2
 
 ### Features and improvements
