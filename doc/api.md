@@ -41,6 +41,17 @@ Methods: GET, DELETE
 
 Retrieve and delete specific project.
 
+#### Suite status
+
+Path: `projects/{{project_id}}/suites/{{suite_id}}/status`
+Methods: GET
+
+Get last run result. This is useful to poll whether a suite is working as expected. Possible values:
+
+* accepted
+* rejected
+* pending
+
 ### Runs
 
 Path: `runs/{{run_id}}`
