@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS diff
   after       INTEGER        NOT NULL REFERENCES screenshot ON DELETE CASCADE,
   percentage  NUMERIC(5, 2)  NOT NULL,
   image_id        BIGINT       UNIQUE REFERENCES image,
+  mask_image_id        BIGINT       UNIQUE REFERENCES image,
   status      VARCHAR(8)     NOT NULL,
   analysis_id INTEGER        NOT NULL REFERENCES analysis ON DELETE CASCADE
 );

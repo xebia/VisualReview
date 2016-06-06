@@ -35,13 +35,16 @@
 
   If file1 or file2 is nil, the diff will be a default transparant 1x1 png and
   percentage will be 0.0"
-  [file1 file2]
+  [file1 file2 meta]
   (if (or (nil? file1) (nil? file2))
-    {:diff (generate-empty-diff-file) :percentage 0.0}
-    (let [result ^DiffReport (PixelComparator/processImage file1 file2)
+    {:diff (generate-empty-diff-file) :percentage 0.0 :mask (generate-empty-diff-file)}
+    (let [result ^DiffReport (PixelComparator/processImage file1 file2 meta)
           diff-file (File/createTempFile "vr-diff-" ".tmp")
-          write-success? (ImageIO/write (.getDiffImage result) "png" diff-file)]
+          mask-file (File/createTempFile "vr-mask-" ".tmp")
+          write-success? (and (if (nil? (.getMaskImage result)) (generate-empty-diff-file) (ImageIO/write (.getMaskImage result) "png" mask-file)) (ImageIO/write (.getDiffImage result) "png" diff-file))]
       (do
-        (sutil/assume (true? write-success?) (str "Could not write diff image to temporary file " (.getAbsolutePath () diff-file)) ::diff-could-not-write-on-fs))
+        (sutil/assume (true? write-success?) (str "Could not write diff/mask images to temporary file " (.getAbsolutePath () diff-file)) ::diff-could-not-write-on-fs))
       {:diff       diff-file
-       :percentage (.getPercentage result)})))
+       :percentage (.getPercentage result)
+       :mask mask-file
+       })))

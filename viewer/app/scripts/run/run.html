@@ -93,6 +93,10 @@
               <input type="checkbox" id="checkbox-difference" name="imageDifferenceDisplay" ng-model="showDiff">
               <label for="checkbox-difference" class="unselectable">show diff ({{diffs[selectedDiffIndex].percentage}} %)</label>
             </div>
+          <div class="padding-right-2">
+            <input type="checkbox" id="checkbox-mask" name="imageDifferenceDisplay" ng-model="showMask">
+            <label for="checkbox-mask" class="unselectable">show mask</label>
+          </div>
         </div>
       </div>
     </div>
@@ -103,6 +107,7 @@
   <div class="size-max-width-1 padding-top-2 padding-bottom-8 text-center" style="max-width:100%;" ng-if="diffs.length > 0">
     <div>
       <img ng-show="showDiff" ng-src="/api/image/{{diffs[selectedDiffIndex].imageId}}" style="position:absolute;"/>
+      <img ng-show="showMask" ng-src="/api/image/{{diffs[selectedDiffIndex].maskImageId}}" style="position:absolute;"/>
       <img ng-src="/api/image/{{diffs[selectedDiffIndex][selectedScreenshot].imageId}}"/>
     </div>
   </div>
