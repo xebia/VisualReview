@@ -35,10 +35,10 @@
 
   If file1 or file2 is nil, the diff will be a default transparant 1x1 png and
   percentage will be 0.0"
-  [file1 file2 meta]
+  [file1 file2 mask]
   (if (or (nil? file1) (nil? file2))
     {:diff (generate-empty-diff-file) :percentage 0.0 :mask (generate-empty-diff-file)}
-    (let [result ^DiffReport (PixelComparator/processImage file1 file2 meta)
+    (let [result ^DiffReport (PixelComparator/processImage file1 file2 mask)
           diff-file (File/createTempFile "vr-diff-" ".tmp")
           mask-file (File/createTempFile "vr-mask-" ".tmp")
           write-success? (and (if (nil? (.getMaskImage result)) (generate-empty-diff-file) (ImageIO/write (.getMaskImage result) "png" mask-file)) (ImageIO/write (.getDiffImage result) "png" diff-file))]

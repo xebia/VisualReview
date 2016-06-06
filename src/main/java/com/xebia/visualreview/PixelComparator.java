@@ -21,15 +21,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.lang.Math;
-import java.awt.Color;
-import java.util.logging.Handler;
 
 import clojure.lang.Keyword;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 public class PixelComparator {
 
@@ -68,19 +63,6 @@ public class PixelComparator {
                 isValid = false;
             }
         }
-/*
-        public Rect(JSONObject info, int maxWidth, int maxHeight){
-            isValid = true;
-            try{
-                this.x = Math.min(Math.max(0,info.getInt("x")),maxWidth);
-                this.y = Math.max(Math.min(this.y,maxHeight),info.getInt("y"));
-                this.width = Math.min(Math.max(0,info.getInt("width")),maxWidth-this.x);
-                this.height = Math.min(Math.max(0,info.getInt("height")),maxHeight-this.y);
-            }catch (Exception e) {
-                System.out.println("Invalid rect "+info);
-                isValid = false;
-            }
-        }*/
 
         public void applyToImage(BufferedImage image,int rgb){
             if (isValid){
@@ -96,35 +78,19 @@ public class PixelComparator {
     private static BufferedImage generateMask(java.util.Map maskInfo, int width, int height){
         BufferedImage maskImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Rect fullRect = new Rect(0,0,width,height);
-        //fullRect.applyToImage(maskImage,Color.WHITE.getRGB());
         if (maskInfo != null) {
-            //parse json string info to Map
             java.util.List<java.util.Map> exludeszones = (java.util.List<java.util.Map>)maskInfo.get(Keyword.find("exludeZones"));
             for (int i = 0;i<exludeszones.size();i++){
                 java.util.Map exludeZone = exludeszones.get(i);
                 Rect rect = new Rect(exludeZone,width,height);
                 rect.applyToImage(maskImage,DIFFCOLOUR);
             }
-            /*
-            for (HashMap<String, Integer> jsonRect : exludeszones) {
-                Rect rect = new Rect(jsonRect,width,height);
-                rect.applyToImage(maskImage,DIFFCOLOUR);
-            }*/
-            /*
-            try{
-                JSONObject object = new JSONObject(maskInfo);
-                System.out.println("" +object);
-
-            }catch(Exception e){
-                System.out.println("Invalid mask "+maskInfo);
-                throw new RuntimeException(e);
-            }*/
         }
         return maskImage;
     }
 
     public static DiffReport processImage(File beforeFile, File afterFile ,java.util.Map maskInfo) {
-        System.out.println("Mask received "+maskInfo);
+        //System.out.println("Mask received "+maskInfo);
         try {
             PixelGrabber beforeGrab = grabImage(beforeFile);
             PixelGrabber afterGrab = grabImage(afterFile);

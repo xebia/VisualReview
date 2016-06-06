@@ -214,9 +214,9 @@
     :handle-ok (fn [ctx] (let [screenshots (screenshot/get-screenshots-by-run-id (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
-(defn- proces-diff [conn run-id before-file after-file before-id after-id meta]
+(defn- proces-diff [conn run-id before-file after-file before-id after-id mask]
   (let [analysis (analysis/get-analysis conn run-id)
-        diff-report (analysisc/generate-diff-report before-file after-file meta)
+        diff-report (analysisc/generate-diff-report before-file after-file mask)
         diff-file-id (image/insert-image! conn (:diff diff-report))
         mask-file-id (image/insert-image! conn (:mask diff-report))
         new-diff-id (analysis/save-diff! conn diff-file-id mask-file-id before-id after-id (:percentage diff-report) (:id analysis))]
