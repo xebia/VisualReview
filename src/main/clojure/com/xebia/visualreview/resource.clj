@@ -194,11 +194,11 @@
 
 ;; The screenshot resource has been split up into separate handler for each http method.
 (def ^:private upload-screenshot-schema
-  {:file           [Map [::v/screenshot]]
-   :screenshotName [String []]
-   :meta           [Map [::v/screenshot-meta]]
-   :mask           [Map [::v/screenshot-meta]]
-   :properties     [Map [::v/screenshot-meta]]})
+  {:file              [Map [::v/screenshot]]
+   :screenshotName    [String []]
+   :meta              [Map [::v/screenshot-meta]]
+   :mask              [Map [::v/optional ::v/screenshot-mask]]
+   :properties        [Map [::v/screenshot-meta]]})
 
 (defn- update-screenshot-path [screenshot]
   (update-in screenshot [:path] #(str "/screenshots/" % "/" (:id screenshot) ".png")))
