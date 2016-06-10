@@ -12,7 +12,10 @@ RUN apt-get  -y install wget
 RUN wget -q -O /usr/bin/lein     https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein     && chmod +x /usr/bin/lein &&     lein
 
 ENV APP_HOME=/usr/local/visualreview
-ENV APP_TEMP_HOME=/usr/local/visualreview/
+ENV APP_TEMP_HOME=/usr/local/visualreviewTemp
+
+RUN mkdir -p $APP_HOME
+RUN mkdir -p APP_TEMP_HOME
 
 WORKDIR $APP_TEMP_HOME
 
@@ -24,17 +27,21 @@ RUN cd $(npm root -g)/npm \
     && sed -i -e s/graceful-fs/fs-extra/ -e s/fs.rename/fs.move/ ./lib/utils/rename.js
 
 RUN LEIN_ROOT=true lein uberjar
-RUN mv `ls target/*-standalone.jar` $APP_HOME/app-standalone.jar
+COPY target/*-standalone.jar $APP_HOME
+
+COPY config.edn $APP_HOME
 
 RUN rm -fr $APP_TEMP_HOME
 
 WORKDIR $APP_HOME
+RUN mv `ls *-standalone.jar` app-standalone.jar
+
 # RUN mkdir -p $APP_HOME
 
 # clean
 RUN apt-get remove -y wget  \
-    apt-get remove -y npm \
     && apt-get clean \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 CMD ["java", "-jar", "app-standalone.jar"]
