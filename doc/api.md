@@ -76,7 +76,7 @@ Multipart elements should be:
  * **file** (binary, with the screenshot png data)
  * **screenshotName** (plain text, containing the screenshot name)
  * **properties**  (application/json, JSON object with image properties, see below)
- * **mask**  (application/json, JSON object with exludeZone array for the image comparaison, see below)
+ * **mask**  (application/json, JSON object with excludeZone array for the image comparison, see below)
  * **meta** (application/json, JSON object with additional data about the screenshot. Can be empty).
 
 When a screenshot is uploaded it's compared to a previously uploaded screenshot having the same `screenshotName` and `properties`. The `properties` object has no predefined set of keys, however we suggest including at least a screen resolution and browser as these fields will be displayed by VisualReview's GUI. For example:
@@ -87,8 +87,8 @@ properties = {
 }
 ```
 
-If screenhot has dynamic zones (like dateTime in a phone screenshot), you can specify a  field `mask` which contains a array of Excludes Zones for the image comparaison engine. Exclude zones have format `{"height":x,"x":x,"width":x,"y":x}` in the image coordonates.
-For Example : `{"mask":{"exludeZones":[{"height":40,"x":0,"width":640,"y":0}]}}`
+If screenshot has dynamic zones (like dateTime in a phone screenshot), you can specify a  field `mask` which contains a array of Excludes Zones for the image comparison engine. Exclude zones have format `{"height":x,"x":x,"width":x,"y":x}` in the image coordinates.
+For Example : `{"mask":{"excludeZones":[{"height":40,"x":0,"width":640,"y":0}]}}`
 
 The field `metadata` can contain some additional data of the screenshot. Currently it's not being used by VisualReview's GUI, but might be handy for other tools using VisualReview's API.
 

@@ -39,14 +39,14 @@ public class PixelComparator {
         private int width;
         private int height;
         public boolean isValid;
-        public Rect(int x,int y,int width, int height){
+        Rect(int x,int y,int width, int height){
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
             isValid = true;
         }
-        public Rect(java.util.Map info, int maxWidth, int maxHeight){
+        Rect(java.util.Map info, int maxWidth, int maxHeight){
             isValid = true;
             try{
                 int x = Integer.parseInt(info.get(Keyword.find("x")).toString());
@@ -61,10 +61,11 @@ public class PixelComparator {
             }catch (Exception e) {
                 System.out.println("Invalid rect "+info);
                 isValid = false;
+                throw new RuntimeException(new Exception("Invalid Rect "+info));
             }
         }
 
-        public void applyToImage(BufferedImage image,int rgb){
+        void applyToImage(BufferedImage image,int rgb){
             if (isValid){
                 for(int i = x;i<x+width;i++){
                     for(int j = y;j<y+height;j++){
@@ -79,18 +80,19 @@ public class PixelComparator {
         BufferedImage maskImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Rect fullRect = new Rect(0,0,width,height);
         if (maskInfo != null) {
-            java.util.List<java.util.Map> exludeszones = (java.util.List<java.util.Map>)maskInfo.get(Keyword.find("exludeZones"));
-            for (int i = 0;i<exludeszones.size();i++){
-                java.util.Map exludeZone = exludeszones.get(i);
-                Rect rect = new Rect(exludeZone,width,height);
-                rect.applyToImage(maskImage,DIFFCOLOUR);
+            java.util.List<java.util.Map> excludeszones = (java.util.List<java.util.Map>)maskInfo.get(Keyword.find("excludeZones"));
+            if (excludeszones!=null) {
+                for (int i = 0; i < excludeszones.size(); i++) {
+                    java.util.Map excludeZone = excludeszones.get(i);
+                    Rect rect = new Rect(excludeZone, width, height);
+                    rect.applyToImage(maskImage, DIFFCOLOUR);
+                }
             }
         }
         return maskImage;
     }
 
     public static DiffReport processImage(File beforeFile, File afterFile ,java.util.Map maskInfo) {
-        //System.out.println("Mask received "+maskInfo);
         try {
             PixelGrabber beforeGrab = grabImage(beforeFile);
             PixelGrabber afterGrab = grabImage(afterFile);
@@ -120,19 +122,15 @@ public class PixelComparator {
             int diffHeight = Math.max(y1, y2);
             int[] diffData = new int[diffWidth * diffHeight];
             int differentPixels = 0;
-            boolean hasMask =  (maskInfo != null) ;// metaInfo.containsKey(Keyword.find("mask"));
-            //BufferedImage maskImage = generateMask((String)metaInfo.get(Keyword.find("mask")),diffWidth,diffHeight);
+            boolean hasMask =  (maskInfo != null) ;
             BufferedImage maskImage = generateMask(maskInfo,diffWidth,diffHeight);
             for (int y = 0; y < diffHeight; y++) {
                 for (int x = 0; x < diffWidth; x++) {
-                    if (maskImage.getRGB(x,y) != DIFFCOLOUR/*Color.WHITE.getRGB()*/) {
+                    if (maskImage.getRGB(x,y) != DIFFCOLOUR) {
                         if (x >= minX || y >= minY || beforeData[y * beforeWidth + x] != afterData[y * afterWidth + x]) {
                             diffData[y * diffWidth + x] = DIFFCOLOUR;
                             differentPixels++;
-                           //;
                         }
-                    }else {
-                        //System.out.println("inside mask, pixel ignored: "+x+","+y);
                     }
                 }
             }
