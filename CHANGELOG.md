@@ -3,7 +3,7 @@
 ## 0.1.4
 
 ### Features and improvements
-* Added new `mask` API by @rgroult, which allows users to exclude certain areas of a screenshot from diff-analysis. Useful for areas that are different on each screenshot, such as dates or ads.
+* Added new `mask` API by [@rgroult](https://github.com/rgroult), which allows users to exclude certain areas of a screenshot from diff-analysis. Useful for areas that are different on each screenshot, such as dates or ads.
 
 ## 0.1.3
 
