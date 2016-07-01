@@ -27,6 +27,8 @@ public class DiffReport {
 
   private BufferedImage diffImage;
 
+  private BufferedImage maskImage;
+
   private File before;
   private File after;
 
@@ -57,6 +59,14 @@ public class DiffReport {
     return diffImage;
   }
 
+  public BufferedImage getMaskImage() {
+    return maskImage;
+  }
+
+  public void setMaskImage(BufferedImage maskImage) {
+    this.maskImage = maskImage;
+  }
+
   private void saveImage(BufferedImage image, File outputFile) {
     try {
       outputFile.mkdirs();
@@ -65,4 +75,5 @@ public class DiffReport {
       throw new RuntimeException(e);
     }
  }
+
 }

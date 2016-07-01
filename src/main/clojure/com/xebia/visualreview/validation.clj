@@ -16,6 +16,7 @@
 
 (ns com.xebia.visualreview.validation
   (:import [java.util Map])
+  (:import [java.util Collection])
   (:require [slingshot.slingshot :as ex]
             [clojure.tools.logging :as log]))
 
@@ -58,6 +59,9 @@
 
 (defmethod conforms? ::screenshot-meta [v _]
   (every? (some-fn string? number? true? false? nil?) (vals v)))
+
+(defmethod conforms? ::screenshot-mask [v _]
+  (every? (some-fn string? number? true? false? vector? nil?) (vals v)))
 
 (defmethod conforms? ::diff-status [v _]
   (contains? #{"pending" "accepted" "rejected"} v))

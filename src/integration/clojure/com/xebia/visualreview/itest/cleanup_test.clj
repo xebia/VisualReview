@@ -76,10 +76,12 @@
         (is (= 1 (count unused-screenshot-ids-after-run-deletion)))
         (is (= [(:id run1-screenshot2)] unused-screenshot-ids-after-run-deletion))
 
-        (is (= 3 (count unused-image-ids-after-run-deletion)))
+        (is (= 5 (count unused-image-ids-after-run-deletion)))
         (is (= (sort [unconnected-image-id
                       (:imageId (first run1-analysis-diffs))
-                      (:imageId (second run1-analysis-diffs))])
+                      (:maskImageId (first run1-analysis-diffs))
+                      (:imageId (second run1-analysis-diffs))
+                      (:maskImageId (second run1-analysis-diffs))])
                (sort unused-image-ids-after-run-deletion)))
 
         (is (= 200 (:status cleanup-result)))

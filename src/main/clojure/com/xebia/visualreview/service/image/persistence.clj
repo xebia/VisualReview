@@ -40,7 +40,7 @@
 
 (defn get-unused-image-ids [conn]
   "Returns a vector of image id's that are not referenced in any diff or screenshot"
-  (putil/query conn ["SELECT id FROM image WHERE id NOT IN (SELECT image_id FROM screenshot) AND id NOT IN (SELECT image_id FROM diff)"]
+  (putil/query conn ["SELECT id FROM image WHERE id NOT IN (SELECT image_id FROM screenshot) AND id NOT IN (SELECT image_id FROM diff) AND id NOT IN (SELECT mask_image_id FROM diff)"]
                :row-fn :id
                :result-set-fn vec))
 
