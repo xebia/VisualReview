@@ -76,9 +76,14 @@ angular.module('visualDiffViewerApp')
       $scope.showDiff = !$scope.showDiff;
     }
 
+    function toggleMask() {
+      $scope.showMask = !$scope.showMask;
+    }
+
 		$scope.selectedDiffIndex = 0;
 		$scope.selectedScreenshot = "after";
 		$scope.showDiff = true;
+		$scope.showMask = false;
 
     $scope.selectNextDiff = function () {
       $scope.selectedDiffIndex < $scope.diffs.length - 1 && $scope.selectedDiffIndex++;
@@ -128,7 +133,8 @@ angular.module('visualDiffViewerApp')
       'DOWN': $scope.selectNextDiff,
       'A': function () {toggleCurrentStatus( diffConstants.accepted())},
       'X': function () {toggleCurrentStatus( diffConstants.rejected())},
-      'D': toggleDiff
+      'D': toggleDiff,
+      'M': toggleMask
     };
 
     $scope.$on('keydown', function (ngEvent, key) {

@@ -61,13 +61,14 @@
 ;; Diffs
 (defn save-diff!
   "Stores a new diff. Returns the new diff's id."
-  [conn image-id before after percentage analysis-id]
+  [conn image-id mask-image-id before after percentage analysis-id]
   (putil/insert-single! conn :diff {:before      before
                                     :after       after
                                     :percentage  percentage
                                     :status      "pending"
                                     :analysis-id analysis-id
-                                    :image-id    image-id}))
+                                    :image-id    image-id
+                                    :mask-image-id    mask-image-id}))
 
 (defn get-diff [conn run-id diff-id]
   (putil/query-single conn

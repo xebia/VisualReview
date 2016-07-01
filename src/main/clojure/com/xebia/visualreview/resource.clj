@@ -194,10 +194,11 @@
 
 ;; The screenshot resource has been split up into separate handler for each http method.
 (def ^:private upload-screenshot-schema
-  {:file           [Map [::v/screenshot]]
-   :screenshotName [String []]
-   :meta           [Map [::v/screenshot-meta]]
-   :properties     [Map [::v/screenshot-meta]]})
+  {:file              [Map [::v/screenshot]]
+   :screenshotName    [String []]
+   :meta              [Map [::v/screenshot-meta]]
+   :mask              [Map [::v/optional ::v/screenshot-mask]]
+   :properties        [Map [::v/screenshot-meta]]})
 
 (defn- update-screenshot-path [screenshot]
   (update-in screenshot [:path] #(str "/screenshots/" % "/" (:id screenshot) ".png")))
@@ -213,21 +214,22 @@
     :handle-ok (fn [ctx] (let [screenshots (screenshot/get-screenshots-by-run-id (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
-(defn- proces-diff [conn run-id before-file after-file before-id after-id]
+(defn- proces-diff [conn run-id before-file after-file before-id after-id mask]
   (let [analysis (analysis/get-analysis conn run-id)
-        diff-report (analysisc/generate-diff-report before-file after-file)
+        diff-report (analysisc/generate-diff-report before-file after-file mask)
         diff-file-id (image/insert-image! conn (:diff diff-report))
-        new-diff-id (analysis/save-diff! conn diff-file-id before-id after-id (:percentage diff-report) (:id analysis))]
+        mask-file-id (image/insert-image! conn (:mask diff-report))
+        new-diff-id (analysis/save-diff! conn diff-file-id mask-file-id before-id after-id (:percentage diff-report) (:id analysis))]
     (do
       (.delete (:diff diff-report))
       (analysis/get-diff conn run-id new-diff-id))))
 
-(defn- process-screenshot [conn suite-id run-id screenshot-name properties meta {:keys [tempfile]}]
+(defn- process-screenshot [conn suite-id run-id screenshot-name properties meta mask {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
         baseline-screenshot (baseline/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
         before-file (when baseline-screenshot (io/get-file (image/get-image-path conn (:image-id baseline-screenshot))))
-        diff (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id)]
+        diff (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id mask)]
     (when (and baseline-screenshot (zero? (:percentage diff)))
       (update-diff-status! conn diff "accepted"))
     screenshot))
@@ -240,6 +242,7 @@
     :processable? (fn [ctx]
                     (let [v (v/validations upload-screenshot-schema (-> ctx :request :params
                                                                         (update-in [:meta] json/parse-string true)
+                                                                        (update-in [:mask] json/parse-string true)
                                                                         (update-in [:properties] json/parse-string true)))]
                       (if (:valid? v)
                         (let [data (hyphenize-request (:data v))
@@ -255,9 +258,9 @@
     :can-post-to-missing? false
     :post! (fn [ctx]
              (ex/try+
-               (let [{:keys [meta file properties screenshot-name]} (::data ctx)
+               (let [{:keys [meta mask file properties screenshot-name]} (::data ctx)
                      {suite-id :suite-id run-id :id} (::run ctx)
-                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties meta file)]
+                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties meta mask file)]
                  {::screenshot screenshot ::new? true})
                (catch [:type :service-exception :code ::screenshot/screenshot-cannot-store-in-db-already-exists] _
                  {::screenshot {:error              "Screenshot with identical name and properties was already uploaded in this run"
@@ -295,7 +298,9 @@
                 :screenshotName (:after-name diff)}
    :status     (:status diff)
    :percentage (:percentage diff)
-   :image-id   (:image-id diff)})
+   :image-id   (:image-id diff)
+   :mask-image-id   (:mask-image-id diff)
+   })
 
 (defn- transform-analysis [full-analysis]
   (update-in full-analysis [:diffs] #(mapv transform-diff %)))

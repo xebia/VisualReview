@@ -41,6 +41,17 @@ Methods: GET, DELETE
 
 Retrieve and delete specific project.
 
+#### Suite status
+
+Path: `projects/{{project_id}}/suites/{{suite_id}}/status`
+Methods: GET
+
+Get last run result. This is useful to poll whether a suite is working as expected. Possible values:
+
+* accepted
+* rejected
+* pending
+
 ### Runs
 
 Path: `runs/{{run_id}}`
@@ -61,9 +72,11 @@ Methods: POST
 Upload a screenshot to the supplied run.
 The request should be just like a multi-part form post, like you're uploading a screenshot from a form.
 Multipart elements should be:
+
  * **file** (binary, with the screenshot png data)
  * **screenshotName** (plain text, containing the screenshot name)
  * **properties**  (application/json, JSON object with image properties, see below)
+ * **mask**  (application/json, JSON object with excludeZone array for the image comparison, see below)
  * **meta** (application/json, JSON object with additional data about the screenshot. Can be empty).
 
 When a screenshot is uploaded it's compared to a previously uploaded screenshot having the same `screenshotName` and `properties`. The `properties` object has no predefined set of keys, however we suggest including at least a screen resolution and browser as these fields will be displayed by VisualReview's GUI. For example:
@@ -73,6 +86,9 @@ properties = {
   browser: 'firefox'
 }
 ```
+
+If screenshot has dynamic zones (like dateTime in a phone screenshot), you can specify a  field `mask` which contains a array of Excludes Zones for the image comparison engine. Exclude zones have format `{"height":x,"x":x,"width":x,"y":x}` in the image coordinates.
+For Example : `{"mask":{"excludeZones":[{"height":40,"x":0,"width":640,"y":0}]}}`
 
 The field `metadata` can contain some additional data of the screenshot. Currently it's not being used by VisualReview's GUI, but might be handy for other tools using VisualReview's API.
 
@@ -106,3 +122,4 @@ The following parts/project already make use of these API calls:
 * [VisualReview-protractor](https://github.com/xebia/VisualReview-protractor), create new runs and screenshots.
 * [VisualReview-node-client](https://github.com/Klaasvaak/VisualReview-node-client), Node.js client for VisualReview
 * [VisualReview-selenium-java-prototype](https://github.com/skwakman/visualreview-selenium-java-prototype), Java implementation that can create suites, runs and ofcourse send screenshots. Very quickly setup for demonstration purposes.
+* [VisualReview-docker](https://github.com/FinKingma/VisualReviewDockerfile), Dockerfile to run VisualReview.
