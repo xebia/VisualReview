@@ -131,6 +131,14 @@
                     :subtype ::unique-constraint-violation
                     :message (.getMessage e)})))))
 
+(defn get-baseline-branch-by-suitename [conn suite-name branch-name]
+      {:pre [(string? suite-name) (string? branch-name)]}
+      (putil/query-single conn
+                          ["SELECT br.* FROM baseline_branch br
+     JOIN baseline_tree tr ON tr.id = br.baseline_tree
+     JOIN suite on tr.suite_id = suite.id
+     WHERE suite.name = ? AND br.name = ?" suite-name branch-name]))
+
 (defn get-baseline-branch [conn suite-id branch-name]
   {:pre [(number? suite-id) (string? branch-name)]}
   (putil/query-single conn

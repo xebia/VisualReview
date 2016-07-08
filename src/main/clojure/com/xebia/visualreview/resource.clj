@@ -29,7 +29,8 @@
             [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]
             [com.xebia.visualreview.service.cleanup :as cleanup]
-            [com.xebia.visualreview.service.baseline :as baseline])
+            [com.xebia.visualreview.service.baseline :as baseline]
+            [com.xebia.visualreview.service.branch :as branch])
   (:import [java.util Map]))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
@@ -128,7 +129,8 @@
 
 ;;;;;;;;;;; Runs ;;;;;;;;;;;
 (def ^:private run-create-schema
-  {:projectName [String []]
+  {:branchName [String []]
+   :projectName [String []]
    :suiteName   [String [::v/non-empty]]})
 
 (defn run-resource [run-id]
@@ -169,16 +171,22 @@
                    (when-let [suite
                               (and
                                 (or
+;                                  (branch/branch-exists (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name) (-> ctx ::data :branch-name))
+                                  (baseline/get-baseline-branch-by-suitename (tx-conn ctx) (-> ctx ::data :suite-name) (-> ctx ::data :branch-name))
+                                  (baseline/create-baseline-branch! (tx-conn ctx) 2 (-> ctx ::data :branch-name))
+                                  true)
+                                (or
                                   (project/get-project-by-name (tx-conn ctx) (-> ctx ::data :project-name))
                                   (project/create-project! (tx-conn ctx) (-> ctx ::data :project-name)))
                                 (or
                                   (suite/get-suite-by-name (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))
                                   (suite/get-suite-by-id (tx-conn ctx)
-                                                         (suite/create-suite-for-project! (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name)))))]
-                     {::suite suite})))
+                                                                         (suite/create-suite-for-project! (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name))))
+                              )]
+                   {::suite suite})))
     :can-post-to-missing? false
     :post! (fn [ctx]
-             (let [new-run-id (run/create-run! (tx-conn ctx) (:id (::suite ctx)))
+             (let [new-run-id (run/create-run! (tx-conn ctx) (:id (::suite ctx)) (-> ctx ::data :branch-name))
                    run (run/get-run (tx-conn ctx) new-run-id)]
                {::run run}))
     :handle-created ::run
@@ -224,10 +232,10 @@
       (.delete (:diff diff-report))
       (analysis/get-diff conn run-id new-diff-id))))
 
-(defn- process-screenshot [conn suite-id run-id screenshot-name properties meta mask {:keys [tempfile]}]
+(defn- process-screenshot [conn suite-id run-id branch-name screenshot-name properties meta mask {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
-        baseline-screenshot (baseline/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
+        baseline-screenshot (baseline/get-baseline-screenshot conn suite-id branch-name screenshot-name properties)
         before-file (when baseline-screenshot (io/get-file (image/get-image-path conn (:image-id baseline-screenshot))))
         diff (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id mask)]
     (when (and baseline-screenshot (zero? (:percentage diff)))
@@ -260,7 +268,8 @@
              (ex/try+
                (let [{:keys [meta mask file properties screenshot-name]} (::data ctx)
                      {suite-id :suite-id run-id :id} (::run ctx)
-                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties meta mask file)]
+                     branch-name (run/get-branch-name-by-run-id (tx-conn ctx) run-id)
+                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id branch-name screenshot-name properties meta mask file)]
                  {::screenshot screenshot ::new? true})
                (catch [:type :service-exception :code ::screenshot/screenshot-cannot-store-in-db-already-exists] _
                  {::screenshot {:error              "Screenshot with identical name and properties was already uploaded in this run"

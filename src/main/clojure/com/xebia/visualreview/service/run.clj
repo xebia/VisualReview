@@ -28,8 +28,9 @@
   If the suite does not yet exist it will be created along with a new baseline.
   Creating a run also creates an analysis for the run, this may change in the future.
   Returns the created run id."
-  [conn suite-id]
-  (let [branch (baseline/get-baseline-branch conn suite-id "master")
+  [conn suite-id branch-name]
+
+  (let [branch (baseline/get-baseline-branch conn suite-id branch-name)
         new-run-id (putil/insert-single! conn :run {:suite-id         suite-id
                                                     :start-time       (Timestamp. (.getTime (Date.)))
                                                     :branch-name      (:name branch)
@@ -37,6 +38,12 @@
                                                     :status           "running"})
         _ (analysis/create-analysis! conn (:head branch) new-run-id)]
     new-run-id))
+
+(defn get-branch-name-by-run-id
+  [conn run-id]
+  (:branch-name (putil/query-single conn
+                      ["SELECT run.branch_name FROM run WHERE run.id = ?" run-id])
+  ))
 
 (defn get-run
   "Returns the data for the given run-id"
