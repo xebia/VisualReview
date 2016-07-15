@@ -18,7 +18,10 @@
             <div class="hover-target">
                 <a class="text-decoration-none" href="#/{{suite.project.id}}/{{suite.id}}/{{run.id}}">
                     <span class="text-big font-bold color-light text-decoration-underline">
-                        {{run.id}} - {{run.startTime | date : 'medium'}}
+                        {{run.status}} -
+                        {{run.id}} -
+                        <span ng-if="run.branchName != 'master'">{{run.branchName}} -</span>
+                        {{run.startTime | date : 'medium'}}
                     </span>
                 </a>
 
