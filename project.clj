@@ -20,6 +20,8 @@
 
   :min-lein-version "2.4.0"
 
+  :jvm-opts ["-Xmx1g"]
+
   :plugins [[lein-shell "0.4.0"]
             [lein-resource "14.10.1"]]
 
