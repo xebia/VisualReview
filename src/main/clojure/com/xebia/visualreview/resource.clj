@@ -198,7 +198,8 @@
    :screenshotName    [String []]
    :meta              [Map [::v/screenshot-meta]]
    :mask              [Map [::v/optional ::v/screenshot-mask]]
-   :properties        [Map [::v/screenshot-meta]]})
+   :properties        [Map [::v/screenshot-meta]]
+   :compareSettings   [Map [::v/optional ::v/screenshot-meta]]})
 
 (defn- update-screenshot-path [screenshot]
   (update-in screenshot [:path] #(str "/screenshots/" % "/" (:id screenshot) ".png")))
@@ -214,9 +215,9 @@
     :handle-ok (fn [ctx] (let [screenshots (screenshot/get-screenshots-by-run-id (tx-conn ctx) (-> ctx ::run :id))]
                            (mapv update-screenshot-path screenshots)))))
 
-(defn- proces-diff [conn run-id before-file after-file before-id after-id mask]
+(defn- proces-diff [conn run-id before-file after-file compare-settings before-id after-id mask]
   (let [analysis (analysis/get-analysis conn run-id)
-        diff-report (analysisc/generate-diff-report before-file after-file mask)
+        diff-report (analysisc/generate-diff-report before-file after-file mask compare-settings)
         diff-file-id (image/insert-image! conn (:diff diff-report))
         mask-file-id (image/insert-image! conn (:mask diff-report))
         new-diff-id (analysis/save-diff! conn diff-file-id mask-file-id before-id after-id (:percentage diff-report) (:id analysis))]
@@ -224,12 +225,12 @@
       (.delete (:diff diff-report))
       (analysis/get-diff conn run-id new-diff-id))))
 
-(defn- process-screenshot [conn suite-id run-id screenshot-name properties meta mask {:keys [tempfile]}]
+(defn- process-screenshot [conn suite-id run-id screenshot-name properties compare-settings meta mask {:keys [tempfile]}]
   (let [screenshot-id (screenshot/insert-screenshot! conn run-id screenshot-name properties meta tempfile)
         screenshot (screenshot/get-screenshot-by-id conn screenshot-id)
         baseline-screenshot (baseline/get-baseline-screenshot conn suite-id "master" screenshot-name properties)
         before-file (when baseline-screenshot (io/get-file (image/get-image-path conn (:image-id baseline-screenshot))))
-        diff (proces-diff conn run-id before-file tempfile (:id baseline-screenshot) screenshot-id mask)]
+        diff (proces-diff conn run-id before-file tempfile compare-settings (:id baseline-screenshot) screenshot-id mask)]
     (when (and baseline-screenshot (zero? (:percentage diff)))
       (update-diff-status! conn diff "accepted"))
     screenshot))
@@ -258,9 +259,9 @@
     :can-post-to-missing? false
     :post! (fn [ctx]
              (ex/try+
-               (let [{:keys [meta mask file properties screenshot-name]} (::data ctx)
+               (let [{:keys [meta mask file properties compare-settings screenshot-name]} (::data ctx)
                      {suite-id :suite-id run-id :id} (::run ctx)
-                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties meta mask file)]
+                     screenshot (process-screenshot (tx-conn ctx) suite-id run-id screenshot-name properties compare-settings meta mask file)]
                  {::screenshot screenshot ::new? true})
                (catch [:type :service-exception :code ::screenshot/screenshot-cannot-store-in-db-already-exists] _
                  {::screenshot {:error              "Screenshot with identical name and properties was already uploaded in this run"
