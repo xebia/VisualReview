@@ -97,10 +97,6 @@ public class PixelComparator {
         try {
             int precision = getPrecision(compareSettings);
 
-            if (precision < 0 || precision > 255) {
-                throw new Exception("VisualReview only supports precision values between 0 and 255");
-            }
-
             PixelGrabber beforeGrab = grabImage(beforeFile);
             PixelGrabber afterGrab = grabImage(afterFile);
 
@@ -192,12 +188,16 @@ public class PixelComparator {
                     try {
                         precision = json.getInt("precision");
                     } catch (Exception e) {
-                        throw new Exception("precision has invalid value:\n" + e);
+                        throw new Exception("precision has invalid value.\n" + e);
                     }
                 }
             } catch(Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        if (precision < 0 || precision > 255) {
+            throw new RuntimeException("VisualReview only supports precision values between 0 and 255");
         }
 
         return precision;
