@@ -199,7 +199,7 @@
    :meta              [Map [::v/screenshot-meta]]
    :mask              [Map [::v/optional ::v/screenshot-mask]]
    :properties        [Map [::v/screenshot-meta]]
-   :compareSettings   [Map [::v/optional ::v/screenshot-meta]]})
+   :compareSettings   [Map [::v/optional ::v/screenshot-mask]]})
 
 (defn- update-screenshot-path [screenshot]
   (update-in screenshot [:path] #(str "/screenshots/" % "/" (:id screenshot) ".png")))
@@ -244,7 +244,8 @@
                     (let [v (v/validations upload-screenshot-schema (-> ctx :request :params
                                                                         (update-in [:meta] json/parse-string true)
                                                                         (update-in [:mask] json/parse-string true)
-                                                                        (update-in [:properties] json/parse-string true)))]
+                                                                        (update-in [:properties] json/parse-string true)
+                                                                        (update-in [:compareSettings] json/parse-string true)))]
                       (if (:valid? v)
                         (let [data (hyphenize-request (:data v))
                               run (run/get-run (tx-conn ctx) (Long/parseLong run-id))]

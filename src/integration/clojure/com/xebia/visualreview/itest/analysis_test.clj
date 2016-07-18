@@ -37,7 +37,7 @@
 
 (defn setup-project []
   (api/put-project! {:name project-name})
-  (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir))
+  (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir :zd mock/upload-zd-image-1))
 
 (defn- content-type [response]
   (get-in response [:headers "Content-Type"]))
@@ -94,5 +94,19 @@
 
       (is (= 1.03 (:percentage chess-diff)) "The chess image is changed with respect to the previous run")
       (is (= "pending" (:status chess-diff)) "The chess diff is pending")
-      (is (= (:chess (@image-ids (dec run-id))) (-> chess-diff :before :id)) "The chess image is compared to the previous run"))))
+      (is (= (:chess (@image-ids (dec run-id))) (-> chess-diff :before :id)) "The chess image is compared to the previous run")))
 
+  (testing "No precision will fail comparison with unseen pixel difference"
+    (let [run-id (post-run-with-screenshots :zd mock/upload-zd-image-2)
+          {:keys [analysis diffs]} (:body (api/get-analysis run-id))
+          [zd-diff] diffs]
+
+      (is (= "pending" (:status zd-diff)) "The tapir diff is pending")))
+
+  (testing "Specified precision will accept comparison with unseen pixel difference"
+    (let [run-id (post-run-with-screenshots :zd mock/upload-zd-image-2)
+          {:keys [analysis diffs]} (:body (api/get-analysis run-id))
+          [zd-diff] diffs]
+
+      (is (= "pending" (:status zd-diff)) "The tapir diff is pending")))
+  )

@@ -97,4 +97,8 @@
   (api/upload-screenshot! run-id {:file "chess1.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
 (defn upload-chess-image-2 [run-id meta props]
   (api/upload-screenshot! run-id {:file "chess2.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
+(defn upload-zd-image-1 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "ZD_1.png" :meta meta :properties props :screenshotName "Referral"}))
+(defn upload-zd-image-2 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "ZD_2.png" :meta meta :properties props :screenshotName "Referral"}))
 
