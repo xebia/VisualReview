@@ -95,19 +95,10 @@ public class PixelComparator {
 
     public static DiffReport processImage(File beforeFile, File afterFile ,java.util.Map maskInfo, String compareSettings) {
         try {
-            int precision = 0;
+            int precision = getPrecision(compareSettings);
 
-            try {
-                if (!compareSettings.equals(null) && !compareSettings.equals("null") && !compareSettings.equals("")) {
-                    JSONObject json = new JSONObject(compareSettings);
-                    precision = json.getInt("precision");
-                }
-            }
-            catch (Exception e) {
-                throw new Exception("compareSettings were incorrectly provided. \n", e);
-            }
-            if (precision < 0) {
-                throw new Exception("VisualReview does not support precision values below 0");
+            if (precision < 0 || precision > 255) {
+                throw new Exception("VisualReview only supports precision values between 0 and 255");
             }
 
             PixelGrabber beforeGrab = grabImage(beforeFile);
@@ -189,6 +180,27 @@ public class PixelComparator {
         return (Math.abs(r1-r2) > maxDifference ||
             Math.abs(g1-g2) > maxDifference ||
             Math.abs(b1-b2) > maxDifference);
+    }
+
+    private static int getPrecision(String compareSettings) {
+        int precision = 0;
+
+        if (!compareSettings.equals(null) && !compareSettings.equals("null") && !compareSettings.equals("")) {
+            try {
+                JSONObject json = new JSONObject(compareSettings);
+                if (json.has("precision")) {
+                    try {
+                        precision = json.getInt("precision");
+                    } catch (Exception e) {
+                        throw new Exception("precision has invalid value:\n" + e);
+                    }
+                }
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return precision;
     }
 
     private static PixelGrabber grabImage(File file) {

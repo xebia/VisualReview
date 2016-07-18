@@ -37,7 +37,7 @@
 
 (defn setup-project []
   (api/put-project! {:name project-name})
-  (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir :zd mock/upload-zd-image-1))
+  (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir :zd mock/upload-zd-image-1 :zdp10 mock/upload-zd-image-1-p10))
 
 (defn- content-type [response]
   (get-in response [:headers "Content-Type"]))
@@ -65,7 +65,9 @@
                                                           (= (-> r :body :status) new-status)))
         1 1 201 "rejected"
         1 1 201 "accepted"
-        1 2 201 "accepted")))
+        1 2 201 "accepted"
+        1 3 201 "accepted"
+        1 4 201 "accepted")))
 
   (testing "New run with different tapir image"
     (let [run-id (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir-hat)
@@ -98,15 +100,11 @@
 
   (testing "No precision will fail comparison with unseen pixel difference"
     (let [run-id (post-run-with-screenshots :zd mock/upload-zd-image-2)
-          {:keys [analysis diffs]} (:body (api/get-analysis run-id))
-          [zd-diff] diffs]
+          [zd-diff] (-> (api/get-analysis run-id) :body :diffs)]
+      (is (= "pending" (:status zd-diff)) "The zd diff is pending")))
 
-      (is (= "pending" (:status zd-diff)) "The tapir diff is pending")))
-
-  (testing "Specified precision will accept comparison with unseen pixel difference"
-    (let [run-id (post-run-with-screenshots :zd mock/upload-zd-image-2)
-          {:keys [analysis diffs]} (:body (api/get-analysis run-id))
-          [zd-diff] diffs]
-
-      (is (= "pending" (:status zd-diff)) "The tapir diff is pending")))
+  (testing "Precision will pass comparison if pixel difference is within specified value"
+    (let [run-id (post-run-with-screenshots :zdp10 mock/upload-zd-image-2-p10)
+          [zdp10-diff] (-> (api/get-analysis run-id) :body :diffs)]
+      (is (= "accepted" (:status zdp10-diff)) "The zd diff is automatically accepted")))
   )

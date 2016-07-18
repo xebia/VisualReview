@@ -89,16 +89,23 @@
   (binding [log/*tx-agent-levels* #{:warn}]
   (f)))
 
+(def compare-settings {:precision    "0"})
+(def compare-settings10 {:precision    "10"})
+
 (defn upload-tapir [run-id meta props]
-  (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir"}))
+  (api/upload-screenshot! run-id {:file "tapir.png" :meta meta :properties props :screenshotName "Tapir" :compareSettings compare-settings}))
 (defn upload-tapir-hat [run-id meta props]
-  (api/upload-screenshot! run-id {:file "tapir_hat.png" :meta meta :properties props :screenshotName "Tapir"}))
+  (api/upload-screenshot! run-id {:file "tapir_hat.png" :meta meta :properties props :screenshotName "Tapir" :compareSettings compare-settings}))
 (defn upload-chess-image-1 [run-id meta props]
-  (api/upload-screenshot! run-id {:file "chess1.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
+  (api/upload-screenshot! run-id {:file "chess1.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999" :compareSettings compare-settings}))
 (defn upload-chess-image-2 [run-id meta props]
-  (api/upload-screenshot! run-id {:file "chess2.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999"}))
+  (api/upload-screenshot! run-id {:file "chess2.png" :meta meta :properties props :screenshotName "Kasparov vs Topalov - 1999" :compareSettings compare-settings}))
 (defn upload-zd-image-1 [run-id meta props]
-  (api/upload-screenshot! run-id {:file "ZD_1.png" :meta meta :properties props :screenshotName "Referral"}))
+  (api/upload-screenshot! run-id {:file "ZD_1.png" :meta meta :properties props :screenshotName "Referral" :compareSettings compare-settings}))
 (defn upload-zd-image-2 [run-id meta props]
-  (api/upload-screenshot! run-id {:file "ZD_2.png" :meta meta :properties props :screenshotName "Referral"}))
+  (api/upload-screenshot! run-id {:file "ZD_2.png" :meta meta :properties props :screenshotName "Referral" :compareSettings compare-settings}))
+(defn upload-zd-image-1-p10 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "ZD_1.png" :meta meta :properties props :screenshotName "Referral-p10" :compareSettings compare-settings10}))
+(defn upload-zd-image-2-p10 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "ZD_2.png" :meta meta :properties props :screenshotName "Referral-p10" :compareSettings compare-settings10}))
 
