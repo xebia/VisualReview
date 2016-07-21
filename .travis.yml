@@ -1,6 +1,6 @@
 language: clojure
 lein: lein2
-script: lein test-all
+script: lein test-all uberjar
 install:
   - npm install -g npm@2
 before_script:
