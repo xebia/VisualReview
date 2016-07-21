@@ -16,6 +16,7 @@
                  [com.mchange/c3p0 "0.9.5"]                 ;database connection pooling
                  [com.h2database/h2 "1.4.185"]
                  [joda-time/joda-time "2.8.2"]
+                 [org.json/json "20160212"]
                  [im.chit/cronj "1.4.1"]]                   ;task scheduling
 
   :min-lein-version "2.4.0"
