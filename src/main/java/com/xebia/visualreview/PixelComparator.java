@@ -22,6 +22,7 @@ import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Math;
+import org.json.JSONObject;
 
 import clojure.lang.Keyword;
 
@@ -92,8 +93,10 @@ public class PixelComparator {
         return maskImage;
     }
 
-    public static DiffReport processImage(File beforeFile, File afterFile ,java.util.Map maskInfo) {
+    public static DiffReport processImage(File beforeFile, File afterFile ,java.util.Map maskInfo, String compareSettings) {
         try {
+            int precision = getPrecision(compareSettings);
+
             PixelGrabber beforeGrab = grabImage(beforeFile);
             PixelGrabber afterGrab = grabImage(afterFile);
 
@@ -127,7 +130,7 @@ public class PixelComparator {
             for (int y = 0; y < diffHeight; y++) {
                 for (int x = 0; x < diffWidth; x++) {
                     if (maskImage.getRGB(x,y) != DIFFCOLOUR) {
-                        if (x >= minX || y >= minY || beforeData[y * beforeWidth + x] != afterData[y * afterWidth + x]) {
+                        if (x >= minX || y >= minY || hasDifference(beforeData[y * beforeWidth + x], afterData[y * afterWidth + x],precision)) {
                             diffData[y * diffWidth + x] = DIFFCOLOUR;
                             differentPixels++;
                         }
@@ -155,6 +158,49 @@ public class PixelComparator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean hasDifference(int data1,int data2, int maxDifference) {
+        if (data1 == data2) {
+            return false;
+        }
+
+        int r1 = (data1)&0xFF;
+        int g1 = (data1>>8)&0xFF;
+        int b1 = (data1>>16)&0xFF;
+
+        int r2 = (data2)&0xFF;
+        int g2 = (data2>>8)&0xFF;
+        int b2 = (data2>>16)&0xFF;
+
+        return (Math.abs(r1-r2) > maxDifference ||
+            Math.abs(g1-g2) > maxDifference ||
+            Math.abs(b1-b2) > maxDifference);
+    }
+
+    private static int getPrecision(String compareSettings) {
+        int precision = 0;
+
+        if (!compareSettings.equals(null) && !compareSettings.equals("null") && !compareSettings.equals("")) {
+            try {
+                JSONObject json = new JSONObject(compareSettings);
+                if (json.has("precision")) {
+                    try {
+                        precision = json.getInt("precision");
+                    } catch (Exception e) {
+                        throw new Exception("precision has invalid value.\n" + e);
+                    }
+                }
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (precision < 0 || precision > 255) {
+            throw new RuntimeException("VisualReview only supports precision values between 0 and 255");
+        }
+
+        return precision;
     }
 
     private static PixelGrabber grabImage(File file) {
