@@ -1,4 +1,4 @@
-# API doc 
+# API doc
 
 A REST API is available to send screenshots to the VisualReview server from another process.
 
@@ -76,6 +76,7 @@ Multipart elements should be:
  * **file** (binary, with the screenshot png data)
  * **screenshotName** (plain text, containing the screenshot name)
  * **properties**  (application/json, JSON object with image properties, see below)
+ * **compareSettings** (application/json, JSON object with data about the screenshot comparison. Can be empty).
  * **mask**  (application/json, JSON object with excludeZone array for the image comparison, see below)
  * **meta** (application/json, JSON object with additional data about the screenshot. Can be empty).
 
@@ -84,6 +85,13 @@ When a screenshot is uploaded it's compared to a previously uploaded screenshot 
 properties = {
   resolution: size.width + 'x' + size.height,
   browser: 'firefox'
+}
+```
+
+With compareSettings you can specify a precision factor. This will determine the difference in each pixel comparison that will still be accepted. Default the precision factor is '0'. For example:
+```javascript
+compareSettings = {
+  "precision": 10
 }
 ```
 
