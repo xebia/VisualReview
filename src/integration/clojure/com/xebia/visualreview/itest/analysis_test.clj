@@ -37,7 +37,7 @@
 
 (defn setup-project []
   (api/put-project! {:name project-name})
-  (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir :zd mock/upload-zd-image-1 :zdp10 mock/upload-zd-image-1-p10))
+  (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir :line mock/upload-line-image-1 :zd mock/upload-zd-image-1 :zdp10 mock/upload-zd-image-1-p10))
 
 (defn- content-type [response]
   (get-in response [:headers "Content-Type"]))
@@ -67,7 +67,8 @@
         1 1 201 "accepted"
         1 2 201 "accepted"
         1 3 201 "accepted"
-        1 4 201 "accepted")))
+        1 4 201 "accepted"
+        1 5 201 "accepted")))
 
   (testing "New run with different tapir image"
     (let [run-id (post-run-with-screenshots :chess mock/upload-chess-image-1 :tapir mock/upload-tapir-hat)
@@ -97,6 +98,11 @@
       (is (= 1.03 (:percentage chess-diff)) "The chess image is changed with respect to the previous run")
       (is (= "pending" (:status chess-diff)) "The chess diff is pending")
       (is (= (:chess (@image-ids (dec run-id))) (-> chess-diff :before :id)) "The chess image is compared to the previous run")))
+
+  (testing "Small difference will fail comparison"
+    (let [run-id (post-run-with-screenshots :line mock/upload-line-image-2)
+          [line-diff] (-> (api/get-analysis run-id) :body :diffs)]
+      (is (= "pending" (:status line-diff)) "The line diff is pending")))
 
   (testing "No precision will fail comparison with unseen pixel difference"
     (let [run-id (post-run-with-screenshots :zd mock/upload-zd-image-2)
