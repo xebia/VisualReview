@@ -127,7 +127,6 @@ public class PixelComparator {
             int differentPixels = 0;
             boolean hasMask =  (maskInfo != null) ;
             BufferedImage maskImage = generateMask(maskInfo,diffWidth,diffHeight);
-
             for (int y = 0; y < diffHeight; y++) {
                 for (int x = 0; x < diffWidth; x++) {
                     if (maskImage.getRGB(x,y) != DIFFCOLOUR) {
