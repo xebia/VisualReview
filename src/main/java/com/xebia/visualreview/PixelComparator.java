@@ -128,21 +128,6 @@ public class PixelComparator {
             boolean hasMask =  (maskInfo != null) ;
             BufferedImage maskImage = generateMask(maskInfo,diffWidth,diffHeight);
 
-            if(beforeWidth >= 878) {
-              System.out.println("Image is " + diffWidth + "x" + diffHeight);
-
-              int b1 = (beforeData[355 * beforeWidth + 878])&0xFF;
-              int g1 = (beforeData[355 * beforeWidth + 878]>>8)&0xFF;
-              int r1 = (beforeData[355 * beforeWidth + 878]>>16)&0xFF;
-
-              int b2 = (afterData[355 * afterWidth + 878])&0xFF;
-              int g2 = (afterData[355 * afterWidth + 878]>>8)&0xFF;
-              int r2 = (afterData[355 * afterWidth + 878]>>16)&0xFF;
-
-              System.out.println("PixelDiff at " + 878 + "x" + 355 + " | originalColor R: " + r1 + " - B: " + b1 + " - G: " + g1 + " | newPixel R: " + r2 + " - B: " + b2 + " - G: " + g2);
-            }
-
-
             for (int y = 0; y < diffHeight; y++) {
                 for (int x = 0; x < diffWidth; x++) {
                     if (maskImage.getRGB(x,y) != DIFFCOLOUR) {
@@ -153,8 +138,6 @@ public class PixelComparator {
                     }
                 }
             }
-
-            System.out.println("differentPixels: " + differentPixels);
 
             BufferedImage diffImage = new BufferedImage(diffWidth, diffHeight, BufferedImage.TYPE_INT_ARGB);
             diffImage.setRGB(0, 0, diffWidth, diffHeight, diffData, 0, diffWidth);
