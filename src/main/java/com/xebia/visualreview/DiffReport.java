@@ -44,7 +44,8 @@ public class DiffReport {
   }
 
   public double getPercentage() {
-    return percentage;
+    if (percentage > 0 && percentage < 0.1) return 0.1;
+    else return percentage;
   }
 
   public File getBefore() {
