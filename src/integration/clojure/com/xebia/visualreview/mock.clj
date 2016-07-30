@@ -108,4 +108,7 @@
   (api/upload-screenshot! run-id {:file "ZD_1.png" :meta meta :properties props :screenshotName "Referral-p10" :compareSettings compare-settings10}))
 (defn upload-zd-image-2-p10 [run-id meta props]
   (api/upload-screenshot! run-id {:file "ZD_2.png" :meta meta :properties props :screenshotName "Referral-p10" :compareSettings compare-settings10}))
-
+(defn upload-line-image-1 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "noticeSmallDiff_1.png" :meta meta :properties props :screenshotName "Line" :compareSettings compare-settings}))
+(defn upload-line-image-2 [run-id meta props]
+  (api/upload-screenshot! run-id {:file "noticeSmallDiff_2.png" :meta meta :properties props :screenshotName "Line" :compareSettings compare-settings}))
