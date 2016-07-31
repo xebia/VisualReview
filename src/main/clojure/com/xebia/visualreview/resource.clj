@@ -29,8 +29,7 @@
             [com.xebia.visualreview.service.suite :as suite]
             [com.xebia.visualreview.service.run :as run]
             [com.xebia.visualreview.service.cleanup :as cleanup]
-            [com.xebia.visualreview.service.baseline :as baseline]
-            [com.xebia.visualreview.service.branch :as branch])
+            [com.xebia.visualreview.service.baseline :as baseline])
   (:import [java.util Map]))
 
 ;;;;;;;;; Projects ;;;;;;;;;;;
@@ -171,7 +170,6 @@
                    (when-let [suite
                               (and
                                 (or
-;                                  (branch/branch-exists (tx-conn ctx) (-> ctx ::data :project-name) (-> ctx ::data :suite-name) (-> ctx ::data :branch-name))
                                   (baseline/get-baseline-branch-by-suitename (tx-conn ctx) (-> ctx ::data :suite-name) (-> ctx ::data :branch-name))
                                   (baseline/create-baseline-branch! (tx-conn ctx) 2 (-> ctx ::data :branch-name))
                                   true)
