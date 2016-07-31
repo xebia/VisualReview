@@ -31,7 +31,7 @@
   (testing "Storing and retrieving a screenshot based on a screenshot-id"
     (project/create-project! mock/*conn* "myProject")
     (let [suite-id (suite/create-suite-for-project! mock/*conn* "myProject" "mySuite")
-          run-id (run/create-run! mock/*conn* suite-id)
+          run-id (run/create-run! mock/*conn* suite-id "master")
           image-file (io/as-file (io/resource "tapir_hat.png"))
           screenshot-id (s/insert-screenshot! mock/*conn* run-id "myScreenshot" {:browser "chrome" :os "windows"} {:version "4.0"} image-file)
           screenshot (s/get-screenshot-by-id mock/*conn* screenshot-id)]

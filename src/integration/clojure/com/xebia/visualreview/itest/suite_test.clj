@@ -52,8 +52,8 @@
     (let  [project-id (project/create-project! mock/*conn* "some project")
            project (project/get-project-by-id mock/*conn* project-id)
            suite-id (suite/create-suite-for-project! mock/*conn* "some project" "some suite")
-           run-1 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id))
-           run-2 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id))
+           run-1 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id "master"))
+           run-2 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id "master"))
            full-suite (suite/get-full-suite mock/*conn* project-id suite-id)]
       (is (= full-suite {:name "some suite" :project project :id suite-id :runs [run-2 run-1]})))))
 
@@ -64,10 +64,10 @@
           created-project (project/get-project-by-id mock/*conn* project-id)
           suite-id-1 (suite/create-suite-for-project! mock/*conn* "project name" "suite name")
           suite-1 (suite/get-suite-by-id mock/*conn* suite-id-1)
-          run-1 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id-1))
+          run-1 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id-1 "master"))
           suite-id-2 (suite/create-suite-for-project! mock/*conn* "project name" "suite name 2")
           suite-2 (suite/get-suite-by-id mock/*conn* suite-id-2)
-          run-2 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id-2))
+          run-2 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id-2 "master"))
           deleted-suite (suite/delete-suite! mock/*conn* suite-id-1)
 
           suite-1-after-deletion (suite/get-suite-by-id mock/*conn* suite-id-1)

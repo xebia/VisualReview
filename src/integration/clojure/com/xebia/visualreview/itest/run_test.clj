@@ -27,7 +27,7 @@
   (testing "stores and retrieves a run"
     (let [project-id (project/create-project! mock/*conn* "some project")
           suite-id (suite/create-suite-for-project! mock/*conn* "some project" "some suite")
-          run-id (run/create-run! mock/*conn* suite-id)
+          run-id (run/create-run! mock/*conn* suite-id "master")
           run (run/get-run mock/*conn* run-id)]
       (is (= (:id run) run-id))
       (is (= (:project-id run) project-id))
@@ -40,9 +40,9 @@
   (testing "retrieves a list of runs"
     (let [project-id (project/create-project! mock/*conn* "some project")
           suite-id (suite/create-suite-for-project! mock/*conn* "some project" "some suite")
-          run-1 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id))
-          run-2 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id))
-          run-3 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id))
+          run-1 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id "master"))
+          run-2 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id "master"))
+          run-3 (run/get-run mock/*conn* (run/create-run! mock/*conn* suite-id "master"))
           runs (run/get-runs mock/*conn* project-id suite-id)]
       (is (= (count runs) 3))
       (is (= (nth runs 0) run-3))
@@ -55,9 +55,9 @@
           created-project (project/get-project-by-id mock/*conn* project-id)
           suite-id (suite/create-suite-for-project! mock/*conn* "project name" "suite name")
           suite (suite/get-suite-by-id mock/*conn* suite-id)
-          run-id-1 (run/create-run! mock/*conn* suite-id)
+          run-id-1 (run/create-run! mock/*conn* suite-id "master")
           run-1 (run/get-run mock/*conn* run-id-1)
-          run-id-2(run/create-run! mock/*conn* suite-id)
+          run-id-2(run/create-run! mock/*conn* suite-id "master")
           run-2 (run/get-run mock/*conn* run-id-2)
           deleted-run (run/delete-run! mock/*conn* run-id-1)
 
