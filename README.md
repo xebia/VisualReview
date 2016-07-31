@@ -23,7 +23,7 @@ To use VisualReview we'll start the VisualReview app itself. After that, we'll r
 
 ### Configuring and starting the VisualReview server
 
-* Download and extract the [latest release](https://github.com/xebia/VisualReview/releases).
+* Download and extract the [latest release](https://github.com/xebia/VisualReview/releases) or [build it and run from source](https://github.com/xebia/VisualReview/wiki/Building-and-running-from-source).
 * Reconfigure any settings in config.edn (optional)
 * Run `./start.sh`
 * Open your browser at [http://localhost:7000](http://localhost:7000) (or the port you configured in config.edn) to see if everything is working. It should list an empty project list.

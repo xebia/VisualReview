@@ -16,7 +16,8 @@
 
 (ns com.xebia.visualreview.service.analysis.core
   (:require [com.xebia.visualreview.service.service-util :as sutil]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [cheshire.core :as json])
   (:import [com.xebia.visualreview PixelComparator DiffReport]
            [javax.imageio ImageIO]
            [java.io File]))
@@ -35,10 +36,10 @@
 
   If file1 or file2 is nil, the diff will be a default transparant 1x1 png and
   percentage will be 0.0"
-  [file1 file2 mask]
+  [file1 file2 mask compare-settings]
   (if (or (nil? file1) (nil? file2))
     {:diff (generate-empty-diff-file) :percentage 0.0 :mask (generate-empty-diff-file)}
-    (let [result ^DiffReport (PixelComparator/processImage file1 file2 mask)
+    (let [result ^DiffReport (PixelComparator/processImage file1 file2 mask (json/generate-string compare-settings))
           diff-file (File/createTempFile "vr-diff-" ".tmp")
           mask-file (File/createTempFile "vr-mask-" ".tmp")
           write-success? (and (if (nil? (.getMaskImage result)) (generate-empty-diff-file) (ImageIO/write (.getMaskImage result) "png" mask-file)) (ImageIO/write (.getDiffImage result) "png" diff-file))]

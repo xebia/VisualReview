@@ -23,6 +23,11 @@ import java.io.IOException;
 
 public class DiffReport {
 
+  /**
+   * Percentage of difference between `before` and `after` image.
+   * Note that this double is expected to be rounded up to 2 decimal places. For example: a value of 0.001 should be
+   * rounded up to 0.01.
+   */
   private double percentage;
 
   private BufferedImage diffImage;
@@ -44,7 +49,8 @@ public class DiffReport {
   }
 
   public double getPercentage() {
-    return percentage;
+    if (percentage > 0 && percentage < 0.1) return 0.1;
+    else return percentage;
   }
 
   public File getBefore() {
